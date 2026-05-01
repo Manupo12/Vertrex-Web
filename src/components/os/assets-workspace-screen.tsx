@@ -22,6 +22,7 @@ export default function AssetsWorkspaceScreen({ open }: AssetsWorkspaceScreenPro
   const { snapshot, loading, error, refresh } = useWorkspaceSnapshot();
   const [query, setQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<"all" | "drive" | "vertrex">("all");
+  const [activeFolder, setActiveFolder] = useState<string | null>(null);
 
   const filteredFiles = useMemo(() => {
     return snapshot.files.filter((file) => {
@@ -34,10 +35,11 @@ export default function AssetsWorkspaceScreen({ open }: AssetsWorkspaceScreenPro
       const matchesSource =
         sourceFilter === "all" ||
         (sourceFilter === "drive" ? file.provider === "drive" : file.provider !== "drive");
+      const matchesFolder = activeFolder === null || file.category === activeFolder;
 
-      return matchesQuery && matchesSource;
+      return matchesQuery && matchesSource && matchesFolder;
     });
-  }, [query, snapshot.files, sourceFilter]);
+  }, [query, snapshot.files, sourceFilter, activeFolder]);
 
   const driveFiles = snapshot.files.filter((file) => file.provider === "drive");
   const vertrexFiles = snapshot.files.filter((file) => file.provider !== "drive");
@@ -122,18 +124,29 @@ export default function AssetsWorkspaceScreen({ open }: AssetsWorkspaceScreenPro
 
           <section className="rounded-2xl border border-border bg-card">
             <div className="border-b border-border px-5 py-4">
-              <h2 className="text-lg font-semibold text-foreground">Categorías activas</h2>
+              <h2 className="text-lg font-semibold text-foreground">Carpetas</h2>
             </div>
-            <div className="space-y-3 p-4">
+            <div className="space-y-1 p-4">
+              <button
+                className={`flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm transition-colors ${activeFolder === null ? "bg-primary/10 font-medium text-primary" : "text-foreground hover:bg-secondary/40"}`}
+                onClick={() => setActiveFolder(null)}
+              >
+                <span>Todos</span>
+                <span className="text-muted-foreground">{snapshot.files.length}</span>
+              </button>
               {categories.length > 0 ? (
                 categories.map((category) => (
-                  <div key={category.label} className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-secondary/20 px-4 py-3 text-sm">
-                    <span className="text-foreground">{category.label}</span>
+                  <button
+                    key={category.label}
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm transition-colors ${activeFolder === category.label ? "bg-primary/10 font-medium text-primary" : "text-foreground hover:bg-secondary/40"}`}
+                    onClick={() => setActiveFolder(category.label)}
+                  >
+                    <span>{category.label}</span>
                     <span className="text-muted-foreground">{category.count}</span>
-                  </div>
+                  </button>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">Sin categorías detectadas.</p>
+                <p className="text-sm text-muted-foreground">Sin carpetas detectadas.</p>
               )}
             </div>
           </section>

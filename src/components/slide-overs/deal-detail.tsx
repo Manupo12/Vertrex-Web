@@ -187,7 +187,7 @@ export default function DealDetailSlideOver() {
 // SUB-COMPONENTES DEL DEAL DETAIL
 // ==========================================
 
-function TabButton({ label, count, active }: any) {
+function TabButton({ label, count, active }: { label: string; count?: number; active?: boolean }) {
   return (
     <button className={`py-3 border-b-2 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
       active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
@@ -198,7 +198,7 @@ function TabButton({ label, count, active }: any) {
   );
 }
 
-function DealMetric({ icon: Icon, label, value, subtext, borderLeft, badge, badgeColor }: any) {
+function DealMetric({ icon: Icon, label, value, subtext, borderLeft, badge, badgeColor }: { icon: React.ElementType; label: string; value: string; subtext?: string; borderLeft?: boolean; badge?: string; badgeColor?: string }) {
   return (
     <div className={`flex flex-col gap-1.5 ${borderLeft ? 'border-l border-border/50 pl-4' : 'pl-1'}`}>
       <span className="text-[10px] text-muted-foreground uppercase font-bold flex items-center gap-1.5">
@@ -217,7 +217,7 @@ function DealMetric({ icon: Icon, label, value, subtext, borderLeft, badge, badg
   );
 }
 
-function ContactRoleCard({ name, role, dealRole, dealRoleColor, email }: any) {
+function ContactRoleCard({ name, role, dealRole, dealRoleColor, email }: { name: string; role: string; dealRole: string; dealRoleColor: string; email: string }) {
   return (
     <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-card hover:border-primary/30 transition-colors group">
       <div className="flex items-center gap-3">
@@ -241,7 +241,7 @@ function ContactRoleCard({ name, role, dealRole, dealRoleColor, email }: any) {
   );
 }
 
-function DocLinkPill({ title, type, date, isSigned }: any) {
+function DocLinkPill({ title, type, date, isSigned }: { title: string; type: string; date: string; isSigned?: boolean }) {
   return (
     <div className="flex items-center justify-between p-2.5 rounded-xl border border-border bg-secondary/30 hover:border-primary/40 cursor-pointer transition-colors group">
       <div className="flex items-center gap-3 min-w-0">

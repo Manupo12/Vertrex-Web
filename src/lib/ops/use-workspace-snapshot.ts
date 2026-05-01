@@ -22,6 +22,7 @@ export const emptyWorkspaceSnapshot: WorkspaceSnapshot = {
     files: 0,
   },
   clients: [],
+  users: [],
   projects: [],
   tasks: [],
   milestones: [],

@@ -58,6 +58,10 @@ import {
 import { canonicalDealStageOptions, dealPipelineGroups, getDealPipelineGroup } from "@/lib/ops/deal-stages";
 import { isOpenTaskStatus } from "@/lib/ops/status-catalog";
 import { workspaceRequestTypeOptions } from "@/lib/ops/request-governance";
+import ClientDetailSheet from "@/components/overlays/client-detail-sheet";
+import DealDetailSheet from "@/components/overlays/deal-detail-sheet";
+import TaskDetailSheet from "@/components/overlays/task-detail-sheet";
+import TicketDetailSheet from "@/components/overlays/ticket-detail-sheet";
 
 type OverlayActionHandler = (key: UIOverlayKey, payload?: UIActionPayload) => void;
 
@@ -1827,132 +1831,8 @@ function UniversalInboxDialog({
   );
 }
 
-function TaskDetailSheet({ open, id, snapshot, onOpenChange }: { open: boolean; id: string | null; snapshot: WorkspaceSnapshot; onOpenChange: (open: boolean) => void }) {
-  const record = getTaskRecord(id, snapshot);
 
-  return (
-    <SheetFrame
-      open={open}
-      onOpenChange={onOpenChange}
-      title={record.title}
-      subtitle={`${record.code} · ${record.status}`}
-      footer={
-        <div className="flex items-center gap-3">
-          <div className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
-            Añadir comentario o contexto...
-          </div>
-          <PrimaryButton>
-            <Send className="h-4 w-4" />
-            Responder
-          </PrimaryButton>
-        </div>
-      }
-    >
-      <div className="space-y-6">
-        <div className="grid gap-3 md:grid-cols-2">
-          <MetricRow label="Responsable" value={record.assignee} />
-          <MetricRow label="Prioridad" value={record.priority} />
-          <MetricRow label="Vence" value={record.dueDate} />
-          <MetricRow label="Estado" value={record.status} />
-        </div>
-        <div>
-          <SectionTitle icon={FileText} title="Descripción" />
-          <p className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground">
-            {record.description}
-          </p>
-        </div>
-        <div>
-          <SectionTitle icon={Database} title="Relaciones" />
-          <div className="flex flex-wrap gap-2">
-            {record.relations.map((relation) => (
-              <TagChip key={relation} label={relation} />
-            ))}
-          </div>
-        </div>
-        <div>
-          <SectionTitle icon={Clock} title="Actividad reciente" />
-          <ActivityList items={record.activity} />
-        </div>
-      </div>
-    </SheetFrame>
-  );
-}
 
-function ClientDetailSheet({ open, id, snapshot, onOpenChange }: { open: boolean; id: string | null; snapshot: WorkspaceSnapshot; onOpenChange: (open: boolean) => void }) {
-  const record = getClientRecord(id, snapshot);
-
-  return (
-    <SheetFrame
-      open={open}
-      onOpenChange={onOpenChange}
-      title={record.name}
-      subtitle={`${record.segment} · Health ${record.health}`}
-    >
-      <div className="space-y-6">
-        <div className="grid gap-3 md:grid-cols-2">
-          <MetricRow label="Owner" value={record.owner} />
-          <MetricRow label="Email" value={record.email} />
-          <MetricRow label="Teléfono" value={record.phone} />
-          <MetricRow label="Segmento" value={record.segment} />
-        </div>
-        <div>
-          <SectionTitle icon={Building2} title="Resumen" />
-          <p className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground">
-            {record.summary}
-          </p>
-        </div>
-        <div>
-          <SectionTitle icon={FolderKanban} title="Proyectos vinculados" />
-          <div className="space-y-2">
-            {record.projects.map((project) => (
-              <MetricRow key={project} label="Proyecto" value={project} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </SheetFrame>
-  );
-}
-
-function DealDetailSheet({ open, id, snapshot, onOpenChange }: { open: boolean; id: string | null; snapshot: WorkspaceSnapshot; onOpenChange: (open: boolean) => void }) {
-  const record = getDealRecord(id, snapshot);
-
-  return (
-    <SheetFrame
-      open={open}
-      onOpenChange={onOpenChange}
-      title={record.title}
-      subtitle={`${record.company} · ${record.stage}`}
-      footer={
-        <div className="flex justify-end gap-2">
-          <SecondaryButton>
-            <Mail className="h-4 w-4" />
-            Follow-up
-          </SecondaryButton>
-          <PrimaryButton>
-            <ArrowRight className="h-4 w-4" />
-            Avanzar etapa
-          </PrimaryButton>
-        </div>
-      }
-    >
-      <div className="space-y-6">
-        <div className="grid gap-3 md:grid-cols-3">
-          <MetricRow label="Empresa" value={record.company} />
-          <MetricRow label="Valor" value={record.value} />
-          <MetricRow label="Probabilidad" value={record.probability} />
-        </div>
-        <MetricRow label="Siguiente paso" value={record.nextStep} />
-        <div>
-          <SectionTitle icon={Sparkles} title="Notas del deal" />
-          <p className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground">
-            {record.notes}
-          </p>
-        </div>
-      </div>
-    </SheetFrame>
-  );
-}
 
 function EventDetailSheet({
   open,
@@ -2240,50 +2120,6 @@ function ContractDetailSheet({
           <button className="text-sm font-medium text-primary" onClick={onNewVersion}>
             Crear nueva versión desde plantilla
           </button>
-        </div>
-      </div>
-    </SheetFrame>
-  );
-}
-
-function TicketDetailSheet({ open, id, snapshot, onOpenChange }: { open: boolean; id: string | null; snapshot: WorkspaceSnapshot; onOpenChange: (open: boolean) => void }) {
-  const record = getTicketRecord(id, snapshot);
-
-  return (
-    <SheetFrame
-      open={open}
-      onOpenChange={onOpenChange}
-      title={record.title}
-      subtitle={`${record.client} · ${record.project}`}
-      footer={
-        <div className="flex justify-end gap-2">
-          <SecondaryButton>
-            <MessageSquare className="h-4 w-4" />
-            Responder
-          </SecondaryButton>
-          <SecondaryButton>
-            <User className="h-4 w-4" />
-            Asignar
-          </SecondaryButton>
-          <PrimaryButton>
-            <CheckCircle2 className="h-4 w-4" />
-            Cambiar estado
-          </PrimaryButton>
-        </div>
-      }
-    >
-      <div className="space-y-6">
-        <div className="grid gap-3 md:grid-cols-2">
-          <MetricRow label="Estado" value={record.status} />
-          <MetricRow label="Tipo request" value={record.requestType} />
-          <MetricRow label="Prioridad" value={record.priority} />
-          <MetricRow label="SLA" value={record.sla} />
-          <MetricRow label="Cliente" value={record.client} />
-          <MetricRow label="Proyecto" value={record.project} />
-        </div>
-        <div>
-          <SectionTitle icon={Clock} title="Actividad" />
-          <ActivityList items={record.activity} />
         </div>
       </div>
     </SheetFrame>

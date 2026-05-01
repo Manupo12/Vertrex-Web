@@ -3,17 +3,22 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import {
   Bell,
+  BookOpen,
   Calendar,
   CheckSquare,
   ChevronRight,
   Database,
   FileText,
   FolderKanban,
+  Home,
   LayoutDashboard,
+  LifeBuoy,
   Link2,
   LogOut,
+  Menu,
   MessageSquare,
   Plus,
   Search,
@@ -70,6 +75,8 @@ const navItems: NavItem[] = [
   { label: "Finanzas", icon: Wallet, path: getOSPath("/finance"), healthTarget: "finance" },
   { label: "Agenda", icon: Calendar, path: getOSPath("/calendar"), healthTarget: "calendar" },
   { label: "Chat", icon: MessageSquare, path: getOSPath("/chat"), healthTarget: "chat" },
+  { label: "Tickets", icon: LifeBuoy, path: getOSPath("/tickets"), healthTarget: "tickets" },
+  { label: "Knowledge Base", icon: BookOpen, path: getOSPath("/kb"), healthTarget: "hub" },
 ];
 
 export default function OSShell({ children, user }: OSShellProps) {
@@ -77,6 +84,17 @@ export default function OSShell({ children, user }: OSShellProps) {
   const router = useRouter();
   const open = useUIStore((store) => store.open);
   const toggle = useUIStore((store) => store.toggle);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const breadcrumbs = useMemo(() => {
+    if (!pathname.startsWith("/os")) return [];
+    const parts = pathname.slice(3).split("/").filter(Boolean);
+    return parts.map((part, i) => {
+      const path = "/os/" + parts.slice(0, i + 1).join("/");
+      const label = part.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      return { path, label };
+    });
+  }, [pathname]);
   const { snapshot: healthSnapshot } = useWorkspaceHealth({ enabled: user.role === "team" });
   const moduleHealthMap = new Map(healthSnapshot.modules.map((module) => [module.key, module]));
 
@@ -88,7 +106,10 @@ export default function OSShell({ children, user }: OSShellProps) {
 
   return (
     <div className="vertrex-os-theme flex h-screen w-full overflow-hidden bg-background text-foreground">
-      <aside className="hidden w-[260px] flex-col justify-between border-r border-border bg-card/30 md:flex">
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden" onClick={() => setMobileMenuOpen(false)} />
+      )}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[260px] flex-col justify-between border-r border-border bg-card/30 transition-transform duration-200 md:static md:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div>
           <div className="flex h-16 items-center justify-between border-b border-border/50 px-6">
             <div className="flex items-center gap-3">
@@ -181,10 +202,32 @@ export default function OSShell({ children, user }: OSShellProps) {
       </aside>
 
       <div className="relative flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-8 backdrop-blur-md">
-          <div className="flex max-w-md flex-1 items-center gap-3">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 backdrop-blur-md md:px-8">
+          <div className="flex flex-1 items-center gap-3">
             <button
-              className="flex w-full items-center justify-between rounded-lg border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-colors ring-offset-background hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="rounded-lg border border-border bg-secondary/40 p-2 text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground md:hidden"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+            {breadcrumbs.length > 0 && (
+              <nav className="hidden items-center gap-1 text-sm text-muted-foreground md:flex">
+                <Link href="/os" className="hover:text-foreground">
+                  <Home className="h-3.5 w-3.5" />
+                </Link>
+                <ChevronRight className="h-3 w-3" />
+                {breadcrumbs.map((crumb, i) => (
+                  <span key={crumb.path} className="flex items-center gap-1">
+                    <Link href={crumb.path} className="transition-colors hover:text-foreground">
+                      {crumb.label}
+                    </Link>
+                    {i < breadcrumbs.length - 1 && <ChevronRight className="h-3 w-3" />}
+                  </span>
+                ))}
+              </nav>
+            )}
+            <button
+              className="flex w-full max-w-md items-center justify-between rounded-lg border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-colors ring-offset-background hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => toggle("commandCenter")}
             >
               <div className="flex items-center gap-2">

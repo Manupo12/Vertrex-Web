@@ -4,6 +4,7 @@ import { z } from "zod";
 import { buildJsonErrorResponse } from "@/lib/api/error-response";
 import { authenticateUser, getLoginRedirectPath, getSessionCookieOptions } from "@/lib/auth/session";
 import { enforceRateLimit, readRateLimitFingerprint } from "@/lib/security/rate-limit";
+import { logger } from "@/lib/logging/logger";
 
 export const runtime = "nodejs";
 
@@ -27,8 +28,14 @@ export async function POST(request: Request) {
     const session = await authenticateUser(payload.identifier, payload.password, payload.role);
 
     if (!session) {
+      logger.warn("Login failed: invalid credentials", {
+        identifier: payload.identifier,
+        role: payload.role,
+      });
       return Response.json({ error: "Credenciales inválidas o acceso no autorizado." }, { status: 401 });
     }
+
+    logger.info("Login successful", { userId: session.user.id, role: session.user.role });
 
     const cookieStore = await cookies();
     cookieStore.set({
@@ -43,6 +50,9 @@ export async function POST(request: Request) {
       redirectTo: getLoginRedirectPath(session.user),
     });
   } catch (error) {
+    logger.error("Login error", error instanceof Error ? error : undefined, {
+      identifier: (await request.json().catch(() => ({}))).identifier,
+    });
     return buildJsonErrorResponse(error, "No fue posible iniciar sesión.");
   }
 }

@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 
 import OSShell from "@/components/os/os-shell";
 import { getCurrentSession } from "@/lib/auth/session";
+import { ToastContainer } from "@/components/ui/toast-container";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export default async function OSLayout({ children }: { children: ReactNode }) {
   const session = await getCurrentSession();
@@ -23,7 +25,10 @@ export default async function OSLayout({ children }: { children: ReactNode }) {
         role: session.user.role,
       }}
     >
-      {children}
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
+      <ToastContainer />
     </OSShell>
   );
 }

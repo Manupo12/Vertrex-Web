@@ -26,7 +26,9 @@ import SettingsPage from '@/app/_os/(os)/settings/page'
 import StrategyControlCenterPage from '@/app/_os/(os)/strategy/page'
 import TeamManagementPage from '@/app/_os/(os)/team/page'
 import IntelligentTimeTrackingPage from '@/app/_os/(os)/time/page'
+import TicketsPage from '@/app/_os/(os)/tickets/page'
 import VaultPage from '@/app/_os/(os)/vault/page'
+import KbPage from '@/app/_os/(os)/kb/page'
 
 type OSRouteRendererProps = {
   path?: string[]
@@ -101,8 +103,12 @@ export function renderOSRoute({ path = [], searchParams }: OSRouteRendererProps)
       return path.length === 1 ? <TeamManagementPage /> : notFound()
     case 'time':
       return path.length === 1 ? <IntelligentTimeTrackingPage /> : notFound()
+    case 'tickets':
+      return path.length === 1 ? <TicketsPage /> : notFound()
     case 'vault':
       return path.length === 1 ? <VaultPage /> : notFound()
+    case 'kb':
+      return path.length === 1 ? <KbPage /> : notFound()
     default:
       return notFound()
   }

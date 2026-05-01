@@ -21,7 +21,8 @@ import {
   formatMoney,
   formatNumber,
 } from "@/components/os/workspace-ui";
-import { dealPipelineGroups, getDealPipelineGroup, getDealStageLabel } from "@/lib/ops/deal-stages";
+import { dealPipelineGroups, getDealPipelineGroup, getDealStageLabel, type CanonicalDealStage } from "@/lib/ops/deal-stages";
+import { advanceDealStage } from "@/lib/crm/crm-service";
 import { postWorkspaceCommand } from "@/lib/ops/workspace-client";
 import { useWorkspaceSnapshot } from "@/lib/ops/use-workspace-snapshot";
 import type { WorkspaceClientRecord, WorkspaceDealRecord } from "@/lib/ops/workspace-service";
@@ -49,6 +50,9 @@ export default function CRMWorkspaceScreen({ open }: CRMWorkspaceScreenProps) {
   const [showClientForm, setShowClientForm] = useState(false);
   const [submittingClient, setSubmittingClient] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [draggingDealId, setDraggingDealId] = useState<string | null>(null);
+  const [dropTargetColumn, setDropTargetColumn] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const totalPipelineValue = snapshot.deals.reduce((total, deal) => total + deal.valueCents, 0);
   const weightedPipelineValue = snapshot.deals.reduce((total, deal) => total + Math.round((deal.valueCents * deal.probability) / 100), 0);
@@ -210,30 +214,95 @@ export default function CRMWorkspaceScreen({ open }: CRMWorkspaceScreenProps) {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-4">
           <div className="grid gap-4 xl:grid-cols-4">
-            {pipeline.map((column) => (
-              <section key={column.key} className="rounded-2xl border border-border bg-card shadow-sm">
-                <div className="border-b border-border px-4 py-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{column.title}</h2>
-                      <p className="mt-1 text-xs text-muted-foreground">{column.subtitle}</p>
+            {pipeline.map((column) => {
+              const columnStageMap: Record<string, CanonicalDealStage> = {
+                contacto: "contactado",
+                calificado: "interesado",
+                propuesta: "propuesta_enviada",
+                activacion: "pendiente_anticipo_50",
+                activo: "cliente_activo",
+                cerrado: "perdido",
+              };
+
+              const handleDragOver = (e: React.DragEvent) => {
+                e.preventDefault();
+                setDropTargetColumn(column.key);
+              };
+
+              const handleDragLeave = () => {
+                setDropTargetColumn(null);
+              };
+
+              const handleDrop = async (e: React.DragEvent) => {
+                e.preventDefault();
+                const dealId = e.dataTransfer.getData("dealId");
+                setDropTargetColumn(null);
+                setDraggingDealId(null);
+
+                if (!dealId) return;
+
+                const deal = snapshot.deals.find((d) => d.id === dealId);
+                if (!deal) return;
+
+                const currentGroup = getDealPipelineGroup(deal.stage).key;
+                if (currentGroup === column.key) return;
+
+                const newStage = columnStageMap[column.key];
+                if (!newStage) return;
+
+                setIsUpdating(true);
+                try {
+                  await advanceDealStage(dealId, newStage);
+                  await refresh();
+                } finally {
+                  setIsUpdating(false);
+                }
+              };
+
+              const isDropTarget = dropTargetColumn === column.key;
+
+              return (
+                <section
+                  key={column.key}
+                  className={`rounded-2xl border bg-card shadow-sm transition-colors ${
+                    isDropTarget ? "border-primary bg-primary/5" : "border-border"
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div className="border-b border-border px-4 py-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{column.title}</h2>
+                        <p className="mt-1 text-xs text-muted-foreground">{column.subtitle}</p>
+                      </div>
+                      <span className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-foreground">
+                        {column.deals.length}
+                      </span>
                     </div>
-                    <span className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-foreground">
-                      {column.deals.length}
-                    </span>
                   </div>
-                </div>
-                <div className="space-y-3 p-4">
-                  {column.deals.length > 0 ? (
-                    column.deals.map((deal) => <DealCard key={deal.id} deal={deal} onOpen={open} />)
-                  ) : (
-                    <div className="rounded-xl border border-dashed border-border bg-secondary/20 px-4 py-8 text-center text-sm text-muted-foreground">
-                      Sin oportunidades en esta etapa.
-                    </div>
-                  )}
-                </div>
-              </section>
-            ))}
+                  <div className={`space-y-3 p-4 min-h-[200px] ${isUpdating ? "opacity-50" : ""}`}>
+                    {column.deals.length > 0 ? (
+                      column.deals.map((deal) => (
+                        <DealCard
+                          key={deal.id}
+                          deal={deal}
+                          onOpen={open}
+                          isDragging={draggingDealId === deal.id}
+                          onDragStart={() => setDraggingDealId(deal.id)}
+                          onDragEnd={() => setDraggingDealId(null)}
+                        />
+                      ))
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-border bg-secondary/20 px-4 py-8 text-center text-sm text-muted-foreground">
+                        {isDropTarget ? "Suelta aquí para mover" : "Sin oportunidades en esta etapa."}
+                      </div>
+                    )}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         </div>
 
@@ -346,9 +415,19 @@ function MetricCard({ title, value, subtitle, icon: Icon }: { title: string; val
   );
 }
 
-function DealCard({ deal, onOpen }: { deal: WorkspaceDealRecord; onOpen: UIStore["open"] }) {
+function DealCard({ deal, onOpen, isDragging, onDragStart, onDragEnd }: { deal: WorkspaceDealRecord; onOpen: UIStore["open"]; isDragging?: boolean; onDragStart?: () => void; onDragEnd?: () => void }) {
   return (
-    <button className="w-full rounded-xl border border-border/60 bg-secondary/20 p-4 text-left transition-colors hover:border-primary/30 hover:bg-primary/5" onClick={() => onOpen("dealDetail", deal.id)}>
+    <button
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("dealId", deal.id);
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart?.();
+      }}
+      onDragEnd={() => onDragEnd?.()}
+      className={`w-full rounded-xl border border-border/60 bg-secondary/20 p-4 text-left transition-all hover:border-primary/30 hover:bg-primary/5 ${isDragging ? "opacity-50 rotate-2" : ""}`}
+      onClick={() => onOpen("dealDetail", deal.id)}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-foreground">{deal.title}</p>

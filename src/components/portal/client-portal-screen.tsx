@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -360,6 +360,28 @@ function ChatView({ client, open }: { client: PortalClient; open: OpenOverlay })
   const [draft, setDraft] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState(client.messages);
+
+  useEffect(() => {
+    setMessages(client.messages);
+  }, [client.messages]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/portal/messages");
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.messages && Array.isArray(data.messages)) {
+            setMessages(data.messages);
+          }
+        }
+      } catch {
+        // silent fail on polling
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -388,7 +410,11 @@ function ChatView({ client, open }: { client: PortalClient; open: OpenOverlay })
       }
 
       setDraft("");
-      router.refresh();
+      if (payload?.messages) {
+        setMessages(payload.messages);
+      } else {
+        router.refresh();
+      }
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "No fue posible enviar tu mensaje.");
     } finally {
@@ -411,8 +437,8 @@ function ChatView({ client, open }: { client: PortalClient; open: OpenOverlay })
         </div>
 
         <div className="space-y-4">
-          {client.messages.length > 0 ? (
-            client.messages.map((message) => {
+          {messages.length > 0 ? (
+            messages.map((message) => {
               const isClient = message.role === "client";
               const isAssistant = message.role === "assistant";
 
@@ -920,6 +946,22 @@ function BillingView({ client, open }: { client: PortalClient; open: OpenOverlay
             />
           )}
         </div>
+
+        {client.invoices.some((i) => i.status !== "paid") && (
+          <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-[#00FA82]/20 bg-black/30 p-6">
+            <h4 className="text-sm font-bold uppercase tracking-widest text-[#00FA82]">Pago en línea</h4>
+            <p className="text-sm text-gray-400">Paga tu saldo pendiente de forma segura con tarjeta de crédito o débito.</p>
+            <a
+              href={`https://buy.stripe.com/test_sample?client_reference_id=${client.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#00FA82] px-4 py-2 text-xs font-bold uppercase tracking-widest text-black transition-colors hover:bg-[#00FA82]/90"
+            >
+              <CreditCard className="h-4 w-4" />
+              Pagar con Stripe
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -978,6 +1020,38 @@ function FilesView({ client, open, openFile }: { client: PortalClient; open: Ope
 }
 
 function SupportView({ client, open }: { client: PortalClient; open: OpenOverlay }) {
+  const [ticketForm, setTicketForm] = useState({ title: "", description: "", requestType: "general" });
+  const [submitting, setSubmitting] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const handleCreateTicket = async () => {
+    if (!ticketForm.title.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/workspace", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "ticket",
+          payload: {
+            title: ticketForm.title,
+            summary: ticketForm.description,
+            clientSlug: client.id,
+            requestType: ticketForm.requestType,
+            priority: "medium",
+          },
+        }),
+      });
+      if (res.ok) {
+        setTicketForm({ title: "", description: "", requestType: "general" });
+        setShowForm(false);
+        window.location.reload();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-[#00FA82]/30 bg-[#111] p-6">
@@ -990,9 +1064,48 @@ function SupportView({ client, open }: { client: PortalClient; open: OpenOverlay
           </div>
           <div className="flex gap-2">
             <button className="rounded-lg border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5" onClick={() => open("threadDetail", "support-thread")}>Abrir IA</button>
-            <button className="rounded-lg bg-[#00FA82] px-4 py-2 text-xs font-bold uppercase tracking-widest text-black transition-colors hover:bg-[#00FA82]/90" onClick={() => open("createTicket")}>Nuevo ticket</button>
+            <button className="rounded-lg bg-[#00FA82] px-4 py-2 text-xs font-bold uppercase tracking-widest text-black transition-colors hover:bg-[#00FA82]/90" onClick={() => setShowForm((v) => !v)}>
+              {showForm ? "Cancelar" : "Nuevo ticket"}
+            </button>
           </div>
         </div>
+        {showForm && (
+          <div className="mt-4 space-y-3 rounded-xl border border-white/10 bg-black/40 p-4">
+            <input
+              value={ticketForm.title}
+              onChange={(e) => setTicketForm((f) => ({ ...f, title: e.target.value }))}
+              placeholder="Título del ticket"
+              className="w-full rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none placeholder:text-gray-500"
+            />
+            <textarea
+              value={ticketForm.description}
+              onChange={(e) => setTicketForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Describe tu solicitud..."
+              rows={3}
+              className="w-full resize-none rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none placeholder:text-gray-500"
+            />
+            <div className="flex items-center gap-3">
+              <select
+                value={ticketForm.requestType}
+                onChange={(e) => setTicketForm((f) => ({ ...f, requestType: e.target.value }))}
+                className="rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2 text-xs text-white"
+              >
+                <option value="general">General</option>
+                <option value="soporte">Soporte</option>
+                <option value="incidencia_bloqueante">Incidencia bloqueante</option>
+                <option value="revision_entregable">Revisión entregable</option>
+                <option value="solicitud_cambio">Solicitud cambio</option>
+              </select>
+              <button
+                onClick={handleCreateTicket}
+                disabled={submitting || !ticketForm.title.trim()}
+                className="rounded-lg bg-[#00FA82] px-4 py-2 text-xs font-bold uppercase tracking-widest text-black transition-colors hover:bg-[#00FA82]/90 disabled:opacity-40"
+              >
+                {submitting ? "Enviando..." : "Crear ticket"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       <div className="rounded-2xl border border-white/10 bg-[#111] p-6">
         <div className="mb-6 flex items-center justify-between">

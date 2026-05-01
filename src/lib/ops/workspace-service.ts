@@ -54,6 +54,7 @@ export type WorkspaceClientRecord = {
   portalAccessActive: boolean;
   portalLastLoginAt: string | null;
   activePortalSessions: number;
+  metadata?: Record<string, unknown>;
 };
 
 export type WorkspaceProjectTrack = "commercial" | "community" | "roadmap";
@@ -206,6 +207,7 @@ export type WorkspaceInvoiceRecord = {
   invoiceNumber: string;
   amountCents: number;
   dueDate: string | null;
+  dueLabel: string | null;
   status: string;
   updatedAt: string;
 };
@@ -338,6 +340,18 @@ export type WorkspaceSnapshot = {
   automationPlaybooks: WorkspaceAutomationPlaybookRecord[];
   automationRuns: WorkspaceAutomationRunRecord[];
   links: WorkspaceLinkRecord[];
+  users: WorkspaceUserRecord[];
+};
+
+export type WorkspaceUserRecord = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  clientId: string | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type CreateWorkspaceClientInput = {
@@ -559,7 +573,7 @@ export async function getWorkspaceSnapshot(): Promise<WorkspaceSnapshot> {
 
   const db = getDb();
   const now = new Date();
-  const [clients, projects, tasks, milestones, deals, events, files, credentials, tickets, invoices, documents, transactions, messages, portalUsers, activeSessions, automationPlaybooks, automationRuns, links] = await Promise.all([
+  const [clients, projects, tasks, milestones, deals, events, files, credentials, tickets, invoices, documents, transactions, messages, portalUsers, teamUsers, activeSessions, automationPlaybooks, automationRuns, links] = await Promise.all([
     readOptionalWorkspaceDataset(() => db.select().from(schema.clients).orderBy(desc(schema.clients.updatedAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.projects).orderBy(desc(schema.projects.updatedAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.tasks).orderBy(desc(schema.tasks.updatedAt))),
@@ -574,6 +588,7 @@ export async function getWorkspaceSnapshot(): Promise<WorkspaceSnapshot> {
     readOptionalWorkspaceDataset(() => db.select().from(schema.transactions).orderBy(desc(schema.transactions.occurredAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.conversationMessages).orderBy(desc(schema.conversationMessages.createdAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.users).where(eq(schema.users.role, "client")).orderBy(desc(schema.users.updatedAt))),
+    readOptionalWorkspaceDataset(() => db.select().from(schema.users).where(eq(schema.users.role, "team")).orderBy(desc(schema.users.updatedAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.sessions).where(gt(schema.sessions.expiresAt, now)).orderBy(desc(schema.sessions.createdAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.automationPlaybooks).orderBy(desc(schema.automationPlaybooks.updatedAt))),
     readOptionalWorkspaceDataset(() => db.select().from(schema.automationRuns).orderBy(desc(schema.automationRuns.startedAt))),
@@ -933,7 +948,8 @@ export async function getWorkspaceSnapshot(): Promise<WorkspaceSnapshot> {
       label: invoice.label,
       invoiceNumber: invoice.invoiceNumber,
       amountCents: invoice.amountCents,
-      dueDate: invoice.dueLabel ?? toIsoString(invoice.dueDate),
+      dueDate: toIsoString(invoice.dueDate),
+      dueLabel: invoice.dueLabel,
       status: invoice.status,
       updatedAt: formatDateTime(invoice.updatedAt ?? invoice.createdAt),
     };
@@ -1081,6 +1097,7 @@ export async function getWorkspaceSnapshot(): Promise<WorkspaceSnapshot> {
     automationPlaybooks: mappedAutomationPlaybooks,
     automationRuns: mappedAutomationRuns,
     links: mappedLinks,
+    users: teamUsers,
   };
 }
 
@@ -2319,6 +2336,7 @@ function createEmptyWorkspaceSnapshot(): WorkspaceSnapshot {
     automationPlaybooks: [],
     automationRuns: [],
     links: [],
+    users: [],
   };
 }
 
@@ -2368,6 +2386,12 @@ function hasMissingWorkspaceRelationMessage(message: string) {
     || (normalized.includes("table") && normalized.includes("does not exist"))
     || normalized.includes("no such table")
     || normalized.includes("undefined_table")
+    || normalized.includes("database_url no está configurada")
+    || normalized.includes("database_url is not configured")
+    || normalized.includes("connection")
+    || normalized.includes("connect")
+    || normalized.includes("econnrefused")
+    || normalized.includes("enotfound")
   );
 }
 

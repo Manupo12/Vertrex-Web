@@ -13,6 +13,7 @@ import { dealPipelineGroups, getDealPipelineGroup } from "@/lib/ops/deal-stages"
 import { isOpenTaskStatus } from "@/lib/ops/status-catalog";
 import { useWorkspaceSnapshot } from "@/lib/ops/use-workspace-snapshot";
 import { useUIStore } from "@/lib/store/ui";
+import TimesheetView from "@/components/os/timesheet-view";
 
 export default function TimeWorkspaceScreen() {
   const open = useUIStore((store) => store.open);
@@ -133,6 +134,8 @@ export default function TimeWorkspaceScreen() {
           </div>
         </section>
       </div>
+
+      <TimesheetView snapshot={snapshot} />
 
       <section className="rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border px-5 py-4">

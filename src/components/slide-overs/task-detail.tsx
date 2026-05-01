@@ -147,7 +147,7 @@ export default function TaskSlideOver() {
 }
 
 // Sub-componente para el Grid de Propiedades
-function PropertyRow({ icon: Icon, label, value, valueColor = "text-foreground", avatar }: any) {
+function PropertyRow({ icon: Icon, label, value, valueColor = "text-foreground", avatar }: { icon: React.ElementType; label: string; value: string; valueColor?: string; avatar?: string }) {
   return (
     <div className="flex flex-col gap-1.5 group cursor-pointer">
       <span className="text-xs text-muted-foreground flex items-center gap-1.5">

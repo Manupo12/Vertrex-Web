@@ -146,11 +146,11 @@ export default function ClientDetailSlideOver() {
 // SUB-COMPONENTES DEL SLIDE-OVER
 // ==========================================
 
-function GlobeIcon(props: any) {
+function GlobeIcon(props: React.SVGProps<SVGSVGElement>) {
   return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
 }
 
-function TabButton({ label, count, active }: any) {
+function TabButton({ label, count, active }: { label: string; count?: number; active?: boolean }) {
   return (
     <button className={`py-3 border-b-2 text-sm font-medium transition-colors flex items-center gap-2 ${
       active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
@@ -161,7 +161,7 @@ function TabButton({ label, count, active }: any) {
   );
 }
 
-function ContactCard({ name, role, email, isPrimary }: any) {
+function ContactCard({ name, role, email, isPrimary }: { name: string; role: string; email?: string; isPrimary?: boolean }) {
   return (
     <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-primary/30 transition-colors group">
       <div className="flex items-center gap-3">
@@ -183,7 +183,7 @@ function ContactCard({ name, role, email, isPrimary }: any) {
   );
 }
 
-function MetadataRow({ label, value, isMono, isPrimary }: any) {
+function MetadataRow({ label, value, isMono, isPrimary }: { label: string; value: string; isMono?: boolean; isPrimary?: boolean }) {
   return (
     <div className="flex items-center justify-between py-1 border-b border-border/30 last:border-0">
       <span className="text-xs text-muted-foreground">{label}</span>
@@ -194,7 +194,7 @@ function MetadataRow({ label, value, isMono, isPrimary }: any) {
   );
 }
 
-function ProjectPill({ id, name, status, progress }: any) {
+function ProjectPill({ id, name, status, progress }: { id: string; name: string; status: string; progress: number }) {
   const isDone = progress === 100;
   return (
     <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-secondary/30 hover:border-primary/40 cursor-pointer transition-colors group">

@@ -22,6 +22,8 @@ import { postWorkspaceCommand } from "@/lib/ops/workspace-client";
 import { useWorkspaceSnapshot } from "@/lib/ops/use-workspace-snapshot";
 import type { WorkspaceMilestoneRecord, WorkspaceProjectRecord, WorkspaceTaskRecord } from "@/lib/ops/workspace-service";
 import { useUIStore } from "@/lib/store/ui";
+import { updateTaskStatus } from "@/lib/projects/task-service";
+import type { WorkspaceTaskStatusValue } from "@/lib/ops/status-catalog";
 
 type TaskColumn = {
   key: "todo" | "in_progress" | "review" | "blocked" | "done";
@@ -66,6 +68,9 @@ export default function ProjectsWorkspaceScreen() {
   const [projectError, setProjectError] = useState<string | null>(null);
   const [taskError, setTaskError] = useState<string | null>(null);
   const [milestoneError, setMilestoneError] = useState<string | null>(null);
+  const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
+  const [dropTargetColumn, setDropTargetColumn] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const columns = useMemo<TaskColumn[]>(() => {
     return columnDefinitions.map((column) => ({
@@ -315,39 +320,81 @@ export default function ProjectsWorkspaceScreen() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="grid gap-4 xl:grid-cols-4">
-          {columns.map((column) => (
-            <section key={column.key} className="rounded-2xl border border-border bg-card shadow-sm">
-              <div className="border-b border-border px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{column.title}</h2>
-                    <p className="mt-1 text-xs text-muted-foreground">{column.subtitle}</p>
+          {columns.map((column) => {
+            const handleDragOver = (e: React.DragEvent) => {
+              e.preventDefault();
+              setDropTargetColumn(column.key);
+            };
+
+            const handleDragLeave = () => {
+              setDropTargetColumn(null);
+            };
+
+            const handleDrop = async (e: React.DragEvent) => {
+              e.preventDefault();
+              const taskId = e.dataTransfer.getData("taskId");
+              setDropTargetColumn(null);
+              setDraggingTaskId(null);
+
+              if (!taskId) return;
+
+              const task = snapshot.tasks.find((t) => t.id === taskId);
+              if (!task) return;
+
+              const currentStatus = normalizeTaskStatus(task.status);
+              if (currentStatus === column.key) return;
+
+              setIsUpdating(true);
+              try {
+                await updateTaskStatus(taskId, column.key);
+                await refresh();
+              } finally {
+                setIsUpdating(false);
+              }
+            };
+
+            const isDropTarget = dropTargetColumn === column.key;
+
+            return (
+              <section
+                key={column.key}
+                className={`rounded-2xl border bg-card shadow-sm transition-colors ${isDropTarget ? "border-primary bg-primary/5" : "border-border"}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className="border-b border-border px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{column.title}</h2>
+                      <p className="mt-1 text-xs text-muted-foreground">{column.subtitle}</p>
+                    </div>
+                    <span className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-foreground">
+                      {column.tasks.length}
+                    </span>
                   </div>
-                  <span className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-foreground">
-                    {column.tasks.length}
-                  </span>
                 </div>
-              </div>
-              <div className="space-y-3 p-4">
-                {column.tasks.length > 0 ? (
-                  column.tasks.map((task) => (
-                    <button key={task.id} className="w-full rounded-xl border border-border/60 bg-secondary/20 p-4 text-left transition-colors hover:border-primary/30 hover:bg-primary/5" onClick={() => open("taskDetail", task.id)}>
-                      <p className="text-sm font-semibold text-foreground">{task.title}</p>
-                      <p className="mt-2 text-xs text-muted-foreground">{task.projectName ?? task.clientName ?? "Sin vínculo"}</p>
-                      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                        <span>{task.owner ?? "Sin owner"}</span>
-                        <span>{task.dueLabel ?? formatDateTime(task.updatedAt)}</span>
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border bg-secondary/20 px-4 py-8 text-center text-sm text-muted-foreground">
-                    Sin tareas en esta columna.
-                  </div>
-                )}
-              </div>
-            </section>
-          ))}
+                <div className={`space-y-3 p-4 min-h-[200px] ${isUpdating ? "opacity-50" : ""}`}>
+                  {column.tasks.length > 0 ? (
+                    column.tasks.map((task) => (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        isDragging={draggingTaskId === task.id}
+                        onDragStart={() => setDraggingTaskId(task.id)}
+                        onDragEnd={() => setDraggingTaskId(null)}
+                        onClick={() => open("taskDetail", task.id)}
+                      />
+                    ))
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-border bg-secondary/20 px-4 py-8 text-center text-sm text-muted-foreground">
+                      {isDropTarget ? "Suelta aquí para mover" : "Sin tareas en esta columna."}
+                    </div>
+                  )}
+                </div>
+              </section>
+            );
+          })}
         </div>
 
         <aside className="space-y-6">
@@ -511,6 +558,29 @@ function MilestoneCard({ milestone }: { milestone: WorkspaceMilestoneRecord }) {
         <span>{milestone.clientVisible ? "Visible al cliente" : "Interno"}</span>
       </div>
     </div>
+  );
+}
+
+function TaskCard({ task, isDragging, onDragStart, onDragEnd, onClick }: { task: WorkspaceTaskRecord; isDragging?: boolean; onDragStart?: () => void; onDragEnd?: () => void; onClick?: () => void }) {
+  return (
+    <button
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("taskId", task.id);
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart?.();
+      }}
+      onDragEnd={() => onDragEnd?.()}
+      className={`w-full rounded-xl border border-border/60 bg-secondary/20 p-4 text-left transition-all hover:border-primary/30 hover:bg-primary/5 ${isDragging ? "opacity-50 rotate-2" : ""}`}
+      onClick={onClick}
+    >
+      <p className="text-sm font-semibold text-foreground">{task.title}</p>
+      <p className="mt-2 text-xs text-muted-foreground">{task.projectName ?? task.clientName ?? "Sin vínculo"}</p>
+      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+        <span>{task.owner ?? "Sin owner"}</span>
+        <span>{task.dueLabel ?? formatDateTime(task.updatedAt)}</span>
+      </div>
+    </button>
   );
 }
 

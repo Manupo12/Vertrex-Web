@@ -12,6 +12,7 @@ export const workspaceHealthModuleMeta = {
   chat: { label: "Chat", path: "/os/chat" },
   vault: { label: "Vault", path: "/os/vault" },
   clients: { label: "Clientes", path: "/os/clients" },
+  tickets: { label: "Tickets", path: "/os/tickets" },
 } as const;
 
 export type WorkspaceHealthModuleKey = keyof typeof workspaceHealthModuleMeta;

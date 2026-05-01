@@ -19,6 +19,14 @@ export default function AutomationsWorkspaceScreen() {
   const { snapshot, loading, error, refresh } = useWorkspaceSnapshot();
   const [runningPlaybookId, setRunningPlaybookId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [showBuilder, setShowBuilder] = useState(false);
+  const [builderForm, setBuilderForm] = useState({
+    title: "",
+    trigger: "deal_created" as "deal_created" | "ticket_created" | "invoice_issued" | "project_started" | "event_scheduled",
+    action: "create_task" as "create_task" | "send_email" | "create_event" | "update_deal",
+    condition: "",
+  });
+  const [savingPlaybook, setSavingPlaybook] = useState(false);
 
   const activeDealsWithoutProject = snapshot.deals.filter((deal) => isActiveClientDealStage(deal.stage) && !deal.projectId);
   const clientsWithoutPortal = snapshot.clients.filter((client) => client.projectCount > 0 && !client.portalUserId);
@@ -131,7 +139,7 @@ export default function AutomationsWorkspaceScreen() {
           <button className="rounded-lg border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary/80" onClick={refresh}>
             Actualizar
           </button>
-          <button className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground" onClick={() => open("createAutomation")}>
+          <button className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground" onClick={() => setShowBuilder(true)}>
             <span className="inline-flex items-center gap-2">
               <Plus className="h-4 w-4" /> Nueva automatización
             </span>
@@ -205,6 +213,26 @@ export default function AutomationsWorkspaceScreen() {
                 lastRunStatus={playbook.lastRunStatus}
                 onRun={() => handleRegisterRun(playbook.id)}
                 running={runningPlaybookId === playbook.id}
+                onToggle={async () => {
+                  try {
+                    await requestWorkspaceMutation(
+                      {
+                        kind: "automationPlaybook",
+                        payload: {
+                          id: playbook.id,
+                          status: playbook.status === "active" ? "paused" : "active",
+                          title: playbook.title,
+                          trigger: playbook.trigger,
+                          action: playbook.action,
+                        },
+                      },
+                      "Error al actualizar playbook"
+                    );
+                    refresh();
+                  } catch (err) {
+                    setActionError(err instanceof Error ? err.message : "Error al actualizar playbook");
+                  }
+                }}
               />
             )) : (
               <div className="rounded-xl border border-dashed border-border bg-secondary/10 p-4 text-sm text-muted-foreground">
@@ -247,6 +275,103 @@ export default function AutomationsWorkspaceScreen() {
           </div>
         </section>
       </div>
+
+      {showBuilder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-foreground">Nueva automatización</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Configura un trigger y una acción</p>
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="text-sm font-medium text-foreground">Título</label>
+                <input
+                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  value={builderForm.title}
+                  onChange={(e) => setBuilderForm((prev) => ({ ...prev, title: e.target.value }))}
+                  placeholder="Ej: Crear tarea cuando se active deal"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground">Trigger (Cuando)</label>
+                  <select
+                    className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    value={builderForm.trigger}
+                    onChange={(e) => setBuilderForm((prev) => ({ ...prev, trigger: e.target.value as typeof builderForm.trigger }))}
+                  >
+                    <option value="deal_created">Deal creado</option>
+                    <option value="ticket_created">Ticket creado</option>
+                    <option value="invoice_issued">Factura emitida</option>
+                    <option value="project_started">Proyecto iniciado</option>
+                    <option value="event_scheduled">Evento agendado</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground">Acción (Entonces)</label>
+                  <select
+                    className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    value={builderForm.action}
+                    onChange={(e) => setBuilderForm((prev) => ({ ...prev, action: e.target.value as typeof builderForm.action }))}
+                  >
+                    <option value="create_task">Crear tarea</option>
+                    <option value="send_email">Enviar email</option>
+                    <option value="create_event">Crear evento</option>
+                    <option value="update_deal">Actualizar deal</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground">Condición (opcional)</label>
+                <input
+                  className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  value={builderForm.condition}
+                  onChange={(e) => setBuilderForm((prev) => ({ ...prev, condition: e.target.value }))}
+                  placeholder="Ej: deal.valueCents > 1000000"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                className="rounded-lg border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary/80"
+                onClick={() => setShowBuilder(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                disabled={!builderForm.title || savingPlaybook}
+                onClick={async () => {
+                  setSavingPlaybook(true);
+                  try {
+                    await requestWorkspaceMutation(
+                      {
+                        kind: "automationPlaybook",
+                        payload: {
+                          title: builderForm.title,
+                          trigger: builderForm.trigger,
+                          action: builderForm.action,
+                          condition: builderForm.condition || undefined,
+                          status: "active",
+                        },
+                      },
+                      "Error al guardar playbook"
+                    );
+                    setShowBuilder(false);
+                    setBuilderForm({ title: "", trigger: "deal_created", action: "create_task", condition: "" });
+                    refresh();
+                  } catch (err) {
+                    setActionError(err instanceof Error ? err.message : "Error al guardar");
+                  } finally {
+                    setSavingPlaybook(false);
+                  }
+                }}
+              >
+                {savingPlaybook ? "Guardando..." : "Guardar playbook"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -277,6 +402,7 @@ function PlaybookCard({
   lastRunStatus,
   onRun,
   running,
+  onToggle,
 }: {
   title: string;
   description: string;
@@ -286,6 +412,7 @@ function PlaybookCard({
   lastRunStatus: string | null;
   onRun: () => void;
   running: boolean;
+  onToggle?: () => void;
 }) {
   const badge = getStatusBadge(status);
 
@@ -305,11 +432,19 @@ function PlaybookCard({
         <span>Última ejecución: {formatAutomationTimestamp(lastRunAt) ?? "Sin ejecuciones"}</span>
         {lastRunStatus ? <span>Estado último run: {getStatusBadge(lastRunStatus).label}</span> : null}
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex items-center justify-end gap-2">
+        {onToggle && (
+          <button
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5"
+            onClick={onToggle}
+          >
+            {status === "active" ? "Pausar" : "Activar"}
+          </button>
+        )}
         <button
           className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-50"
           onClick={onRun}
-          disabled={running}
+          disabled={running || status !== "active"}
         >
           <Play className="h-3.5 w-3.5" />
           {running ? "Registrando..." : "Registrar ejecución"}

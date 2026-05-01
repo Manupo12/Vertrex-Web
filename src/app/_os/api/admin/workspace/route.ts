@@ -19,6 +19,7 @@ import {
 } from "@/lib/ops/workspace-service";
 import { workspaceAdminCommandSchema } from "@/lib/ops/workspace-schemas";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { evaluateTrigger } from "@/lib/automation/trigger-service";
 
 export const runtime = "nodejs";
 
@@ -53,35 +54,58 @@ export async function POST(request: Request) {
       },
     };
 
+    let result;
     switch (command.kind) {
       case "client":
-        return Response.json(await createWorkspaceClient(command.payload, options), { status: 201 });
+        result = await createWorkspaceClient(command.payload, options);
+        await evaluateTrigger("client.created", { clientId: (result as Record<string, unknown>)?.id, ...command.payload });
+        return Response.json(result, { status: 201 });
       case "project":
-        return Response.json(await createWorkspaceProject(command.payload, options), { status: 201 });
+        result = await createWorkspaceProject(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "task":
-        return Response.json(await createWorkspaceTask(command.payload, options), { status: 201 });
+        result = await createWorkspaceTask(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "milestone":
-        return Response.json(await createWorkspaceMilestone(command.payload, options), { status: 201 });
+        result = await createWorkspaceMilestone(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "deal":
-        return Response.json(await createWorkspaceDeal(command.payload, options), { status: 201 });
+        result = await createWorkspaceDeal(command.payload, options);
+        if ((command.payload as Record<string, unknown>)?.stage === "won") {
+          await evaluateTrigger("deal.won", { dealId: (result as Record<string, unknown>)?.id, ...command.payload });
+        }
+        return Response.json(result, { status: 201 });
       case "event":
-        return Response.json(await createWorkspaceEvent(command.payload, options), { status: 201 });
+        result = await createWorkspaceEvent(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "transaction":
-        return Response.json(await createWorkspaceTransaction(command.payload, options), { status: 201 });
+        result = await createWorkspaceTransaction(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "invoice":
-        return Response.json(await createWorkspaceInvoice(command.payload, options), { status: 201 });
+        result = await createWorkspaceInvoice(command.payload, options);
+        if ((command.payload as Record<string, unknown>)?.status === "overdue") {
+          await evaluateTrigger("invoice.overdue", { invoiceId: (result as Record<string, unknown>)?.id, ...command.payload });
+        }
+        return Response.json(result, { status: 201 });
       case "credential":
-        return Response.json(await createWorkspaceCredential(command.payload, options), { status: 201 });
+        result = await createWorkspaceCredential(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "link":
-        return Response.json(await createWorkspaceLink(command.payload, options), { status: 201 });
+        result = await createWorkspaceLink(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "ticket":
-        return Response.json(await createWorkspaceTicket(command.payload, options), { status: 201 });
+        result = await createWorkspaceTicket(command.payload, options);
+        await evaluateTrigger("ticket.created", { ticketId: (result as Record<string, unknown>)?.id, ...command.payload });
+        return Response.json(result, { status: 201 });
       case "message":
-        return Response.json(await createWorkspaceMessage(command.payload, options), { status: 201 });
+        result = await createWorkspaceMessage(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "automationPlaybook":
-        return Response.json(await createWorkspaceAutomationPlaybook(command.payload, options), { status: 201 });
+        result = await createWorkspaceAutomationPlaybook(command.payload, options);
+        return Response.json(result, { status: 201 });
       case "automationRun":
-        return Response.json(await createWorkspaceAutomationRun(command.payload, options), { status: 201 });
+        result = await createWorkspaceAutomationRun(command.payload, options);
+        return Response.json(result, { status: 201 });
       default:
         return Response.json({ error: "Comando no soportado." }, { status: 400 });
     }

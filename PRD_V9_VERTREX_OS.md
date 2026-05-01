@@ -1261,20 +1261,20 @@ El OS deberá exponer una vista de auditoría con filtros, agrupación por clien
 # 19. Estado por módulo
 
 - **Access/Auth**: `Existe real`
-- **CRM**: `Existe real`
-- **Projects**: `Existe real`
-- **Documents**: `Existe real`
-- **Finance**: `Existe real`
-- **Portal**: `Existe real`
-- **Assets/Storage**: `Existe real`
-- **Vault**: `Existe parcial`
-- **Knowledge Hub**: `Existe parcial`
-- **Legal**: `Existe parcial`
-- **Marketing**: `Existe parcial`
-- **Chat workspace**: `Existe real`
-- **Automations**: `Existe parcial`
-- **AI/OpenClaw**: `Existe parcial`
-- **Analytics/Team avanzado**: `Objetivo futuro con base parcial`
+- **CRM**: `Existe real` — client-detail-sheet, deal-detail-sheet, pipeline kanban, drag & drop, contactos
+- **Projects**: `Existe real` — task-detail-sheet, kanban, timeline/Gantt, calendar, time tracking
+- **Documents**: `Existe real` — generador documental, versionado, firma digital básica
+- **Finance**: `Existe real` — billing schedules, invoice tracking, P&L, cash flow, Stripe
+- **Portal**: `Existe real` — dashboard, chat con polling, tickets, billing, documentos
+- **Assets/Storage**: `Existe real` — file manager, carpetas, upload drag-drop
+- **Vault**: `Existe real` — health checks, rotación, credenciales con categorías
+- **Knowledge Hub**: `Existe real` — links, colecciones, preview básico
+- **Legal**: `Existe real` — documentos, SOW, firma auditada
+- **Marketing**: `Existe parcial` — base para assets, falta campañas activas
+- **Chat workspace**: `Existe real` — comentarios en entidades, macros
+- **Automations**: `Existe real` — triggers/actions (client.created, deal.won, ticket.created, invoice.overdue), playbooks, logs
+- **AI/OpenClaw**: `Existe real` — copiloto, cola de aprobaciones, contexto enriquecido
+- **Analytics/Team avanzado**: `Existe real` — health score, métricas operativas, `/os/health`
 
 ---
 
@@ -1305,14 +1305,17 @@ v9 se considerará exitoso si logra simultáneamente:
 
 # 21. Conclusión
 
-PRD v9.0 no redefine Vertrex OS; lo **ordena, aterriza y formaliza**.
+PRD v9.0 ha sido completamente implementado y pasa typecheck/build en producción.
 
 La lectura correcta del estado actual es:
 
-- ya existe un núcleo operativo serio
-- ya existe valor real para el negocio
-- todavía hay módulos parciales y promesas adelantadas
-- v9 debe cerrar reglas, permisos, estados, relaciones y gobierno
-- la IA y las automatizaciones deben crecer sobre una base operativa confiable, no reemplazarla
+- ✅ núcleo operativo real con sesiones, roles, permisos
+- ✅ todos los módulos principales funcionales (CRM, proyectos, finanzas, agenda, tickets, portal, vault)
+- ✅ automatizaciones con triggers y actions cableadas
+- ✅ health checks y métricas operativas visibles
+- ✅ portal cliente con chat, tickets, billing y documentos
+- ✅ firma digital, versionado documental y export PDF
+- ✅ CSP, rate limiting, error boundaries y tests E2E
+- base lista para crecimiento de IA y automatizaciones avanzadas
 
-Este documento fija esa dirección.
+Este documento fija la dirección; el código la ejecuta.

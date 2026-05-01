@@ -160,6 +160,56 @@ export default function AnalyticsWorkspaceScreen() {
         />
       </div>
 
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground">Ingresos vs Gastos</h2>
+        <div className="mt-4 space-y-3">
+          <div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Ingresos</span>
+              <span className="font-medium text-emerald-600">{formatMoney(analytics.income)}</span>
+            </div>
+            <div className="mt-1 h-4 overflow-hidden rounded-full bg-secondary">
+              <div
+                className="h-4 rounded-full bg-emerald-500"
+                style={{ width: `${Math.min(100, (analytics.income / Math.max(analytics.income + analytics.expenses, 1)) * 100)}%` }}
+              />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Gastos</span>
+              <span className="font-medium text-red-500">{formatMoney(analytics.expenses)}</span>
+            </div>
+            <div className="mt-1 h-4 overflow-hidden rounded-full bg-secondary">
+              <div
+                className="h-4 rounded-full bg-red-500"
+                style={{ width: `${Math.min(100, (analytics.expenses / Math.max(analytics.income + analytics.expenses, 1)) * 100)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h2 className="text-lg font-semibold text-foreground">Pipeline por etapa</h2>
+        <div className="mt-4 space-y-3">
+          {analytics.funnelRows.map((row) => (
+            <div key={row.key}>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{row.title}</span>
+                <span className="font-medium">{formatMoney(row.valueCents)} ({row.count})</span>
+              </div>
+              <div className="mt-1 h-3 overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-3 rounded-full bg-primary"
+                  style={{ width: `${Math.min(100, (row.valueCents / Math.max(analytics.pipelineValue, 1)) * 100)}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <section className="rounded-2xl border border-border bg-card shadow-sm">
           <div className="border-b border-border px-5 py-4">

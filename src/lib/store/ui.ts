@@ -24,6 +24,8 @@ export type UIState = {
   eventDetail: OverlayDetailState;
   assetDetail: OverlayDetailState;
   vaultEntry: OverlayDetailState;
+  invoiceDetail: OverlayDetailState;
+  transactionDetail: OverlayDetailState;
   threadDetail: OverlayDetailState;
   contractDetail: OverlayDetailState;
   ticketDetail: OverlayDetailState;
@@ -62,6 +64,8 @@ const detailOverlayKeys = [
   "threadDetail",
   "contractDetail",
   "ticketDetail",
+  "invoiceDetail",
+  "transactionDetail",
 ] as const;
 
 const toggleableObjectKeys = [
@@ -103,6 +107,8 @@ const createInitialState = (): UIState => ({
   threadDetail: { open: false, id: null },
   contractDetail: { open: false, id: null },
   ticketDetail: { open: false, id: null },
+  invoiceDetail: { open: false, id: null },
+  transactionDetail: { open: false, id: null },
   uploadFile: { open: false, context: null },
   importDocument: false,
   registerTransaction: { open: false, type: null },
