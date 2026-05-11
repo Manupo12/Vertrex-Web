@@ -38,7 +38,12 @@ export async function POST(request: NextRequest) {
     let contentBase64: string | null = null;
 
     if (shouldUseDrive) {
-      const uploaded = await uploadToDrive(buffer, file.name, file.type || "application/octet-stream");
+      const uploaded = await uploadToDrive(
+        buffer,
+        file.name,
+        file.type || "application/octet-stream",
+        process.env.DRIVE_FOLDER_ID
+      );
       storageProvider = "drive";
       driveFileId = uploaded.id;
       url = uploaded.webViewLink || null;
