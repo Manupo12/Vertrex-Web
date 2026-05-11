@@ -92,6 +92,32 @@ export async function markFinancePaidAction(id: string) {
   revalidatePath(`/os/finances/${id}`);
 }
 
+export async function exportFinancesCSVAction() {
+  const { db } = await import("@/lib/db");
+  const { finances } = await import("@/lib/db/schema");
+  const { desc } = await import("drizzle-orm");
+  await requireOsUser();
+
+  const all = await db.select().from(finances).orderBy(desc(finances.createdAt));
+
+  const headers = ["Tipo", "Concepto", "Monto COP", "Moneda", "Estado", "Vencimiento", "Pagado", "Recurrencia", "IVA", "Factura"];
+  const rows = all.map(f => [
+    f.type,
+    `"${(f.concept || "").replace(/"/g, '""')}"`,
+    String(f.amountCop),
+    f.currency || "COP",
+    f.status,
+    f.dueDate ? new Date(f.dueDate).toISOString().split("T")[0] : "",
+    f.paidAt ? new Date(f.paidAt).toISOString().split("T")[0] : "",
+    f.recurrence || "none",
+    String(f.vatAmountCop || 0),
+    f.invoiceNumber || "",
+  ]);
+
+  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  return csv;
+}
+
 export async function getMonthlyFinanceSummary() {
   await requireOsUser();
   const all = await db.select().from(finances);

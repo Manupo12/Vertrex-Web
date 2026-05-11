@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { contentPlan } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
@@ -20,7 +21,20 @@ export default async function MarketingCalendarPage() {
 
   return (
     <div>
-      <PageHeader title={`Calendario - ${format(now, "MMMM yyyy", { locale: es })}`} description="Publicaciones planificadas del mes." breadcrumbs={[{ label: "Marketing", href: "/os/marketing" }, { label: "Calendario" }]} />
+      <PageHeader
+        title={`Calendario - ${format(now, "MMMM yyyy", { locale: es })}`}
+        description="Publicaciones planificadas del mes."
+        breadcrumbs={[{ label: "Marketing", href: "/os/marketing" }, { label: "Calendario" }]}
+        primaryAction={
+          <Link
+            href="/os/marketing"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90 transition-opacity"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Crear contenido
+          </Link>
+        }
+      />
       <div className="mt-6 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg overflow-hidden">
         <div className="grid grid-cols-7 border-b border-[var(--color-border)]">
           {dayNames.map(d => (

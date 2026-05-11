@@ -8,6 +8,7 @@ import { PriorityDot } from "@/components/os/Tasks/PriorityDot";
 import { requireOsUser } from "@/lib/auth/session";
 import { BlockEditor } from "@/components/os/Editor/BlockEditor";
 import { formatShortDate } from "@/lib/format";
+import { AddSubtaskForm } from "./AddSubtaskForm";
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string, taskId: string }> }) {
   await requireOsUser();
@@ -76,6 +77,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             ) : (
               <p className="text-sm text-[var(--color-muted-foreground)]">Sin subtareas.</p>
             )}
+            <AddSubtaskForm parentTaskId={taskId} />
           </div>
           
           <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-6">
