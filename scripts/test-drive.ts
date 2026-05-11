@@ -2,7 +2,6 @@ import { uploadToDrive } from "../src/lib/drive/service";
 import * as dotenv from "dotenv";
 import path from "path";
 
-// Cargar variables de entorno desde .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 async function test() {
@@ -10,14 +9,14 @@ async function test() {
   try {
     const buffer = Buffer.from("H");
     const result = await uploadToDrive(
-      buffer,
       "test-tiny.txt",
+      buffer,
       "text/plain",
       process.env.DRIVE_FOLDER_ID
     );
     console.log("✅ Subida exitosa!");
-    console.log("ID del archivo:", result.id);
-    console.log("Link:", result.webViewLink);
+    console.log("ID del archivo:", result.driveFileId);
+    console.log("Link:", result.url);
   } catch (error) {
     console.error("❌ Error en la prueba:", error);
   }

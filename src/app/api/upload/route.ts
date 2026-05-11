@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    
+
     let portalSession = null;
     let forceDrive = false;
-    
+
     if (source === "portal") {
       portalSession = await getPortalSession();
       if (!portalSession) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -39,14 +39,14 @@ export async function POST(request: NextRequest) {
 
     if (shouldUseDrive) {
       const uploaded = await uploadToDrive(
-        buffer,
         file.name,
+        buffer,
         file.type || "application/octet-stream",
         process.env.DRIVE_FOLDER_ID
       );
       storageProvider = "drive";
-      driveFileId = uploaded.id;
-      url = uploaded.webViewLink || null;
+      driveFileId = uploaded.driveFileId;
+      url = uploaded.url || null;
     } else {
       contentBase64 = buffer.toString("base64");
     }

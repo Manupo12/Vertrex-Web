@@ -1,46 +1,34 @@
 import { google } from "googleapis";
-import { Readable } from "stream";
 
-function getAuth() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
-
-  if (!clientId || !clientSecret || !refreshToken) {
-    throw new Error("Credenciales de Google OAuth2 no configuradas (CLIENT_ID, CLIENT_SECRET o REFRESH_TOKEN)");
-  }
-
-  const oauth2Client = new google.auth.OAuth2(
-    clientId,
-    clientSecret,
-    "https://developers.google.com/oauthplayground"
-  );
-
-  oauth2Client.setCredentials({
-    refresh_token: refreshToken,
+export function getDriveClient() {
+  const auth = new google.auth.OAuth2({
+    clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
   });
-
-  return oauth2Client;
+  auth.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN });
+  return google.drive({ version: "v3", auth });
 }
 
-export async function uploadToDrive(fileBuffer: ArrayBuffer | Buffer, fileName: string, mimeType: string, parentFolderId?: string): Promise<{ id: string; webViewLink?: string }> {
-  const auth = getAuth();
-  const drive = google.drive({ version: "v3", auth });
-  const requestBody: Record<string, unknown> = { name: fileName };
+export async function uploadToDrive(fileName: string, fileBuffer: Buffer, mimeType: string, folderId?: string) {
+  const drive = getDriveClient();
+  const folder = folderId || process.env.GOOGLE_DRIVE_FOLDER_ID;
 
-  if (parentFolderId) {
-    console.log("Subiendo a la carpeta:", parentFolderId);
-    requestBody.parents = [parentFolderId];
-  }
-
-  const buffer = Buffer.isBuffer(fileBuffer) ? fileBuffer : Buffer.from(fileBuffer);
-  const body = Readable.from(buffer);
-
-  const res = await drive.files.create({
-    requestBody,
-    media: { mimeType, body },
+  const response = await drive.files.create({
+    requestBody: { name: fileName, parents: folder ? [folder] : [] },
+    media: { mimeType, body: fileBuffer },
     fields: "id, webViewLink",
   });
 
-  return { id: res.data.id!, webViewLink: res.data.webViewLink || undefined };
+  return { driveFileId: response.data.id!, url: response.data.webViewLink! };
+}
+
+export async function downloadFromDrive(fileId: string) {
+  const drive = getDriveClient();
+  const response = await drive.files.get({ fileId, alt: "media" }, { responseType: "arraybuffer" });
+  return Buffer.from(response.data as ArrayBuffer);
+}
+
+export async function deleteFromDrive(fileId: string) {
+  const drive = getDriveClient();
+  await drive.files.delete({ fileId });
 }
