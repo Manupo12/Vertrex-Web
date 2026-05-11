@@ -13,12 +13,14 @@ import { linkEntities } from "@/lib/db/actions/graph";
 import { Link2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
 
 interface NoteEditorProps {
   note: {
     id: string;
     title: string;
     contentJson: unknown;
+    objective: string | null;
     nextStep: string | null;
     ideaStatus: string | null;
     relatedProjectId: string | null;
@@ -30,10 +32,11 @@ interface NoteEditorProps {
 export function NoteEditor({ note, isIdea, projects }: NoteEditorProps) {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState<unknown>(note.contentJson);
+  const [objective, setObjective] = useState(note.objective || "");
   const [nextStep, setNextStep] = useState(note.nextStep || "");
   const [relatedProjectId, setRelatedProjectId] = useState<string | null>(note.relatedProjectId);
-  const [saving, setSaving] = useState(false);
   const [repoPickerOpen, setRepoPickerOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -41,6 +44,7 @@ export function NoteEditor({ note, isIdea, projects }: NoteEditorProps) {
       await saveKnowledgeNote(note.id, {
         title,
         contentJson: content,
+        objective: isIdea ? objective : undefined,
         nextStep: isIdea ? nextStep : undefined,
         relatedProjectId: isIdea ? relatedProjectId : undefined,
       });
@@ -86,26 +90,47 @@ export function NoteEditor({ note, isIdea, projects }: NoteEditorProps) {
         onSelect={handleRepoSelect} 
       />
 
-      {isIdea && (
-        <div className="mb-4 space-y-4">
+      <div className="mb-4 space-y-4">
+        {isIdea && (
           <div>
             <label className="mb-1 block text-sm font-medium text-muted-foreground">
-              Proyecto relacionado
-            </label>
-            <ProjectPicker initialProjectId={relatedProjectId} onSelect={setRelatedProjectId} projects={projects} />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-muted-foreground">
-              Siguiente paso
+              \u00bfCu\u00e1l es el objetivo de esto?
             </label>
             <Input
-              value={nextStep}
-              onChange={(e) => setNextStep(e.target.value)}
-              placeholder="Accion concreta siguiente..."
+              value={objective}
+              onChange={(e) => setObjective(e.target.value)}
+              placeholder="Describe el prop\u00f3sito central..."
             />
           </div>
-        </div>
-      )}
+        )}
+
+        {isIdea && (
+          <>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted-foreground">
+                \u00bfA qu\u00e9 proyecto actual pertenece?
+              </label>
+              <ProjectPicker initialProjectId={relatedProjectId} onSelect={setRelatedProjectId} projects={projects} />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted-foreground">
+                \u00bfCu\u00e1l es el siguiente paso l\u00f3gico?
+              </label>
+              <Input
+                value={nextStep}
+                onChange={(e) => setNextStep(e.target.value)}
+                placeholder="Acci\u00f3n concreta siguiente..."
+              />
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="mt-4 flex justify-end">
+        <form action={handleSave}>
+          <AsyncSubmitButton>Guardar todo</AsyncSubmitButton>
+        </form>
+      </div>
 
       <div className="mt-4">
         <BlockEditor 

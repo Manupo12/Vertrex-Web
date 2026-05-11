@@ -23,7 +23,7 @@ export default async function TeamDetailPage({ params, searchParams }: Props) {
       <div>
         <PageHeader title="Nuevo miembro" breadcrumbs={[{ label: "Equipo", href: "/os/team" }, { label: "Nuevo" }]} />
         <Card className="max-w-lg"><CardHeader><CardTitle>Crear miembro</CardTitle></CardHeader><CardContent>
-          <form action={async (fd) => { await createTeamMemberAction(fd); }} className="space-y-4">
+          <form action={createTeamMemberAction} className="space-y-4">
             <div><label className="block text-sm font-medium text-muted-foreground mb-1">Nombre *</label><input name="name" required className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" /></div>
             <div><label className="block text-sm font-medium text-muted-foreground mb-1">Email *</label><input name="email" type="email" required className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" /></div>
             <div><label className="block text-sm font-medium text-muted-foreground mb-1">Contrasena *</label><input name="password" type="password" required className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" /></div>

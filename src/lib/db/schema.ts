@@ -60,6 +60,7 @@ export const documents = pgTable("documents", {
   url: text("url"),
   mimeType: text("mime_type"),
   contentBase64: text("content_base64"),
+  isPublic: boolean("is_public").notNull().default(true),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
@@ -82,6 +83,7 @@ export const knowledgeNotes = pgTable("knowledge_notes", {
   contentJson: jsonb("content_json").notNull().default(sql`'{}'::jsonb`),
   type: text("type").notNull().default("note"),
   ideaStatus: text("idea_status").default("semilla"),
+  objective: text("objective"),
   nextStep: text("next_step"),
   relatedProjectId: uuid("related_project_id").references(() => projects.id),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
@@ -152,6 +154,8 @@ export const socialAccounts = pgTable("social_accounts", {
   email: text("email"),
   passwordEncrypted: text("password_encrypted"),
   notes: text("notes"),
+  followersCount: integer("followers_count").default(0),
+  reachCount: integer("reach_count").default(0),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 

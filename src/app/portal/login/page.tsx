@@ -12,7 +12,9 @@ export default async function PortalLoginPage({ searchParams }: { searchParams: 
         
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-red-50 text-red-600 text-sm text-center border border-red-100">
-            {error === "1" ? "El PIN o codigo no coinciden. Revisa los datos e intenta de nuevo." : "Ocurrio un error al iniciar sesion."}
+            {error === "not_found" ? "No pudimos encontrar ese cliente. Verifica el codigo." : 
+             error === "invalid_pin" ? "El PIN o codigo no coinciden. Revisa los datos e intenta de nuevo." : 
+             "Ocurrio un error al iniciar sesion."}
           </div>
         )}
 

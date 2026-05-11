@@ -10,28 +10,17 @@ import { Lightbulb, BookOpen } from "lucide-react";
 import { formatShortDate } from "@/lib/format";
 import { toast } from "sonner";
 import { updateIdeaStatus } from "@/lib/db/actions/hub";
+import { KanbanBoard } from "@/components/os/data/KanbanBoard";
+import { cn } from "@/lib/utils";
 
-const IDEA_COLUMNS: Record<
-  string,
-  { label: string; emoji: string; color: string }
-> = {
-  semilla: { label: "Semillas", emoji: "🌱", color: "border-l-green-500" },
-  laboratorio: {
-    label: "Laboratorio",
-    emoji: "🧪",
-    color: "border-l-violet-500",
-  },
-  ejecutar: {
-    label: "Para ejecutar",
-    emoji: "🏗️",
-    color: "border-l-amber-500",
-  },
-  congelador: {
-    label: "Congelador",
-    emoji: "🧊",
-    color: "border-l-blue-500",
-  },
-};
+const KANBAN_COLUMNS = [
+  { id: "semilla", label: "\ud83c\udf31 Semillas" },
+  { id: "laboratorio", label: "\ud83e\uddfa Laboratorio" },
+  { id: "ejecutar", label: "\ud83c\udfd7\ufe0f Para ejecutar" },
+  { id: "congelador", label: "\ud83e\uddfa Congelador" },
+];
+
+import { useSearchParams } from "next/navigation";
 
 export function HubView({
   notes,
@@ -49,8 +38,15 @@ export function HubView({
   defaultView: string;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
-  const [view, setView] = useState(defaultView);
+  const view = searchParams.get("view") || defaultView;
+
+  const setView = (v: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("view", v);
+    router.push(`/os/hub?${params.toString()}`);
+  };
 
   const ideas = notes.filter((n) => n.type === "software_idea");
   const regularNotes = notes.filter((n) => n.type === "note");
@@ -58,6 +54,57 @@ export function HubView({
   const filteredIdeas = ideas.filter(
     (i) => !query || i.title.toLowerCase().includes(query.toLowerCase()),
   );
+
+  const kanbanItems = filteredIdeas.map(i => ({
+    ...i,
+    id: i.id,
+    status: i.ideaStatus || "semilla"
+  }));
+
+  const handleItemMove = async (itemId: string, newStatus: string) => {
+    try {
+      await updateIdeaStatus(itemId, newStatus as any);
+      toast.success("Estado actualizado");
+      router.refresh();
+    } catch {
+      toast.error("Error al actualizar");
+      throw new Error("Update failed");
+    }
+  };
+
+  const renderIdeaCard = (i: any) => (
+    <div
+      onClick={() => router.push(`/os/hub/${i.id}`)}
+      className={cn(
+        "cursor-pointer rounded-lg border border-border bg-card p-3 border-l-2 transition-colors hover:bg-accent/30 shadow-sm",
+        i.status === "semilla" && "border-l-green-500",
+        i.status === "laboratorio" && "border-l-violet-500",
+        i.status === "ejecutar" && "border-l-amber-500",
+        i.status === "congelador" && "border-l-blue-500"
+      )}
+    >
+      <p className="mb-1 text-sm font-medium text-foreground">
+        {i.title}
+      </p>
+      <p className="mb-1 line-clamp-2 text-xs text-muted-foreground">
+        {(typeof i.contentJson === "object" &&
+          (
+            i.contentJson as {
+              content?: Array<{
+                content?: Array<{ text?: string }>;
+              }>;
+            }
+          )?.content?.[0]?.content?.[0]?.text) ||
+          ""}
+      </p>
+      {i.nextStep && (
+        <p className="mt-1 text-[10px] text-primary">
+          \u2192 {i.nextStep}
+        </p>
+      )}
+    </div>
+  );
+
   const filteredNotes = regularNotes.filter(
     (n) => !query || n.title.toLowerCase().includes(query.toLowerCase()),
   );
@@ -85,88 +132,12 @@ export function HubView({
               description="Presiona Ctrl+I para capturar tu primera idea."
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {Object.entries(IDEA_COLUMNS).map(([status, config]) => {
-                const items = filteredIdeas.filter(
-                  (i) => i.ideaStatus === status,
-                );
-                return (
-                  <div
-                    key={status}
-                    className="rounded-xl border border-border bg-card/50 p-3"
-                  >
-                    <div className="mb-3 flex items-center justify-between">
-                      <h3 className="text-sm font-medium">
-                        {config.emoji} {config.label}
-                      </h3>
-                      <span className="text-xs text-muted-foreground">
-                        {items.length}
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      {items.length === 0 && (
-                        <p className="py-4 text-center text-xs text-muted-foreground">
-                          Vacio
-                        </p>
-                      )}
-                      {items.map((i) => (
-                        <div
-                          key={i.id}
-                          onClick={() => router.push(`/os/hub/${i.id}`)}
-                          className={`cursor-pointer rounded-lg border border-border bg-card p-3 border-l-2 ${config.color} transition-colors hover:bg-accent/30`}
-                        >
-                          <p className="mb-1 text-sm font-medium text-foreground">
-                            {i.title}
-                          </p>
-                          <p className="mb-1 line-clamp-2 text-xs text-muted-foreground">
-                            {(typeof i.contentJson === "object" &&
-                              (
-                                i.contentJson as {
-                                  content?: Array<{
-                                    content?: Array<{ text?: string }>;
-                                  }>;
-                                }
-                              )?.content?.[0]?.content?.[0]?.text) ||
-                              ""}
-                          </p>
-                          {i.nextStep && (
-                            <p className="mt-1 text-[10px] text-primary">
-                              → {i.nextStep}
-                            </p>
-                          )}
-                          <select
-                            value={i.ideaStatus || "semilla"}
-                            onChange={async (e) => {
-                              try {
-                                await updateIdeaStatus(
-                                  i.id,
-                                  e.target.value as
-                                    | "semilla"
-                                    | "laboratorio"
-                                    | "ejecutar"
-                                    | "congelador",
-                                );
-                                toast.success("Estado actualizado");
-                                router.refresh();
-                              } catch {
-                                toast.error("Error");
-                              }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="mt-2 w-full rounded border border-border bg-background px-2 py-1 text-[10px] text-foreground"
-                          >
-                            <option value="semilla">🌱 Semilla</option>
-                            <option value="laboratorio">🧪 Laboratorio</option>
-                            <option value="ejecutar">🏗️ Ejecutar</option>
-                            <option value="congelador">🧊 Congelador</option>
-                          </select>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <KanbanBoard 
+              items={kanbanItems} 
+              columns={KANBAN_COLUMNS} 
+              renderItem={renderIdeaCard}
+              onItemMove={handleItemMove}
+            />
           )}
         </TabsContent>
 

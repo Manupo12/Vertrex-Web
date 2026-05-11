@@ -6,8 +6,10 @@ import { eq, and, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { finances, entityLinks } from "@/lib/db/schema";
 import { linkEntities } from "@/lib/db/actions/graph";
+import { requireOsUser } from "@/lib/auth/session";
 
 export async function createFinanceAction(formData: FormData) {
+  await requireOsUser();
   const type = String(formData.get("type") || "ingreso");
   const amountCop = parseInt(String(formData.get("amount_cop") || "0"), 10);
   const concept = String(formData.get("concept") || "").trim();
@@ -23,12 +25,14 @@ export async function createFinanceAction(formData: FormData) {
 }
 
 export async function markFinancePaidAction(id: string) {
+  await requireOsUser();
   await db.update(finances).set({ status: "paid", paidAt: new Date() }).where(eq(finances.id, id));
   revalidatePath("/os/finances");
   revalidatePath(`/os/finances/${id}`);
 }
 
 export async function getMonthlyFinanceSummary() {
+  await requireOsUser();
   const all = await db.select().from(finances);
   const now = new Date();
   const thisMonth = all.filter(f => {

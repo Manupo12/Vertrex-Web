@@ -11,6 +11,8 @@ import { Users, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatShortDate } from "@/lib/format";
+import { useSearchParams } from "next/navigation";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type ClientRow = { id: string; slug: string; name: string; email: string | null; phone: string | null; status: string; createdAt: Date };
 
@@ -20,11 +22,19 @@ interface CrmListProps {
 
 export function CrmList({ clients }: CrmListProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const statusFilter = searchParams.get("status") || "all";
+
+  const setStatusFilter = (newStatus: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (newStatus && newStatus !== "all") params.set("status", newStatus);
+    else params.delete("status");
+    router.push(`/os/crm?${params.toString()}`);
+  };
 
   const filtered = clients.filter(c => {
-    if (statusFilter && c.status !== statusFilter) return false;
+    if (statusFilter !== "all" && c.status !== statusFilter) return false;
     if (query && !c.name.toLowerCase().includes(query.toLowerCase()) && !c.slug.toLowerCase().includes(query.toLowerCase())) return false;
     return true;
   });
@@ -75,7 +85,7 @@ export function CrmList({ clients }: CrmListProps) {
     },
   ];
 
-  if (clients.length === 0) {
+  if (clients.length === 0 && statusFilter === "all" && !query) {
     return (
       <EmptyState
         icon={Users}
@@ -94,12 +104,17 @@ export function CrmList({ clients }: CrmListProps) {
         onSearch={setQuery}
         resultCount={filtered.length}
         filters={
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-            <option value="">Todos</option>
-            <option value="active">Activos</option>
-            <option value="inactive">Inactivos</option>
-            <option value="paused">Pausados</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="Todos los estados" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="active">Activos</SelectItem>
+              <SelectItem value="inactive">Inactivos</SelectItem>
+              <SelectItem value="paused">Pausados</SelectItem>
+            </SelectContent>
+          </Select>
         }
       />
       

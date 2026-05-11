@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { knowledgeNotes, projects } from "@/lib/db/schema";
 import { linkEntities } from "@/lib/db/actions/graph";
+import { requireOsUser } from "@/lib/auth/session";
 
 function titleFromText(text: string) {
   const clean = text.trim().replace(/\s+/g, " ");
@@ -22,6 +23,7 @@ function blockNoteFromPlainText(text: string) {
 }
 
 export async function quickCaptureIdea(rawContent: string) {
+  await requireOsUser();
   const content = rawContent.trim();
   if (!content) throw new Error("La idea no puede estar vacia");
   const [note] = await db
@@ -33,6 +35,7 @@ export async function quickCaptureIdea(rawContent: string) {
 }
 
 export async function createKnowledgeNote(formData: FormData) {
+  await requireOsUser();
   const title = String(formData.get("title") || "").trim();
   const type = String(formData.get("type") || "note");
   if (!title) throw new Error("El titulo es obligatorio");
@@ -44,21 +47,30 @@ export async function createKnowledgeNote(formData: FormData) {
   redirect(`/os/hub/${note.id}`);
 }
 
-export async function saveKnowledgeNote(id: string, input: { title: string; contentJson: unknown; nextStep?: string | null; relatedProjectId?: string | null }) {
+export async function saveKnowledgeNote(id: string, input: { title: string; contentJson: unknown; objective?: string | null; nextStep?: string | null; relatedProjectId?: string | null }) {
+  await requireOsUser();
   const title = input.title.trim();
   if (!title) throw new Error("El titulo es obligatorio");
-  await db.update(knowledgeNotes).set({ title, contentJson: input.contentJson as Record<string, unknown>, nextStep: input.nextStep || null, relatedProjectId: input.relatedProjectId || null }).where(eq(knowledgeNotes.id, id));
+  await db.update(knowledgeNotes).set({ 
+    title, 
+    contentJson: input.contentJson as Record<string, unknown>, 
+    objective: input.objective || null,
+    nextStep: input.nextStep || null, 
+    relatedProjectId: input.relatedProjectId || null 
+  }).where(eq(knowledgeNotes.id, id));
   revalidatePath("/os/hub");
   revalidatePath(`/os/hub/${id}`);
 }
 
 export async function updateIdeaStatus(id: string, status: "semilla" | "laboratorio" | "ejecutar" | "congelador") {
+  await requireOsUser();
   await db.update(knowledgeNotes).set({ ideaStatus: status }).where(eq(knowledgeNotes.id, id));
   revalidatePath("/os/hub");
   revalidatePath(`/os/hub/${id}`);
 }
 
 export async function convertIdeaToProject(id: string) {
+  await requireOsUser();
   const [idea] = await db.select().from(knowledgeNotes).where(eq(knowledgeNotes.id, id)).limit(1);
   if (!idea) throw new Error("Idea no encontrada");
   if (idea.type !== "software_idea") throw new Error("Solo las ideas se pueden convertir en proyecto");
@@ -71,5 +83,6 @@ export async function convertIdeaToProject(id: string) {
 }
 
 export async function getKnowledgeNoteById(id: string) {
+  await requireOsUser();
   return db.select().from(knowledgeNotes).where(eq(knowledgeNotes.id, id)).limit(1).then(rows => rows[0] || null);
 }

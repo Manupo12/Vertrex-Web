@@ -6,6 +6,7 @@ import { entityLinks } from "@/lib/db/schema";
 import type { EntityType } from "@/lib/db/actions/graph-types";
 import { SearchResult } from "@/lib/db/actions/search";
 import { clients, projects, documents, legalDocuments, knowledgeNotes, resources, finances, agendaEvents, repositories, links, socialAccounts, users, tickets } from "@/lib/db/schema";
+import { requireOsUser } from "@/lib/auth/session";
 
 export async function linkEntities(
   sourceId: string,
@@ -14,6 +15,7 @@ export async function linkEntities(
   targetType: EntityType,
   relationType = "relates_to"
 ) {
+  await requireOsUser();
   if (sourceId === targetId && sourceType === targetType) throw new Error("No se puede conectar una entidad consigo misma");
 
   const [existing] = await db
@@ -48,10 +50,12 @@ export async function linkEntities(
 }
 
 export async function unlinkEntity(linkId: string) {
+  await requireOsUser();
   await db.delete(entityLinks).where(eq(entityLinks.id, linkId));
 }
 
 export async function getEntityConnections(entityId: string) {
+  await requireOsUser();
   return db
     .select()
     .from(entityLinks)
@@ -59,12 +63,14 @@ export async function getEntityConnections(entityId: string) {
 }
 
 export async function getGraphSnapshot() {
+  await requireOsUser();
   return db.select().from(entityLinks);
 }
 
 export type ResolvedConnection = SearchResult & { linkId: string; relationType: string; isSource: boolean };
 
 export async function getResolvedEntityConnections(entityId: string): Promise<ResolvedConnection[]> {
+  await requireOsUser();
   const connections = await getEntityConnections(entityId);
   if (connections.length === 0) return [];
 

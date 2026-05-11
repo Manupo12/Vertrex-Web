@@ -100,45 +100,6 @@ export default async function HubDetailPage({ params }: Props) {
       />
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="max-w-[920px] flex-1">
-          {isIdea && (
-            <Card className="mb-4">
-              <CardContent className="space-y-3 pt-4">
-                <div className="flex items-start gap-2">
-                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium">
-                      ¿Cual es el objetivo de esto?
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Define que quieres lograr con esta idea.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium">
-                      ¿A que proyecto actual pertenece?
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Asigna un contexto si esta idea no es un proyecto nuevo.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Rocket className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium">
-                      ¿Cual es el siguiente paso logico?
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Que accion concreta te acerca a ejecutarla.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
           <NoteEditor note={note} isIdea={isIdea} projects={projectsList} />
           {isIdea && note.ideaStatus === "ejecutar" && (
             <form action={convertIdeaToProject.bind(null, note.id)} className="mt-4">

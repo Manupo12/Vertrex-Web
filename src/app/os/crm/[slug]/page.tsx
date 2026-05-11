@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { getClientBySlug, generateClientPinAction, createClientAction } from "@/lib/db/actions/crm";
-import { getEntityConnections } from "@/lib/db/actions/graph";
+import { getEntityConnections, getResolvedEntityConnections } from "@/lib/db/actions/graph";
 import { db } from "@/lib/db";
 import { projects, documents, tickets, finances } from "@/lib/db/schema";
 import { eq, or, inArray } from "drizzle-orm";
@@ -13,6 +13,8 @@ import { formatShortDate, formatCurrencyCop } from "@/lib/format";
 import { notFound } from "next/navigation";
 import { PinManager } from "./PinManager";
 import { EditClientDialog } from "./EditClientDialog";
+import { EntityGraph } from "@/components/os/Graph/EntityGraph";
+import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
 
 interface Props { params: Promise<{ slug: string }>; searchParams: Promise<{ pin?: string }> }
 
@@ -28,6 +30,7 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
   if (!client) notFound();
 
   const connections = await getEntityConnections(client.id);
+  const resolvedConnections = await getResolvedEntityConnections(client.id);
 
   const projectIds = connections
     .filter(l => (l.sourceType === "project" && l.targetId === client.id) || (l.targetType === "project" && l.sourceId === client.id))
@@ -65,12 +68,13 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex-1">
           <Tabs defaultValue="resumen">
-            <TabsList className="overflow-x-auto w-full justify-start h-auto flex-wrap">
+            <TabsList>
               <TabsTrigger value="resumen">Resumen</TabsTrigger>
               <TabsTrigger value="proyectos">Proyectos ({clientProjects.length})</TabsTrigger>
               <TabsTrigger value="documentos">Documentos ({clientDocs.length})</TabsTrigger>
               <TabsTrigger value="finanzas">Finanzas ({clientFinances.length})</TabsTrigger>
               <TabsTrigger value="tickets">Tickets ({clientTickets.length})</TabsTrigger>
+              <TabsTrigger value="conexiones">Conexiones</TabsTrigger>
             </TabsList>
             <TabsContent value="resumen" className="space-y-4">
               <Card>
@@ -124,6 +128,9 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
               ))}
               {clientTickets.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin tickets.</p>}
             </TabsContent>
+            <TabsContent value="conexiones">
+              <EntityGraph entityId={client.id} connections={resolvedConnections} entityLabel={client.name} entityType="Cliente" />
+            </TabsContent>
           </Tabs>
         </div>
         <div className="w-full lg:w-72 shrink-0">
@@ -160,7 +167,7 @@ function NewClientPage() {
               <label className="block text-sm font-medium text-muted-foreground mb-1">Telefono</label>
               <Input name="phone" />
             </div>
-            <button type="submit" className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Crear cliente</button>
+            <AsyncSubmitButton className="w-full">Crear cliente</AsyncSubmitButton>
           </form>
         </CardContent>
       </Card>

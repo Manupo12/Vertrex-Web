@@ -11,6 +11,7 @@ import { FileText, Download } from "lucide-react";
 import { formatFileSize, formatShortDate } from "@/lib/format";
 import { ColumnDef } from "@tanstack/react-table";
 import { SmartUploader } from "@/components/os/Uploader/SmartUploader";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type DocRow = { id: string; name: string; sizeBytes: number; storageProvider: string; mimeType: string | null; createdAt: Date };
 
@@ -21,8 +22,17 @@ interface DocsListProps {
 export function DocsList({ documents }: DocsListProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [storageFilter, setStorageFilter] = useState("all");
+  const [mimeFilter, setMimeFilter] = useState("all");
 
-  const filtered = documents.filter(d => !query || d.name.toLowerCase().includes(query.toLowerCase()));
+  const filtered = documents.filter(d => {
+    if (query && !d.name.toLowerCase().includes(query.toLowerCase())) return false;
+    if (storageFilter !== "all" && d.storageProvider !== storageFilter) return false;
+    if (mimeFilter !== "all" && d.mimeType !== mimeFilter) return false;
+    return true;
+  });
+
+  const uniqueMimes = Array.from(new Set(documents.map(d => d.mimeType).filter(Boolean))) as string[];
 
   const columns: ColumnDef<DocRow>[] = [
     {
@@ -60,7 +70,7 @@ export function DocsList({ documents }: DocsListProps) {
     },
   ];
 
-  if (documents.length === 0) {
+  if (documents.length === 0 && query === "" && storageFilter === "all" && mimeFilter === "all") {
     return (
       <div className="space-y-4">
         <EmptyState icon={FileText} title="Aun no has subido documentos" description="Sube tu primer documento. Archivos menores de 1.5 MB se guardan en Neon, los demas en Drive." actionLabel="Subir documento" onAction={() => {}} />
@@ -74,7 +84,29 @@ export function DocsList({ documents }: DocsListProps) {
   return (
     <div>
       <Toolbar searchPlaceholder="Buscar documentos..." onSearch={setQuery} resultCount={filtered.length} filters={
-        <SmartUploader source="os" variant="button" />
+        <div className="flex flex-wrap gap-2">
+          <Select value={storageFilter} onValueChange={setStorageFilter}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="Almacenamiento" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="neon">Neon</SelectItem>
+              <SelectItem value="drive">Google Drive</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={mimeFilter} onValueChange={setMimeFilter}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="Tipo de archivo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {uniqueMimes.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <SmartUploader source="os" variant="button" />
+        </div>
       } />
 
       <div className="hidden sm:block mt-4">

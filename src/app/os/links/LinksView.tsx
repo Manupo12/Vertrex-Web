@@ -14,13 +14,16 @@ import { formatShortDate } from "@/lib/format";
 import { saveExternalReferenceAction } from "@/lib/db/actions/links";
 import { toast } from "sonner";
 
-type Repo = { id: string; url: string; repoName: string; owner: string; description: string | null; language: string | null; languageColor: string | null; stars: number; forks: number; topics: unknown; pushedAt: Date | null; savedReason: string; implementationStatus: string; priority: number };
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+type Repo = { id: string; url: string; repoName: string; owner: string; description: string | null; language: string | null; languageColor: string | null; stars: number; forks: number; topics: string[]; pushedAt: Date | null; savedReason: string; implementationStatus: string; priority: number };
 type LinkItem = { id: string; url: string; title: string | null; description: string | null; imageUrl: string | null; type: string };
 
 export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [languageFilter, setLanguageFilter] = useState("");
+  const [topicFilter, setTopicFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [addOpen, setAddOpen] = useState(false);
@@ -30,9 +33,10 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
   const [saving, setSaving] = useState(false);
 
   const filteredRepos = repos.filter(r => {
-    if (languageFilter && r.language?.toLowerCase() !== languageFilter.toLowerCase()) return false;
-    if (statusFilter && r.implementationStatus !== statusFilter) return false;
-    if (priorityFilter && r.priority < parseInt(priorityFilter)) return false;
+    if (languageFilter && languageFilter !== "all" && r.language?.toLowerCase() !== languageFilter.toLowerCase()) return false;
+    if (topicFilter && topicFilter !== "all" && !r.topics.includes(topicFilter)) return false;
+    if (statusFilter && statusFilter !== "all" && r.implementationStatus !== statusFilter) return false;
+    if (priorityFilter && priorityFilter !== "all" && r.priority < parseInt(priorityFilter)) return false;
     if (query && !r.repoName.toLowerCase().includes(query.toLowerCase()) && !r.description?.toLowerCase().includes(query.toLowerCase()) && !r.savedReason.toLowerCase().includes(query.toLowerCase())) return false;
     return true;
   });
@@ -63,7 +67,28 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogContent><DialogHeader><DialogTitle>Guardar link</DialogTitle></DialogHeader>
             <div className="space-y-4"><div><label className="block text-sm font-medium text-muted-foreground mb-1">URL *</label><Input value={url} onChange={e => handleUrlChange(e.target.value)} /></div>
-            {isGitHub && <div><label className="block text-sm font-medium text-muted-foreground mb-1">Que problema te resuelve este repo? *</label><Textarea value={savedReason} onChange={e => setSavedReason(e.target.value)} rows={3} /></div>}
+            {isGitHub && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Que problema te resuelve este repo? *</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {["Estudiar c\u00f3digo", "Implementar en proyecto actual", "Inspiraci\u00f3n", "Referencia de arquitectura"].map(tag => (
+                    <Button 
+                      key={tag} 
+                      variant="outline" 
+                      size="sm" 
+                      type="button"
+                      onClick={() => setSavedReason(tag)}
+                      className="text-[10px] h-7 px-2"
+                    >
+                      {tag}
+                    </Button>
+                  ))}
+                </div>
+                <Textarea value={savedReason} onChange={e => setSavedReason(e.target.value)} rows={3} placeholder="O elige un bot\u00f3n arriba..." />
+              </div>
+            </div>
+          )}
             <Button onClick={handleSave} disabled={saving || !url.trim() || (isGitHub && !savedReason.trim())} className="w-full">{saving ? "Guardando..." : "Guardar"}</Button></div></DialogContent>
         </Dialog>
       </div>
@@ -71,29 +96,57 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
   }
 
   const uniqueLanguages = Array.from(new Set(repos.map(r => r.language).filter(Boolean))) as string[];
+  const uniqueTopics = Array.from(new Set(repos.flatMap(r => r.topics || []))).sort();
 
   return (
     <div>
       <div className="flex items-center gap-2 mb-4"><Button variant="outline" size="sm" onClick={() => setAddOpen(true)}>+ Guardar link</Button></div>
       <Toolbar searchPlaceholder="Buscar en repos y links..." onSearch={setQuery} resultCount={filteredRepos.length + filteredLinks.length} filters={
-        <div className="flex gap-2">
-          <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-            <option value="">Todos los lenguajes</option>
-            {uniqueLanguages.map(l => <option key={l} value={l}>{l}</option>)}
-          </select>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-            <option value="">Cualquier estado</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="probando">Probando</option>
-            <option value="en_uso">En uso</option>
-            <option value="descartado">Descartado</option>
-          </select>
-          <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-            <option value="">Cualquier prioridad</option>
-            <option value="3">3+ estrellas</option>
-            <option value="4">4+ estrellas</option>
-            <option value="5">5 estrellas</option>
-          </select>
+        <div className="flex flex-wrap gap-2">
+          <Select value={languageFilter} onValueChange={setLanguageFilter}>
+            <SelectTrigger className="w-[140px] bg-background">
+              <SelectValue placeholder="Lenguaje" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {uniqueLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          <Select value={topicFilter} onValueChange={setTopicFilter}>
+            <SelectTrigger className="w-[140px] bg-background">
+              <SelectValue placeholder="Topic" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px] bg-background">
+              <SelectValue placeholder="Estado" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="pendiente">Pendiente</SelectItem>
+              <SelectItem value="probando">Probando</SelectItem>
+              <SelectItem value="en_uso">En uso</SelectItem>
+              <SelectItem value="descartado">Descartado</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="w-[140px] bg-background">
+              <SelectValue placeholder="Prioridad" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Cualquiera</SelectItem>
+              <SelectItem value="3">3+ estrellas</SelectItem>
+              <SelectItem value="4">4+ estrellas</SelectItem>
+              <SelectItem value="5">5 estrellas</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       } />
 
@@ -132,7 +185,28 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent><DialogHeader><DialogTitle>Guardar link</DialogTitle></DialogHeader>
           <div className="space-y-4"><div><label className="block text-sm font-medium text-muted-foreground mb-1">URL *</label><Input value={url} onChange={e => handleUrlChange(e.target.value)} /></div>
-          {isGitHub && <div><label className="block text-sm font-medium text-muted-foreground mb-1">Que problema te resuelve este repo? *</label><Textarea value={savedReason} onChange={e => setSavedReason(e.target.value)} rows={3} /></div>}
+          {isGitHub && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Que problema te resuelve este repo? *</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {["Estudiar c\u00f3digo", "Implementar en proyecto actual", "Inspiraci\u00f3n", "Referencia de arquitectura"].map(tag => (
+                    <Button 
+                      key={tag} 
+                      variant="outline" 
+                      size="sm" 
+                      type="button"
+                      onClick={() => setSavedReason(tag)}
+                      className="text-[10px] h-7 px-2"
+                    >
+                      {tag}
+                    </Button>
+                  ))}
+                </div>
+                <Textarea value={savedReason} onChange={e => setSavedReason(e.target.value)} rows={3} placeholder="O elige un bot\u00f3n arriba..." />
+              </div>
+            </div>
+          )}
           <Button onClick={handleSave} disabled={saving || !url.trim() || (isGitHub && !savedReason.trim())} className="w-full">{saving ? "Guardando..." : "Guardar"}</Button></div></DialogContent>
       </Dialog>
     </div>

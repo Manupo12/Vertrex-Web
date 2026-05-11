@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RepoActions } from "./RepoActions";
 import ReactMarkdown from "react-markdown";
 import { formatShortDate } from "@/lib/format";
+import { EntityGraph } from "@/components/os/Graph/EntityGraph";
 
 export default async function LinkDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,6 +21,8 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
   if (!repo && !link) {
     notFound();
   }
+
+  const resolvedConnections = await getResolvedEntityConnections(id);
 
   if (repo) {
     let readme = repo.readmeContent;
@@ -47,6 +50,7 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
               <TabsList>
                 <TabsTrigger value="resumen">Resumen</TabsTrigger>
                 <TabsTrigger value="readme">README</TabsTrigger>
+                <TabsTrigger value="conexiones">Conexiones</TabsTrigger>
               </TabsList>
               <TabsContent value="resumen" className="space-y-4">
                 <Card className="bg-yellow-500/10 border-yellow-500/20">
@@ -72,6 +76,9 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
                   </CardContent>
                 </Card>
               </TabsContent>
+              <TabsContent value="conexiones">
+                <EntityGraph entityId={repo.id} connections={resolvedConnections} entityLabel={`${repo.owner}/${repo.repoName}`} entityType="Repositorio" />
+              </TabsContent>
             </Tabs>
           </div>
           <div className="w-full lg:w-72 shrink-0"><EntitySidebar entityId={repo.id} /></div>
@@ -92,11 +99,22 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
         />
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1">
-            <Card>
-              <CardContent className="p-6">
-                <a href={link.url} target="_blank" rel="noreferrer" className="text-primary hover:underline break-all">{link.url}</a>
-              </CardContent>
-            </Card>
+            <Tabs defaultValue="resumen">
+              <TabsList>
+                <TabsTrigger value="resumen">Resumen</TabsTrigger>
+                <TabsTrigger value="conexiones">Conexiones</TabsTrigger>
+              </TabsList>
+              <TabsContent value="resumen">
+                <Card>
+                  <CardContent className="p-6">
+                    <a href={link.url} target="_blank" rel="noreferrer" className="text-primary hover:underline break-all">{link.url}</a>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="conexiones">
+                <EntityGraph entityId={link.id} connections={resolvedConnections} entityLabel={link.title || link.url} entityType="Link" />
+              </TabsContent>
+            </Tabs>
           </div>
           <div className="w-full lg:w-72 shrink-0"><EntitySidebar entityId={link.id} /></div>
         </div>

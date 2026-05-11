@@ -38,8 +38,13 @@ export default async function ProjectDetailPage({ params }: Props) {
   if (!project) notFound();
 
   const links = (project.referenceLinks as Array<{ label: string; url: string }>) || [];
-  const connections = await getResolvedEntityConnections(project.id);
+  const resolvedConnections = await getResolvedEntityConnections(project.id);
   
+  const clientDocs = resolvedConnections.filter(c => c.type === "document");
+  const clientFinances = resolvedConnections.filter(c => c.type === "finance");
+  const clientEvents = resolvedConnections.filter(c => c.type === "agenda");
+  const clientResources = resolvedConnections.filter(c => c.type === "resource");
+
   let hasPaidAdvance = true;
   if (project.status === "active") {
     hasPaidAdvance = await projectHasPaidAdvance(project.id);
@@ -66,6 +71,10 @@ export default async function ProjectDetailPage({ params }: Props) {
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="links">Links ({links.length})</TabsTrigger>
+              <TabsTrigger value="documentos">Docs ({clientDocs.length})</TabsTrigger>
+              <TabsTrigger value="finanzas">Finanzas ({clientFinances.length})</TabsTrigger>
+              <TabsTrigger value="agenda">Agenda ({clientEvents.length})</TabsTrigger>
+              <TabsTrigger value="recursos">Recursos ({clientResources.length})</TabsTrigger>
               <TabsTrigger value="grafo">Grafo</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
@@ -80,8 +89,44 @@ export default async function ProjectDetailPage({ params }: Props) {
               </CardContent></Card>
             </TabsContent>
             <TabsContent value="links"><ReferenceLinks projectId={project.id} links={links} /></TabsContent>
+            <TabsContent value="documentos" className="space-y-2">
+              {clientDocs.map(d => (
+                <div key={d.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
+                  <a href={d.href} className="font-medium text-foreground hover:text-primary">{d.label}</a>
+                  <span className="text-muted-foreground text-xs">{d.subtitle}</span>
+                </div>
+              ))}
+              {clientDocs.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin documentos conectados.</p>}
+            </TabsContent>
+            <TabsContent value="finanzas" className="space-y-2">
+              {clientFinances.map(f => (
+                <div key={f.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
+                  <a href={f.href} className="font-medium text-foreground hover:text-primary">{f.label}</a>
+                  <span className="text-muted-foreground text-xs">{f.subtitle}</span>
+                </div>
+              ))}
+              {clientFinances.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin finanzas conectadas.</p>}
+            </TabsContent>
+            <TabsContent value="agenda" className="space-y-2">
+              {clientEvents.map(e => (
+                <div key={e.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
+                  <a href={e.href} className="font-medium text-foreground hover:text-primary">{e.label}</a>
+                  <span className="text-muted-foreground text-xs">{e.subtitle}</span>
+                </div>
+              ))}
+              {clientEvents.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin eventos en agenda.</p>}
+            </TabsContent>
+            <TabsContent value="recursos" className="space-y-2">
+              {clientResources.map(r => (
+                <div key={r.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
+                  <a href={r.href} className="font-medium text-foreground hover:text-primary">{r.label}</a>
+                  <span className="text-muted-foreground text-xs">{r.subtitle}</span>
+                </div>
+              ))}
+              {clientResources.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin recursos conectados.</p>}
+            </TabsContent>
             <TabsContent value="grafo">
-              <EntityGraph entityId={project.id} connections={connections} entityLabel={project.name} entityType="Proyecto" />
+              <EntityGraph entityId={project.id} connections={resolvedConnections} entityLabel={project.name} entityType="Proyecto" />
             </TabsContent>
           </Tabs>
         </div>

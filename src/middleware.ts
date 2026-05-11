@@ -18,12 +18,15 @@ const PUBLIC_EXACT = [
 const PUBLIC_PFX = ["/_next", "/static", "/favicon", "/api/health"];
 
 function authSecret() {
+  if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET requerido en produccion");
+  }
   return new TextEncoder().encode(process.env.AUTH_SECRET || "default_super_secret_for_dev_only");
 }
 
 async function verifyOsToken(token: string) {
   try {
-    await jose.jwtVerify(token, authSecret());
+    await jose.jwtVerify(token, authSecret(), { audience: "os" });
     return true;
   } catch {
     return false;
@@ -32,7 +35,7 @@ async function verifyOsToken(token: string) {
 
 async function verifyPortalToken(token: string) {
   try {
-    await jose.jwtVerify(token, authSecret());
+    await jose.jwtVerify(token, authSecret(), { audience: "portal" });
     return true;
   } catch {
     return false;

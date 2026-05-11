@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { clients, documents, entityLinks } from "@/lib/db/schema";
-import { eq, or, inArray } from "drizzle-orm";
+import { eq, or, inArray, and } from "drizzle-orm";
 import { requirePortalClient } from "@/lib/auth/portal";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default async function PortalFiles({ params }: Props) {
 
   const connections = await db.select().from(entityLinks).where(or(eq(entityLinks.sourceId, session.clientId), eq(entityLinks.targetId, session.clientId)));
   const docIds = connections.filter(l => l.sourceType === "document" || l.targetType === "document").map(l => l.sourceId === session.clientId ? l.targetId : l.sourceId);
-  const allDocs = docIds.length > 0 ? await db.select().from(documents).where(inArray(documents.id, docIds)) : [];
+  const allDocs = docIds.length > 0 ? await db.select().from(documents).where(and(inArray(documents.id, docIds), eq(documents.isPublic, true))) : [];
 
   return (
     <div className="space-y-6">

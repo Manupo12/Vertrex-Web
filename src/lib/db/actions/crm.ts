@@ -7,8 +7,10 @@ import { db } from "@/lib/db";
 import { clients } from "@/lib/db/schema";
 import { hashPin, generateSixDigitPin } from "@/lib/security/password";
 import { getEntityConnections } from "@/lib/db/actions/graph";
+import { requireOsUser } from "@/lib/auth/session";
 
 export async function createClientAction(formData: FormData) {
+  await requireOsUser();
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
@@ -25,6 +27,7 @@ export async function createClientAction(formData: FormData) {
 }
 
 export async function generateClientPinAction(slug: string) {
+  await requireOsUser();
   const pin = generateSixDigitPin();
   const pinHash = await hashPin(pin);
   const [updated] = await db.update(clients).set({ pinHash }).where(eq(clients.slug, slug)).returning();
@@ -34,6 +37,7 @@ export async function generateClientPinAction(slug: string) {
 }
 
 export async function updateClientAction(slug: string, formData: FormData) {
+  await requireOsUser();
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
@@ -45,6 +49,7 @@ export async function updateClientAction(slug: string, formData: FormData) {
 }
 
 export async function getClientBySlug(slug: string) {
+  await requireOsUser();
   return db.select().from(clients).where(eq(clients.slug, slug)).limit(1).then(rows => rows[0] || null);
 }
 

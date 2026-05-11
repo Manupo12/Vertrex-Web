@@ -39,9 +39,9 @@ const SheetContent = React.forwardRef<
       className={cn(
         "fixed z-50 gap-4 border border-border bg-card p-6 shadow-lg transition-transform duration-300",
         side === "right" &&
-          "inset-y-0 right-0 h-full w-full max-w-md data-[state=open]:translate-x-0 data-[state=closed]:translate-x-full",
+          "inset-y-0 right-0 h-full w-full sm:max-w-md data-[state=open]:translate-x-0 data-[state=closed]:translate-x-full",
         side === "left" &&
-          "inset-y-0 left-0 h-full w-full max-w-md data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full",
+          "inset-y-0 left-0 h-full w-full sm:max-w-md data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full",
         side === "top" &&
           "inset-x-0 top-0 max-h-[80vh] w-full data-[state=open]:translate-y-0 data-[state=closed]:-translate-y-full",
         side === "bottom" &&

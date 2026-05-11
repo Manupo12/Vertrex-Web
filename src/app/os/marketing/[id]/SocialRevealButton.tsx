@@ -10,14 +10,17 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTr
 export function SocialRevealButton({ accountId }: { accountId: string }) {
   const [value, setValue] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [revealing, setRevealing] = useState(false);
 
   const handleReveal = async () => {
+    setRevealing(true);
     try {
       const r = await revealSocialPasswordAction(accountId);
       setValue(r.password);
     } catch {
       toast.error("Error al revelar");
     }
+    setRevealing(false);
   };
 
   return (
@@ -26,9 +29,9 @@ export function SocialRevealButton({ accountId }: { accountId: string }) {
       if (!isOpen) setTimeout(() => setValue(null), 300);
     }}>
       <SheetTrigger asChild>
-        <Button onClick={handleReveal} variant="outline">
+        <Button onClick={handleReveal} variant="outline" disabled={revealing}>
           <Eye className="mr-2 h-4 w-4" />
-          Revelar contrasena
+          {revealing ? "Revelando..." : "Revelar contrasena"}
         </Button>
       </SheetTrigger>
       <SheetContent>

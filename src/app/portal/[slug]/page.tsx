@@ -71,7 +71,7 @@ export default async function PortalDashboard({ params }: Props) {
             <div key={e.id} className="rounded-lg border p-4">
               <p className="font-semibold text-lg text-gray-900">{e.title}</p>
               <p className="text-gray-500">{formatDateTime(e.startsAt)}</p>
-              {e.meetLink && <a href={e.meetLink} target="_blank" className="text-green-600 hover:text-green-700 font-medium mt-1 inline-block transition-colors">Unirse a Google Meet</a>}
+              {e.meetLink && <a href={e.meetLink} target="_blank" rel="noreferrer" className="text-green-600 hover:text-green-700 font-medium mt-1 inline-block transition-colors">Unirse a Google Meet</a>}
             </div>
           ))}
         </CardContent></Card>
@@ -87,9 +87,7 @@ export default async function PortalDashboard({ params }: Props) {
                   <p className="font-semibold text-lg text-gray-900">{l.name}</p>
                   <p className="text-sm text-gray-500 capitalize">{l.type.replace('_', ' ')}</p>
                 </div>
-                {l.url && (
-                  <a href={l.url} target="_blank" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">Ver documento</a>
-                )}
+                <a href={`/api/documents/${l.id}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">Descargar documento</a>
               </div>
             ))}
           </CardContent>

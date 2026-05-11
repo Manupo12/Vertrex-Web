@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/os/layout/PageHeader";
 import Link from "next/link";
 import { CrmList } from "./CrmList";
 
+import { NewClientDialog } from "./NewClientDialog";
+
 interface Props { searchParams: Promise<{ q?: string; status?: string }> }
 
 export default async function CrmPage({ searchParams }: Props) {
@@ -31,9 +33,7 @@ export default async function CrmPage({ searchParams }: Props) {
         title="Clientes"
         description="Gestiona clientes y accesos al portal"
         breadcrumbs={[{ label: "CRM" }]}
-        primaryAction={
-          <Link href="/os/crm/new" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">+ Nuevo cliente</Link>
-        }
+        primaryAction={<NewClientDialog />}
       />
       <CrmList clients={filtered} />
     </div>

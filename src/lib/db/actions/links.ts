@@ -6,7 +6,10 @@ import { db } from "@/lib/db";
 import { repositories, links } from "@/lib/db/schema";
 import { fetchGitHubRepo, fetchOpenGraph, fetchGitHubReadme, parseGitHubUrl } from "@/lib/links/service";
 
+import { requireOsUser } from "@/lib/auth/session";
+
 export async function saveExternalReferenceAction(url: string, savedReason?: string) {
+  await requireOsUser();
   const trimmedUrl = url.trim();
   if (!trimmedUrl) throw new Error("URL es obligatoria");
   
@@ -55,18 +58,22 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
 }
 
 export async function updateRepositoryStatusAction(id: string, status: string) {
+  await requireOsUser();
   await db.update(repositories).set({ implementationStatus: status }).where(eq(repositories.id, id));
   revalidatePath("/os/links");
   revalidatePath(`/os/links/${id}`);
 }
 
 export async function updateRepositoryPriorityAction(id: string, priority: number) {
-  await db.update(repositories).set({ priority }).where(eq(repositories.id, id));
+  await requireOsUser();
+  const clampedPriority = Math.max(1, Math.min(5, priority));
+  await db.update(repositories).set({ priority: clampedPriority }).where(eq(repositories.id, id));
   revalidatePath("/os/links");
   revalidatePath(`/os/links/${id}`);
 }
 
 export async function loadRepositoryReadmeAction(id: string) {
+  await requireOsUser();
   const [repo] = await db.select().from(repositories).where(eq(repositories.id, id)).limit(1);
   if (!repo) throw new Error("Repositorio no encontrado");
   if (repo.readmeContent) return { readmeContent: repo.readmeContent };

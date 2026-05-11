@@ -13,6 +13,9 @@ const FALLBACK_SECRET = "default_super_secret_for_dev_only";
 export type PortalSession = { clientId: string; slug: string };
 
 function getAuthSecret() {
+  if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET requerido en produccion");
+  }
   return new TextEncoder().encode(process.env.AUTH_SECRET || FALLBACK_SECRET);
 }
 
@@ -20,6 +23,7 @@ export async function signPortalSession(session: PortalSession) {
   const token = await new jose.SignJWT(session)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setAudience("portal")
     .setExpirationTime("7d")
     .sign(getAuthSecret());
 
@@ -36,7 +40,7 @@ export async function getPortalSession(): Promise<PortalSession | null> {
   try {
     const token = (await cookies()).get(PORTAL_COOKIE)?.value;
     if (!token) return null;
-    const { payload } = await jose.jwtVerify(token, getAuthSecret());
+    const { payload } = await jose.jwtVerify(token, getAuthSecret(), { audience: "portal" });
     return { clientId: String(payload.clientId), slug: String(payload.slug) };
   } catch {
     return null;

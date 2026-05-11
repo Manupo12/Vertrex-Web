@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { LayoutDashboard, Users, FolderKanban, FileText, Lightbulb, Link2, Calendar, BookOpen, Search } from "lucide-react";
 import { searchEntitiesAction, SearchResult } from "@/lib/db/actions/search";
+import { DialogTitle } from "@/components/ui/dialog";
 
 const ACTIONS = [
   { icon: LayoutDashboard, label: "Ir al Dashboard", action: "navigate", href: "/os/admin" },
@@ -81,6 +82,7 @@ export function CommandMenu() {
 
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Command Menu" className="fixed inset-0 z-50">
+      <DialogTitle className="sr-only">Menu de Comandos</DialogTitle>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="fixed left-1/2 top-[10%] w-full max-w-2xl -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-background shadow-2xl">
         <Command.Input

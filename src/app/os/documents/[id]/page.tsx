@@ -11,6 +11,7 @@ import { formatFileSize, formatShortDate } from "@/lib/format";
 import { Download, FileText } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { DocPrivacyToggle } from "./DocPrivacyToggle";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -51,6 +52,7 @@ export default async function DocDetailPage({ params }: Props) {
             <div className="flex justify-between"><span className="text-muted-foreground">Tama&ntilde;o</span><span>{formatFileSize(doc.sizeBytes)}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Almacenamiento</span><StatusBadge category="storage" status={doc.storageProvider} /></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Creado</span><span>{formatShortDate(doc.createdAt)}</span></div>
+            <DocPrivacyToggle docId={doc.id} initialIsPublic={doc.isPublic} />
           </CardContent></Card>
         </div>
         <div className="w-full lg:w-72 shrink-0"><EntitySidebar entityId={doc.id} /></div>

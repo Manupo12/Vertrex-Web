@@ -6,8 +6,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { socialAccounts, contentPlan } from "@/lib/db/schema";
 import { encrypt, decrypt } from "@/lib/security/encryption";
+import { requireOsUser } from "@/lib/auth/session";
 
 export async function createSocialAccountAction(formData: FormData) {
+  await requireOsUser();
   const platform = String(formData.get("platform") || "").trim();
   const handle = String(formData.get("handle") || "").trim();
   const email = String(formData.get("email") || "").trim();
@@ -21,23 +23,48 @@ export async function createSocialAccountAction(formData: FormData) {
 }
 
 export async function revealSocialPasswordAction(accountId: string) {
+  await requireOsUser();
   const [account] = await db.select().from(socialAccounts).where(eq(socialAccounts.id, accountId)).limit(1);
   if (!account || !account.passwordEncrypted) throw new Error("No hay contrasena guardada");
   return { password: decrypt(account.passwordEncrypted) };
 }
 
 export async function createContentPlanAction(formData: FormData) {
+  await requireOsUser();
   const socialAccountId = String(formData.get("social_account_id") || "");
   const title = String(formData.get("title") || "").trim();
   const contentType = String(formData.get("content_type") || "post");
+  const scheduledAtStr = String(formData.get("scheduled_at") || "");
   const notes = String(formData.get("notes") || "").trim();
+  
   if (!socialAccountId || !title) throw new Error("Cuenta y titulo son obligatorios");
-  await db.insert(contentPlan).values({ socialAccountId, title, contentType, notes: notes || null });
+  
+  await db.insert(contentPlan).values({ 
+    socialAccountId, 
+    title, 
+    contentType, 
+    notes: notes || null,
+    scheduledAt: scheduledAtStr ? new Date(scheduledAtStr) : null
+  });
+  
   revalidatePath(`/os/marketing`);
   revalidatePath(`/os/marketing/${socialAccountId}`);
 }
 
 export async function updateContentPlanStatusAction(id: string, status: string) {
+  await requireOsUser();
+  if (!["idea", "en_produccion", "listo", "publicado"].includes(status)) {
+    throw new Error("Estado invalido");
+  }
   await db.update(contentPlan).set({ status }).where(eq(contentPlan.id, id));
   revalidatePath("/os/marketing");
+}
+
+export async function updateSocialAccountStatsAction(id: string, formData: FormData) {
+  await requireOsUser();
+  const followersCount = parseInt(String(formData.get("followersCount") || "0"));
+  const reachCount = parseInt(String(formData.get("reachCount") || "0"));
+  
+  await db.update(socialAccounts).set({ followersCount, reachCount }).where(eq(socialAccounts.id, id));
+  revalidatePath(`/os/marketing/${id}`);
 }

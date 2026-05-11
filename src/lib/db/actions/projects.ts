@@ -6,8 +6,10 @@ import { eq, and, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { projects, finances, entityLinks } from "@/lib/db/schema";
 import { linkEntities, getEntityConnections } from "@/lib/db/actions/graph";
+import { requireOsUser } from "@/lib/auth/session";
 
 export async function createProjectAction(formData: FormData) {
+  await requireOsUser();
   const name = String(formData.get("name") || "").trim();
   if (!name) throw new Error("El nombre es obligatorio");
   const [project] = await db.insert(projects).values({ name, status: "active", progress: 0, currentVersion: "v1.0", referenceLinks: [] }).returning();
@@ -16,6 +18,7 @@ export async function createProjectAction(formData: FormData) {
 }
 
 export async function updateProjectAction(id: string, data: { name?: string; status?: string; progress?: number; currentVersion?: string }) {
+  await requireOsUser();
   const update: Record<string, unknown> = {};
   if (data.name !== undefined) update.name = data.name;
   if (data.status !== undefined) update.status = data.status;
@@ -27,6 +30,7 @@ export async function updateProjectAction(id: string, data: { name?: string; sta
 }
 
 export async function addProjectReferenceLinkAction(projectId: string, label: string, url: string) {
+  await requireOsUser();
   const [project] = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
   if (!project) throw new Error("Proyecto no encontrado");
   const links = (project.referenceLinks as Array<{ label: string; url: string }>) || [];
@@ -36,6 +40,7 @@ export async function addProjectReferenceLinkAction(projectId: string, label: st
 }
 
 export async function removeProjectReferenceLinkAction(projectId: string, index: number) {
+  await requireOsUser();
   const [project] = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
   if (!project) throw new Error("Proyecto no encontrado");
   const links = (project.referenceLinks as Array<{ label: string; url: string }>) || [];
@@ -63,5 +68,6 @@ export async function projectHasPaidAdvance(projectId: string): Promise<boolean>
 }
 
 export async function getProjectById(id: string) {
+  await requireOsUser();
   return db.select().from(projects).where(eq(projects.id, id)).limit(1).then(rows => rows[0] || null);
 }

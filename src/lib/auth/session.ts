@@ -14,6 +14,9 @@ export type OsRole = "team" | "admin";
 export type OsSession = { userId: string; email: string; name: string; role: OsRole };
 
 function getAuthSecret() {
+  if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET requerido en produccion");
+  }
   return new TextEncoder().encode(process.env.AUTH_SECRET || FALLBACK_SECRET);
 }
 
@@ -29,6 +32,7 @@ export async function signOsSession(session: OsSession) {
   const token = await new jose.SignJWT(session)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setAudience("os")
     .setExpirationTime("7d")
     .sign(getAuthSecret());
 
@@ -45,7 +49,7 @@ export async function getOsSession(): Promise<OsSession | null> {
   try {
     const token = (await cookies()).get(OS_COOKIE)?.value;
     if (!token) return null;
-    const { payload } = await jose.jwtVerify(token, getAuthSecret());
+    const { payload } = await jose.jwtVerify(token, getAuthSecret(), { audience: "os" });
     return {
       userId: String(payload.userId),
       email: String(payload.email),

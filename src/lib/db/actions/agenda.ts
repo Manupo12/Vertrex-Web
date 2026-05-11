@@ -6,8 +6,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { agendaEvents } from "@/lib/db/schema";
 import { linkEntities, getEntityConnections } from "@/lib/db/actions/graph";
+import { requireOsUser } from "@/lib/auth/session";
 
 export async function createAgendaEventAction(formData: FormData) {
+  await requireOsUser();
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
   const startsAt = String(formData.get("starts_at") || "");
@@ -29,6 +31,7 @@ export async function createAgendaEventAction(formData: FormData) {
 }
 
 export async function connectAgendaEntityAction(eventId: string, targetId: string, targetType: "client" | "project") {
+  await requireOsUser();
   await linkEntities(eventId, "agenda", targetId, targetType);
   revalidatePath("/os/agenda");
 }
