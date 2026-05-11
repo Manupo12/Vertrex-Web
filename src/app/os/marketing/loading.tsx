@@ -1,0 +1,1 @@
+export default function MarketingLoading() { return <div><div className="mb-6"><div className="h-8 w-40 animate-pulse rounded bg-muted" /></div><div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{[...Array(3)].map((_, i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-muted" />)}</div></div>; }

@@ -1,6 +1,5 @@
 /* Archivo global de estilos: define tema base, utilidades y ajustes visuales compartidos en toda la web. */
 @import "tailwindcss";
-@source "../../vertrex-os/src";
 
 :root {
   --theme-background: 0 0% 4%;

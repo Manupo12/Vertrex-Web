@@ -1,18 +1,11 @@
-import type { ReactNode } from 'react'
-import { redirect } from 'next/navigation'
+import type { ReactNode } from "react";
+import { ToasterVertrex } from "@/components/ui/toaster";
 
-import { getCurrentSession } from '@/lib/auth/session'
-
-export default async function PortalLayout({ children }: { children: ReactNode }) {
-  const session = await getCurrentSession()
-
-  if (!session) {
-    redirect('/login')
-  }
-
-  if (session.user.role !== 'client') {
-    redirect('/os')
-  }
-
-  return <>{children}</>
+export default function PortalLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-h-screen bg-white text-gray-900">
+      <div className="mx-auto max-w-4xl px-4 py-6">{children}</div>
+      <ToasterVertrex />
+    </div>
+  );
 }

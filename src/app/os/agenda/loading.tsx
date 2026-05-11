@@ -1,0 +1,1 @@
+export default function AgendaLoading() { return <div><div className="mb-6"><div className="h-8 w-32 animate-pulse rounded bg-muted" /></div><div className="space-y-2">{[...Array(5)].map((_, i) => <div key={i} className="h-16 animate-pulse rounded-xl bg-muted" />)}</div></div>; }

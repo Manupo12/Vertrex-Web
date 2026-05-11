@@ -1,296 +1,89 @@
-import { randomUUID } from "node:crypto";
-
-import bcrypt from "bcryptjs";
-import { and, eq, gt } from "drizzle-orm";
+import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import * as jose from "jose";
+import bcrypt from "bcryptjs";
+import { and, eq } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
 
-import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
-import {
-  signSessionToken,
-  type SessionRole,
-  verifySessionToken,
-} from "@/lib/auth/token";
-import { recordAuditEvent } from "@/lib/audit/audit-service";
-import { getDb, isDatabaseConfigured, schema } from "@/lib/db";
+const OS_COOKIE = "os_session";
+const FALLBACK_SECRET = "default_super_secret_for_dev_only";
 
-export type SessionUser = {
-  id: string;
-  email: string;
-  name: string;
-  role: SessionRole;
-  clientId: string | null;
-  clientSlug: string | null;
-};
+export type OsRole = "team" | "admin";
+export type OsSession = { userId: string; email: string; name: string; role: OsRole };
 
-export type AppSession = {
-  sessionToken: string;
-  expiresAt: string;
-  user: SessionUser;
-};
-
-const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7;
-
-export async function authenticateUser(identifier: string, password: string, role: SessionRole) {
-  if (!isDatabaseConfigured()) {
-    throw new Error("DATABASE_URL no está configurada. Conecta Neon para habilitar autenticación real.");
-  }
-
-  const db = getDb();
-  const normalizedIdentifier = normalizeIdentifier(identifier, role);
-  const [user] = await db
-    .select()
-    .from(schema.users)
-    .where(eq(schema.users.email, normalizedIdentifier))
-    .limit(1);
-
-  if (!user || !user.isActive || user.role !== role) {
-    return null;
-  }
-
-  const isValidPassword = await bcrypt.compare(password, user.passwordHash);
-
-  if (!isValidPassword) {
-    return null;
-  }
-
-  const clientSlug = user.clientId ? await getClientSlug(user.clientId) : null;
-  const sessionToken = randomUUID();
-  const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
-
-  await db.insert(schema.sessions).values({
-    userId: user.id,
-    sessionToken,
-    expiresAt,
-    createdAt: new Date(),
-  });
-
-  await db
-    .update(schema.users)
-    .set({
-      lastLoginAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(eq(schema.users.id, user.id));
-
-  const token = await signSessionToken({
-    sid: sessionToken,
-    role: user.role,
-    email: user.email,
-    name: user.name,
-    clientId: user.clientId,
-    clientSlug,
-  }, user.id, expiresAt);
-
-  await recordAuditEvent({
-    actor: {
-      userId: user.id,
-      role: user.role,
-      name: user.name,
-      email: user.email,
-    },
-    targetUserId: user.id,
-    targetName: user.name,
-    clientId: user.clientId,
-    module: "auth",
-    action: "login",
-    entityType: "session",
-    entityId: sessionToken,
-    summary: `${user.name} inició sesión en Vertrex OS.`,
-    metadata: {
-      loginRole: role,
-      clientSlug,
-    },
-  });
-
-  return {
-    token,
-    sessionToken,
-    expiresAt,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      clientId: user.clientId,
-      clientSlug,
-    },
-  };
+function getAuthSecret() {
+  return new TextEncoder().encode(process.env.AUTH_SECRET || FALLBACK_SECRET);
 }
 
-export async function getCurrentSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!token) {
-    return null;
-  }
-
-  return getSessionFromToken(token);
+export async function createPasswordHash(password: string) {
+  return bcrypt.hash(password, 10);
 }
 
-export async function getSessionFromToken(token: string): Promise<AppSession | null> {
-  if (!isDatabaseConfigured()) {
-    return null;
-  }
-
-  const payload = await verifySessionToken(token);
-
-  if (!payload?.sid || typeof payload.sub !== "string") {
-    return null;
-  }
-
-  const db = getDb();
-  const [session] = await db
-    .select()
-    .from(schema.sessions)
-    .where(
-      and(
-        eq(schema.sessions.sessionToken, payload.sid),
-        eq(schema.sessions.userId, payload.sub),
-        gt(schema.sessions.expiresAt, new Date()),
-      ),
-    )
-    .limit(1);
-
-  if (!session) {
-    return null;
-  }
-
-  const [user] = await db
-    .select()
-    .from(schema.users)
-    .where(eq(schema.users.id, payload.sub))
-    .limit(1);
-
-  if (!user || !user.isActive) {
-    return null;
-  }
-
-  const clientSlug = user.clientId ? await getClientSlug(user.clientId) : null;
-
-  return {
-    sessionToken: session.sessionToken,
-    expiresAt: session.expiresAt.toISOString(),
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      clientId: user.clientId,
-      clientSlug,
-    },
-  };
+export async function verifyPassword(password: string, passwordHash: string) {
+  return bcrypt.compare(password, passwordHash);
 }
 
-export async function clearSession(token: string | null | undefined) {
-  if (!token || !isDatabaseConfigured) {
-    return;
-  }
+export async function signOsSession(session: OsSession) {
+  const token = await new jose.SignJWT(session)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(getAuthSecret());
 
-  const currentSession = await getSessionFromToken(token);
-  const payload = await verifySessionToken(token);
-
-  if (!payload?.sid) {
-    return;
-  }
-
-  const db = getDb();
-  await db.delete(schema.sessions).where(eq(schema.sessions.sessionToken, payload.sid));
-
-  if (currentSession) {
-    await recordAuditEvent({
-      actor: {
-        userId: currentSession.user.id,
-        role: currentSession.user.role,
-        name: currentSession.user.name,
-        email: currentSession.user.email,
-      },
-      targetUserId: currentSession.user.id,
-      targetName: currentSession.user.name,
-      clientId: currentSession.user.clientId,
-      module: "auth",
-      action: "logout",
-      entityType: "session",
-      entityId: payload.sid,
-      summary: `${currentSession.user.name} cerró su sesión.`,
-      metadata: {
-        clientSlug: currentSession.user.clientSlug,
-      },
-    });
-  }
-}
-
-export function getSessionCookieOptions(expiresAt?: Date) {
-  return {
-    name: SESSION_COOKIE_NAME,
-    value: "",
+  (await cookies()).set(OS_COOKIE, token, {
     httpOnly: true,
-    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     path: "/",
-    expires: expiresAt,
-  };
+    maxAge: 60 * 60 * 24 * 7,
+  });
 }
 
-export function getLoginRedirectPath(user: SessionUser) {
-  if (user.role === "client") {
-    return `/portal/${user.clientSlug ?? "budaphone"}`;
+export async function getOsSession(): Promise<OsSession | null> {
+  try {
+    const token = (await cookies()).get(OS_COOKIE)?.value;
+    if (!token) return null;
+    const { payload } = await jose.jwtVerify(token, getAuthSecret());
+    return {
+      userId: String(payload.userId),
+      email: String(payload.email),
+      name: String(payload.name),
+      role: payload.role === "admin" ? "admin" : "team",
+    };
+  } catch {
+    return null;
   }
-
-  return "/os";
 }
 
-export async function requireAuthenticatedSession() {
-  const session = await getCurrentSession();
-
-  if (!session) {
-    throw new Error("Sesión inválida o expirada.");
-  }
-
+export async function requireOsUser() {
+  const session = await getOsSession();
+  if (!session) redirect("/login");
   return session;
 }
 
-export async function requireTeamSession() {
-  const session = await requireAuthenticatedSession();
-
-  if (session.user.role !== "team") {
-    throw new Error("Acceso restringido al equipo interno.");
-  }
-
+export async function requireAdminUser() {
+  const session = await requireOsUser();
+  if (session.role !== "admin") redirect("/os/admin");
   return session;
 }
 
-export async function requireClientSession() {
-  const session = await requireAuthenticatedSession();
-
-  if (session.user.role !== "client") {
-    throw new Error("Acceso restringido al portal del cliente.");
-  }
-
-  return session;
-}
-
-function normalizeIdentifier(identifier: string, role: SessionRole) {
-  const normalized = identifier.trim().toLowerCase();
-
-  if (normalized.includes("@")) {
-    return normalized;
-  }
-
-  if (role === "team") {
-    return `${normalized}@vertrex.co`;
-  }
-
-  return `${normalized}@client.vertrex.co`;
-}
-
-async function getClientSlug(clientId: string) {
-  const db = getDb();
-  const [client] = await db
-    .select({ slug: schema.clients.slug })
-    .from(schema.clients)
-    .where(eq(schema.clients.id, clientId))
+export async function loginTeam(email: string, password: string) {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.email, email), eq(users.isActive, true)))
     .limit(1);
 
-  return client?.slug ?? null;
+  if (!user) throw new Error("Credenciales inv\u00e1lidas");
+  const ok = await verifyPassword(password, user.passwordHash);
+  if (!ok) throw new Error("Credenciales inv\u00e1lidas");
+
+  await signOsSession({ userId: user.id, email: user.email, name: user.name, role: user.role });
+  return { userId: user.id, role: user.role };
+}
+
+export async function logoutTeam() {
+  (await cookies()).delete(OS_COOKIE);
 }

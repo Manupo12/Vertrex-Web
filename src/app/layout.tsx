@@ -1,11 +1,8 @@
-// Layout raíz de la aplicación: aplica fuentes, estilos globales, metadata base y estructura compartida.
 import type { Metadata, Viewport } from 'next'
-// Fuentes importadas desde Google Fonts (Next.js): Inter y Chakra Petch
 import { Inter, Chakra_Petch } from 'next/font/google'
-// Estilos globales del proyecto
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import './os-theme.css'
-// Componentes principales del layout
 import { AppChrome } from '@/components/AppChrome'
 
 // Configuración de las fuentes para poder usarlas como variables CSS
@@ -49,6 +46,7 @@ export default function RootLayout({
       {/* Aplicamos las variables de fuente y clases globales en el body */}
       <body className={`${inter.variable} ${chakraPetch.variable} h-full flex flex-col bg-background font-sans text-foreground`}>
         <AppChrome>{children}</AppChrome>
+        <Analytics />
       </body>
     </html>
   )

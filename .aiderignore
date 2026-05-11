@@ -1,0 +1,16 @@
+node_modules/
+.git/
+dist/
+build/
+.next/
+public/
+*.log
+package-lock.json
+*.lock
+tsconfig.tsbuildinfo
+.env*
+.vscode/
+.idea/
+coverage/
+*.min.js
+*.min.css

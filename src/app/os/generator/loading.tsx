@@ -1,0 +1,1 @@
+export default function GeneratorLoading() { return <div><div className="h-8 w-48 animate-pulse rounded bg-muted mb-4" /><div className="grid grid-cols-1 gap-4 lg:grid-cols-2"><div className="h-80 animate-pulse rounded-xl bg-muted" /><div className="h-80 animate-pulse rounded-xl bg-muted" /></div></div>; }

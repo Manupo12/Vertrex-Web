@@ -153,11 +153,53 @@ npm run start    # correr build
 npm run lint     # lint del proyecto
 npm run typecheck
 npm run db:generate
+npm run db:migrate
 npm run db:push
 npm run db:studio
 npm run db:seed
 npm run setup:neon
 ```
+
+## Vertrex OS
+
+Sistema operativo interno de Vertrex con portal de clientes.
+
+### Variables de entorno requeridas
+
+| Variable | Descripción |
+|---|---|
+| `DATABASE_URL` | URL de conexión PostgreSQL (Neon) |
+| `AUTH_SECRET` | Secreto para firmar JWT de sesión |
+| `ENCRYPTION_KEY` | 64 caracteres hex para AES-256-GCM |
+| `MCP_SECRET` | Token para API MCP Graph |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | JSON de Service Account de Google |
+| `GITHUB_TOKEN` | Token de GitHub (opcional) |
+| `SEED_ADMIN_EMAIL` | Email del admin inicial |
+| `SEED_ADMIN_PASSWORD` | Contraseña del admin inicial |
+| `NODE_ENV` | Entorno (development/production) |
+
+### Comandos de base de datos
+
+```bash
+npm run db:generate   # genera migración SQL
+npm run db:migrate    # aplica migración
+npm run db:seed       # crea usuario admin inicial
+```
+
+### Rutas principales
+
+| Ruta | Descripción |
+|---|---|
+| `/login` | Acceso interno del equipo |
+| `/os/admin` | Dashboard principal del OS |
+| `/os/crm` | Gestión de clientes |
+| `/os/projects` | Gestión de proyectos |
+| `/os/hub` | Knowledge Hub e incubadora |
+| `/os/finances` | Finanzas |
+| `/os/settings` | Configuración (solo admin) |
+| `/portal/login` | Acceso de clientes |
+| `/portal/[slug]` | Dashboard de cliente |
+| `/api/mcp/graph` | API MCP (Bearer auth) |
 
 ## 🛰️ Despliegue
 

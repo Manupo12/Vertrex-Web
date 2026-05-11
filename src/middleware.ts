@@ -1,89 +1,83 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import * as jose from "jose";
 
-const SESSION_COOKIE_NAME = "vertrex_session";
-
-const PUBLIC_PATHS = [
+const PUBLIC_EXACT = [
   "/",
   "/login",
   "/portafolio",
-  "/portafolio/",
   "/servicios",
   "/sobre-nosotros",
   "/contacto",
   "/terminos",
   "/politica-de-privacidad",
-  "/api/health",
+  "/demos",
+  "/cuestionario",
+  "/portal/login",
 ];
+const PUBLIC_PFX = ["/_next", "/static", "/favicon", "/api/health"];
 
-const PUBLIC_PREFIXES = [
-  "/_next",
-  "/static",
-  "/favicon",
-  "/api/",
-  "/login",
-];
-
-function isPublicPath(pathname: string): boolean {
-  if (PUBLIC_PATHS.includes(pathname)) return true;
-  return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+function authSecret() {
+  return new TextEncoder().encode(process.env.AUTH_SECRET || "default_super_secret_for_dev_only");
 }
 
-async function verifyToken(token: string): Promise<{ role: string; email: string } | null> {
+async function verifyOsToken(token: string) {
   try {
-    const secret = process.env.AUTH_SECRET;
-    if (!secret) return null;
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
-    if (!payload.role || !payload.email) return null;
-    return { role: String(payload.role), email: String(payload.email) };
+    await jose.jwtVerify(token, authSecret());
+    return true;
   } catch {
-    return null;
+    return false;
+  }
+}
+
+async function verifyPortalToken(token: string) {
+  try {
+    await jose.jwtVerify(token, authSecret());
+    return true;
+  } catch {
+    return false;
   }
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (isPublicPath(pathname)) {
+  if (PUBLIC_EXACT.includes(pathname) || PUBLIC_PFX.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (pathname.startsWith("/api/upload") || pathname.startsWith("/api/documents") || pathname.startsWith("/api/tickets")) {
+    const osToken = request.cookies.get("os_session")?.value;
+    const portalToken = request.cookies.get("portal_session")?.value;
+    
+    let hasAccess = false;
+    if (osToken && await verifyOsToken(osToken)) hasAccess = true;
+    if (portalToken && await verifyPortalToken(portalToken)) hasAccess = true;
 
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
+    if (!hasAccess) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
   }
 
-  const payload = await verifyToken(token);
-
-  if (!payload) {
-    const response = NextResponse.redirect(new URL("/login", request.url));
-    response.cookies.delete(SESSION_COOKIE_NAME);
-    return response;
-  }
-
-  // Protect OS routes for team only
   if (pathname.startsWith("/os")) {
-    if (payload.role !== "team") {
+    const token = request.cookies.get("os_session")?.value;
+    if (!token || !(await verifyOsToken(token))) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
+    return NextResponse.next();
   }
 
-  // Protect portal routes for client only
   if (pathname.startsWith("/portal")) {
-    if (payload.role !== "client") {
-      return NextResponse.redirect(new URL("/login", request.url));
+    const token = request.cookies.get("portal_session")?.value;
+    if (!token || !(await verifyPortalToken(token))) {
+      return NextResponse.redirect(new URL("/portal/login", request.url));
     }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/mcp.*|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

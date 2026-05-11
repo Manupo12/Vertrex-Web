@@ -5,29 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1777325274751,
-      "tag": "0000_dapper_scorpion",
+      "when": 1778044958221,
+      "tag": "0000_abandoned_slayback",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1777327091040,
-      "tag": "0001_strong_bullseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1777347360591,
-      "tag": "0002_magical_king_cobra",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1777572794684,
-      "tag": "0003_loose_hitman",
+      "when": 1778129367125,
+      "tag": "0001_great_marten_broadcloak",
       "breakpoints": true
     }
   ]
