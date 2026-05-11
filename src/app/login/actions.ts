@@ -10,8 +10,14 @@ export async function loginAction(formData: FormData) {
 
   try {
     await loginTeam(email, password);
-  } catch {
-    redirect("/login?error=1");
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[LOGIN ERROR]", message);
+    if (message.includes("Credenciales")) {
+      redirect("/login?error=1");
+    }
+    // DB or server error — show generic message  
+    redirect("/login?error=2");
   }
 
   redirect("/os/admin");

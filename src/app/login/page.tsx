@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-red-500/10 text-red-500 text-sm text-center border border-red-500/20">
-            {error === "1" ? "Credenciales invalidas. Intenta de nuevo." : "Ocurrio un error al iniciar sesion."}
+            {error === "1" ? "Credenciales invalidas. Intenta de nuevo." : error === "2" ? "Error del servidor. Revisa la conexion a la BD." : "Ocurrio un error al iniciar sesion."}
           </div>
         )}
 
