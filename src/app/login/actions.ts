@@ -3,7 +3,24 @@
 import { redirect } from "next/navigation";
 import { loginTeam, logoutTeam } from "@/lib/auth/session";
 
+const loginAttempts = new Map<string, { count: number; timestamp: number }>();
+const MAX_ATTEMPTS = 5;
+const WINDOW_MS = 60000;
+
 export async function loginAction(formData: FormData) {
+  const ip = "server-action";
+  const now = Date.now();
+  const attempt = loginAttempts.get(ip) || { count: 0, timestamp: now };
+  if (now - attempt.timestamp > WINDOW_MS) {
+    attempt.count = 1;
+    attempt.timestamp = now;
+  } else {
+    attempt.count++;
+  }
+  loginAttempts.set(ip, attempt);
+  if (attempt.count > MAX_ATTEMPTS) {
+    redirect("/login?error=3");
+  }
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   if (!email || !password) redirect("/login?error=1");

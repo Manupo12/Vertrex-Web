@@ -17,6 +17,9 @@ export async function createTaskAction(input: {
   priority?: number;
   cycleId?: string;
   milestoneId?: string;
+  taskType?: string;
+  dueDate?: Date | string;
+  estimatePoints?: number;
 }) {
   const user = await requireOsUser();
   let identifier = `INBOX-${Math.floor(Math.random() * 10000)}`;
@@ -33,6 +36,9 @@ export async function createTaskAction(input: {
     priority: input.priority || 0,
     cycleId: input.cycleId,
     milestoneId: input.milestoneId,
+    taskType: (input.taskType as any) || "other",
+    dueDate: input.dueDate ? new Date(input.dueDate) : null,
+    estimatePoints: input.estimatePoints || null,
     createdBy: user.userId,
     state: "todo",
   }).returning();
@@ -244,5 +250,11 @@ export async function getTaskDetailAction(id: string) {
 export async function bulkUpdateTasksAction(ids: string[], patch: Partial<typeof tasks.$inferInsert>) {
   await requireOsUser();
   await db.update(tasks).set({ ...patch, updatedAt: new Date() }).where(inArray(tasks.id, ids));
+  revalidatePath("/os/projects");
+}
+
+export async function deleteTaskAction(id: string) {
+  await requireOsUser();
+  await db.delete(tasks).where(eq(tasks.id, id));
   revalidatePath("/os/projects");
 }

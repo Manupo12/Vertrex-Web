@@ -7,13 +7,44 @@ import { toast } from "sonner";
 import { TaskAssigneeSelect } from "./TaskAssigneeSelect";
 import { PriorityDot } from "./PriorityDot";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { FlagIcon } from "lucide-react";
+import { FlagIcon, ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 
-export function QuickTaskModal({ open, onOpenChange, projects, users, currentUserId }: { open: boolean, onOpenChange: (open: boolean) => void, projects: any[], users: any[], currentUserId?: string }) {
+const TASK_TYPES = [
+  { value: "code", label: "Código" },
+  { value: "design", label: "Diseño" },
+  { value: "marketing", label: "Marketing" },
+  { value: "content", label: "Contenido" },
+  { value: "document", label: "Documento" },
+  { value: "meeting", label: "Reunión" },
+  { value: "research", label: "Investigación" },
+  { value: "ops", label: "Operaciones" },
+  { value: "support", label: "Soporte" },
+  { value: "bug", label: "Bug" },
+  { value: "feature", label: "Feature" },
+  { value: "other", label: "Otro" },
+];
+
+export function QuickTaskModal({
+  open, onOpenChange, projects, users, currentUserId,
+  cycles, milestones, taskTypes,
+  defaultProjectId, defaultCycleId, defaultMilestoneId
+}: {
+  open: boolean; onOpenChange: (open: boolean) => void;
+  projects: any[]; users: any[]; currentUserId?: string;
+  cycles?: any[]; milestones?: any[]; taskTypes?: { value: string; label: string }[];
+  defaultProjectId?: string; defaultCycleId?: string; defaultMilestoneId?: string;
+}) {
   const [title, setTitle] = useState("");
-  const [projectId, setProjectId] = useState<string | undefined>(undefined);
+  const [projectId, setProjectId] = useState<string | undefined>(defaultProjectId || undefined);
   const [assigneeId, setAssigneeId] = useState<string | null>(currentUserId || null);
   const [priority, setPriority] = useState<number>(0);
+  const [taskType, setTaskType] = useState<string>("other");
+  const [dueDate, setDueDate] = useState<string>("");
+  const [estimatePoints, setEstimatePoints] = useState<number>(0);
+  const [cycleId, setCycleId] = useState<string | undefined>(defaultCycleId || undefined);
+  const [milestoneId, setMilestoneId] = useState<string | undefined>(defaultMilestoneId || undefined);
+  const [description, setDescription] = useState("");
+  const [showExtraOptions, setShowExtraOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -22,14 +53,31 @@ export function QuickTaskModal({ open, onOpenChange, projects, users, currentUse
 
     setIsSubmitting(true);
     try {
-      const task = await createTaskAction({ title, projectId, assigneeId: assigneeId || undefined, priority });
+      const task = await createTaskAction({
+        title,
+        projectId,
+        assigneeId: assigneeId || undefined,
+        priority,
+        taskType,
+        dueDate: dueDate || undefined,
+        estimatePoints: estimatePoints || undefined,
+        cycleId,
+        milestoneId,
+      });
       toast.success(`Tarea creada · ${task.identifier}`);
       setTitle("");
-      setProjectId(undefined);
+      setProjectId(defaultProjectId || undefined);
       setAssigneeId(currentUserId || null);
       setPriority(0);
+      setTaskType("other");
+      setDueDate("");
+      setEstimatePoints(0);
+      setCycleId(defaultCycleId || undefined);
+      setMilestoneId(defaultMilestoneId || undefined);
+      setDescription("");
+      setShowExtraOptions(false);
       onOpenChange(false);
-    } catch (e) {
+    } catch {
       toast.error("Error al crear la tarea");
     } finally {
       setIsSubmitting(false);
@@ -42,6 +90,8 @@ export function QuickTaskModal({ open, onOpenChange, projects, users, currentUse
       handleSubmit();
     }
   };
+
+  const types = taskTypes || TASK_TYPES;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,7 +120,7 @@ export function QuickTaskModal({ open, onOpenChange, projects, users, currentUse
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
-            
+
             <TaskAssigneeSelect
               assigneeId={assigneeId}
               assigneeName={users.find(u => u.id === assigneeId)?.name}
@@ -94,11 +144,96 @@ export function QuickTaskModal({ open, onOpenChange, projects, users, currentUse
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          
+
           <div className="text-xs text-[var(--color-muted-foreground)] hidden sm:flex items-center gap-1">
             <span className="bg-[var(--color-muted)] px-1.5 rounded font-medium border border-[var(--color-border)] shadow-sm">Enter</span>
             <span>guardar</span>
           </div>
+        </div>
+
+        <div className="border-t border-[var(--color-border)]">
+          <button
+            type="button"
+            onClick={() => setShowExtraOptions(!showExtraOptions)}
+            className="flex items-center gap-1.5 w-full px-4 py-2 text-xs font-medium text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-muted)]/30 transition-colors"
+          >
+            {showExtraOptions ? <ChevronDownIcon className="h-3.5 w-3.5" /> : <ChevronRightIcon className="h-3.5 w-3.5" />}
+            {showExtraOptions ? "Menos opciones" : "Más opciones"}
+          </button>
+          {showExtraOptions && (
+            <div className="grid grid-cols-2 gap-3 p-4 border-t border-[var(--color-border)]">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[var(--color-muted-foreground)]">Tipo</label>
+                <select
+                  className="w-full text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5"
+                  value={taskType}
+                  onChange={(e) => setTaskType(e.target.value)}
+                >
+                  {types.map(t => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[var(--color-muted-foreground)]">Vencimiento</label>
+                <input
+                  type="date"
+                  className="w-full text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+              </div>
+              {cycles && cycles.length > 0 && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-[var(--color-muted-foreground)]">Ciclo</label>
+                  <select
+                    className="w-full text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5"
+                    value={cycleId || ""}
+                    onChange={(e) => setCycleId(e.target.value || undefined)}
+                  >
+                    <option value="">Sin ciclo</option>
+                    {cycles.map(c => (
+                      <option key={c.id} value={c.id}>{c.name || c.title || c.label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {milestones && milestones.length > 0 && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-[var(--color-muted-foreground)]">Hito</label>
+                  <select
+                    className="w-full text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5"
+                    value={milestoneId || ""}
+                    onChange={(e) => setMilestoneId(e.target.value || undefined)}
+                  >
+                    <option value="">Sin hito</option>
+                    {milestones.map(m => (
+                      <option key={m.id} value={m.id}>{m.name || m.title || m.label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[var(--color-muted-foreground)]">Puntos estimados</label>
+                <input
+                  type="number"
+                  min="0"
+                  className="w-full text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5"
+                  value={estimatePoints || ""}
+                  onChange={(e) => setEstimatePoints(Number(e.target.value))}
+                />
+              </div>
+              <div className="col-span-2 space-y-1.5">
+                <label className="text-xs font-medium text-[var(--color-muted-foreground)]">Descripción</label>
+                <textarea
+                  className="w-full text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5 min-h-[60px] resize-y"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Descripción de la tarea..."
+                />
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

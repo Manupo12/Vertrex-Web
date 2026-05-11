@@ -30,6 +30,21 @@ export const entityTypeEnum = pgEnum("entity_type", [
 ]);
 export const storageProviderEnum = pgEnum("storage_provider", ["neon", "drive"]);
 
+export const taskTypeEnum = pgEnum("task_type", [
+  "code",
+  "design",
+  "marketing",
+  "content",
+  "document",
+  "meeting",
+  "research",
+  "ops",
+  "support",
+  "bug",
+  "feature",
+  "other",
+]);
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
@@ -127,6 +142,7 @@ export const tasks = pgTable("tasks", {
   descriptionJson: jsonb("description_json").notNull().default(sql`'{}'::jsonb`),
   state: text("state").notNull().default("backlog"),
   priority: integer("priority").notNull().default(0),
+  taskType: taskTypeEnum("task_type").notNull().default("other"),
   estimatePoints: integer("estimate_points"),
   assigneeId: uuid("assignee_id").references(() => users.id),
   cycleId: uuid("cycle_id").references(() => cycles.id, { onDelete: "set null" }),

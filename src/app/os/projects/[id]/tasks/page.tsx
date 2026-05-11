@@ -22,7 +22,7 @@ export default async function ProjectTasksPage({ params }: { params: Promise<{ i
         description={`Backlog y ejecución de ${project.name}`}
         breadcrumbs={[{ label: "Proyectos", href: "/os/projects" }, { label: project.name, href: `/os/projects/${id}` }, { label: "Tareas" }]}
       />
-      <TasksView initialTasks={projectTasks} users={allUsers} projectId={id} />
+      <TasksView initialTasks={projectTasks} users={allUsers} projectId={id} projects={[project]} />
     </div>
   );
 }

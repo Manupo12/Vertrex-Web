@@ -22,7 +22,7 @@ export default async function ProjectBoardPage({ params }: { params: Promise<{ i
         description={`Ejecución visual de ${project.name}`}
         breadcrumbs={[{ label: "Proyectos", href: "/os/projects" }, { label: project.name, href: `/os/projects/${id}` }, { label: "Tablero" }]}
       />
-      <BoardView initialTasks={projectTasks} users={allUsers} projectId={id} />
+      <BoardView initialTasks={projectTasks} users={allUsers} projectId={id} projects={[project]} />
     </div>
   );
 }

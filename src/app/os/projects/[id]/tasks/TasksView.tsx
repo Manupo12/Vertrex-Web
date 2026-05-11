@@ -7,9 +7,10 @@ import { CheckSquareIcon } from "lucide-react";
 import { changeTaskStateAction, setTaskPriorityAction, assignTaskAction } from "@/lib/db/actions/tasks";
 import { toast } from "sonner";
 import { TaskDetailSheet } from "@/components/os/Tasks/TaskDetailSheet";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 import { useRouter } from "next/navigation";
 
-export function TasksView({ initialTasks, users, projectId }: { initialTasks: any[], users: any[], projectId: string }) {
+export function TasksView({ initialTasks, users, projectId, projects }: { initialTasks: any[], users: any[], projectId: string, projects?: any[] }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const router = useRouter();
@@ -58,24 +59,32 @@ export function TasksView({ initialTasks, users, projectId }: { initialTasks: an
   }
 
   return (
-    <div className="mt-6 bg-[var(--color-card)] rounded-lg border border-[var(--color-border)] overflow-hidden">
-      {tasks.map(t => (
-        <TaskRow 
-          key={t.id} 
-          task={t} 
-          users={users} 
-          onClick={() => setSelectedTask(t)}
-          onStateChange={(state) => handleStateChange(t.id, state)}
-          onPriorityChange={(priority) => handlePriorityChange(t.id, priority)}
-          onAssigneeChange={(userId) => handleAssigneeChange(t.id, userId)}
+    <div className="mt-6">
+      <div className="flex items-center justify-between mb-4">
+        <div />
+        <TaskCreateButton projectId={projectId} users={users} projects={projects} />
+      </div>
+      <div className="bg-[var(--color-card)] rounded-lg border border-[var(--color-border)] overflow-hidden">
+        {tasks.map(t => (
+          <TaskRow 
+            key={t.id} 
+            task={t} 
+            users={users} 
+            onClick={() => setSelectedTask(t)}
+            onStateChange={(state) => handleStateChange(t.id, state)}
+            onPriorityChange={(priority) => handlePriorityChange(t.id, priority)}
+            onAssigneeChange={(userId) => handleAssigneeChange(t.id, userId)}
+          />
+        ))}
+        <TaskDetailSheet 
+          task={selectedTask} 
+          open={!!selectedTask} 
+          onOpenChange={(open) => !open && setSelectedTask(null)} 
+          onEditFull={() => router.push(`/os/projects/${projectId}/tasks/${selectedTask?.id}`)}
+          onDelete={() => setTasks(tasks.filter(t => t.id !== selectedTask?.id))}
+          users={users}
         />
-      ))}
-      <TaskDetailSheet 
-        task={selectedTask} 
-        open={!!selectedTask} 
-        onOpenChange={(open) => !open && setSelectedTask(null)} 
-        onEditFull={() => router.push(`/os/projects/${projectId}/tasks/${selectedTask?.id}`)}
-      />
+      </div>
     </div>
   );
 }

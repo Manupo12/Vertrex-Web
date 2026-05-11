@@ -6,6 +6,7 @@ import { KanbanIcon } from "lucide-react";
 import { changeTaskStateAction } from "@/lib/db/actions/tasks";
 import { toast } from "sonner";
 import { TaskDetailSheet } from "@/components/os/Tasks/TaskDetailSheet";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 import { useRouter } from "next/navigation";
 import { IdentifierChip } from "@/components/os/Tasks/IdentifierChip";
 import { PriorityDot } from "@/components/os/Tasks/PriorityDot";
@@ -19,7 +20,7 @@ const COLUMNS = [
   { id: "done", label: "Listo" }
 ];
 
-export function BoardView({ initialTasks, users, projectId }: { initialTasks: any[], users: any[], projectId: string }) {
+export function BoardView({ initialTasks, users, projectId, projects }: { initialTasks: any[], users: any[], projectId: string, projects?: any[] }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const router = useRouter();
@@ -51,8 +52,13 @@ export function BoardView({ initialTasks, users, projectId }: { initialTasks: an
   };
 
   return (
-    <div className="mt-6 flex gap-4 overflow-x-auto pb-4 items-start h-[calc(100vh-200px)]">
-      {COLUMNS.map(col => {
+    <div className="mt-6">
+      <div className="flex items-center justify-between mb-4">
+        <div />
+        <TaskCreateButton projectId={projectId} users={users} projects={projects} />
+      </div>
+      <div className="flex gap-4 overflow-x-auto pb-4 items-start h-[calc(100vh-200px)]">
+        {COLUMNS.map(col => {
         const colTasks = tasks.filter(t => t.state === col.id);
         const color = stateToken(col.id);
 
@@ -106,7 +112,10 @@ export function BoardView({ initialTasks, users, projectId }: { initialTasks: an
         open={!!selectedTask} 
         onOpenChange={(open) => !open && setSelectedTask(null)} 
         onEditFull={() => router.push(`/os/projects/${projectId}/tasks/${selectedTask?.id}`)}
+        onDelete={() => setTasks(tasks.filter(t => t.id !== selectedTask?.id))}
+        users={users}
       />
+    </div>
     </div>
   );
 }
