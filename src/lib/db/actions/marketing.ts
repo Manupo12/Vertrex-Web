@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { socialAccounts, contentPlan } from "@/lib/db/schema";
+import { socialAccounts, contentPlan, marketingHashtags } from "@/lib/db/schema";
 import { encrypt, decrypt } from "@/lib/security/encryption";
 import { requireOsUser } from "@/lib/auth/session";
 
@@ -67,4 +67,42 @@ export async function updateSocialAccountStatsAction(id: string, formData: FormD
   
   await db.update(socialAccounts).set({ followersCount, reachCount }).where(eq(socialAccounts.id, id));
   revalidatePath(`/os/marketing/${id}`);
+}
+
+export async function createHashtagAction(label: string, tags: string[], accountId: string) {
+  await requireOsUser();
+  const [ht] = await db.insert(marketingHashtags).values({ label, tags, accountId }).returning();
+  revalidatePath("/os/marketing");
+  return ht;
+}
+
+export async function deleteHashtagAction(id: string) {
+  await requireOsUser();
+  await db.delete(marketingHashtags).where(eq(marketingHashtags.id, id));
+  revalidatePath("/os/marketing");
+}
+
+export async function updateContentPlanEngagementAction(id: string, reach: number, likes: number, comments: number, saves: number) {
+  await requireOsUser();
+  await db.update(contentPlan).set({ reach, likes, comments, saves }).where(eq(contentPlan.id, id));
+  revalidatePath("/os/marketing");
+}
+
+export async function listHashtagsAction(accountId?: string) {
+  await requireOsUser();
+  if (accountId) {
+    return db.select().from(marketingHashtags).where(eq(marketingHashtags.accountId, accountId));
+  }
+  return db.select().from(marketingHashtags);
+}
+
+export async function updateHashtagAction(id: string, data: { label?: string; tags?: string[]; accountId?: string }) {
+  await requireOsUser();
+  const updateData: any = {};
+  if (data.label !== undefined) updateData.label = data.label;
+  if (data.tags !== undefined) updateData.tags = data.tags;
+  if (data.accountId !== undefined) updateData.accountId = data.accountId;
+  await db.update(marketingHashtags).set(updateData).where(eq(marketingHashtags.id, id));
+  revalidatePath("/os/marketing/hashtags");
+  revalidatePath("/os/marketing");
 }

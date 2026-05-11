@@ -5,7 +5,11 @@ import { db } from "@/lib/db";
 import { entityLinks } from "@/lib/db/schema";
 import type { EntityType } from "@/lib/db/actions/graph-types";
 import { SearchResult } from "@/lib/db/actions/search";
-import { clients, projects, documents, legalDocuments, knowledgeNotes, resources, finances, agendaEvents, repositories, links, socialAccounts, users, tickets } from "@/lib/db/schema";
+import { 
+  clients, projects, documents, legalDocuments, knowledgeNotes, resources, finances, 
+  agendaEvents, repositories, links, socialAccounts, users, tickets,
+  tasks, cycles, milestones, tags
+} from "@/lib/db/schema";
 import { requireOsUser } from "@/lib/auth/session";
 
 export async function linkEntities(
@@ -27,13 +31,15 @@ export async function linkEntities(
           eq(entityLinks.sourceId, sourceId),
           eq(entityLinks.sourceType, sourceType),
           eq(entityLinks.targetId, targetId),
-          eq(entityLinks.targetType, targetType)
+          eq(entityLinks.targetType, targetType),
+          eq(entityLinks.relationType, relationType)
         ),
         and(
           eq(entityLinks.sourceId, targetId),
           eq(entityLinks.sourceType, targetType),
           eq(entityLinks.targetId, sourceId),
-          eq(entityLinks.targetType, sourceType)
+          eq(entityLinks.targetType, sourceType),
+          eq(entityLinks.relationType, relationType)
         )
       )
     )
@@ -87,11 +93,9 @@ export async function getResolvedEntityConnections(entityId: string): Promise<Re
 
   const resolved: ResolvedConnection[] = [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const resolveType = async (type: string, table: any, mapper: (row: any) => Pick<SearchResult, "label" | "subtitle" | "href">) => {
     if (!targetsByType[type] || targetsByType[type].length === 0) return;
     const ids = targetsByType[type].map(t => t.id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rows = await db.select().from(table as any).where(inArray((table as any).id, ids));
     for (const row of rows) {
       const targetData = targetsByType[type].find(t => t.id === row.id);
@@ -123,6 +127,10 @@ export async function getResolvedEntityConnections(entityId: string): Promise<Re
     resolveType("social_account", socialAccounts, s => ({ label: s.handle, subtitle: `Red Social (${s.platform})`, href: `/os/marketing/${s.id}` })),
     resolveType("team_member", users, u => ({ label: u.name, subtitle: `Equipo (${u.role})`, href: `/os/team/${u.id}` })),
     resolveType("ticket", tickets, t => ({ label: t.title, subtitle: `Ticket (${t.status})`, href: `/os/crm` })),
+    resolveType("task", tasks, t => ({ label: t.title, subtitle: `Tarea (${t.identifier})`, href: `/t/${t.identifier}` })),
+    resolveType("cycle", cycles, c => ({ label: c.name, subtitle: `Ciclo (${c.status})`, href: `/os/projects/${c.projectId}/cycles/${c.id}` })),
+    resolveType("milestone", milestones, m => ({ label: m.name, subtitle: `Hito (${m.status})`, href: `/os/projects/${m.projectId}/milestones` })),
+    resolveType("tag", tags, t => ({ label: t.label, subtitle: `Etiqueta`, href: `#` })),
   ]);
 
   return resolved;

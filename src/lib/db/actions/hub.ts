@@ -2,10 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { knowledgeNotes, projects } from "@/lib/db/schema";
 import { linkEntities } from "@/lib/db/actions/graph";
+import { materializeMentions } from "@/lib/db/actions/mentions";
 import { requireOsUser } from "@/lib/auth/session";
 
 function titleFromText(text: string) {
@@ -58,6 +59,7 @@ export async function saveKnowledgeNote(id: string, input: { title: string; cont
     nextStep: input.nextStep || null, 
     relatedProjectId: input.relatedProjectId || null 
   }).where(eq(knowledgeNotes.id, id));
+  await materializeMentions(id, "note", input.contentJson);
   revalidatePath("/os/hub");
   revalidatePath(`/os/hub/${id}`);
 }
@@ -85,4 +87,40 @@ export async function convertIdeaToProject(id: string) {
 export async function getKnowledgeNoteById(id: string) {
   await requireOsUser();
   return db.select().from(knowledgeNotes).where(eq(knowledgeNotes.id, id)).limit(1).then(rows => rows[0] || null);
+}
+
+export async function upsertDailyNoteAction(date: string, contentJson: unknown) {
+  await requireOsUser();
+  const title = `Daily ${date}`;
+  const existing = await db.select().from(knowledgeNotes).where(
+    and(eq(knowledgeNotes.title, title), eq(knowledgeNotes.type, "note"))
+  ).limit(1);
+
+  if (existing.length > 0) {
+    const [updated] = await db.update(knowledgeNotes).set({ contentJson: contentJson as Record<string, unknown> }).where(eq(knowledgeNotes.id, existing[0].id)).returning();
+    return updated;
+  }
+
+  const [note] = await db.insert(knowledgeNotes).values({
+    title,
+    contentJson: contentJson as Record<string, unknown>,
+    type: "note",
+  }).returning();
+  revalidatePath("/os/hub");
+  return note;
+}
+
+export async function updateIdeaScoreAction(id: string, score: number) {
+  await requireOsUser();
+  if (score < 0 || score > 10 || !Number.isInteger(score)) throw new Error("Score debe ser un entero entre 0 y 10");
+  await db.update(knowledgeNotes).set({ score } as any).where(eq(knowledgeNotes.id, id));
+  revalidatePath("/os/hub");
+}
+
+export async function getDailyNoteAction(date: string) {
+  await requireOsUser();
+  const title = `Daily ${date}`;
+  return db.select().from(knowledgeNotes).where(
+    and(eq(knowledgeNotes.title, title), eq(knowledgeNotes.type, "note"))
+  ).limit(1).then(rows => rows[0] || null);
 }

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { resources } from "@/lib/db/schema";
+import { resources, resourceFolders } from "@/lib/db/schema";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import Link from "next/link";
 import { ResourcesList } from "./ResourcesList";
@@ -9,6 +9,8 @@ export default async function ResourcesPage() {
     .select()
     .from(resources)
     .orderBy(resources.createdAt);
+    
+  const allFolders = await db.select().from(resourceFolders).orderBy(resourceFolders.name);
 
   return (
     <div>
@@ -25,7 +27,7 @@ export default async function ResourcesPage() {
           </Link>
         }
       />
-      <ResourcesList resources={allResources} />
+      <ResourcesList resources={allResources} folders={allFolders} />
     </div>
   );
 }

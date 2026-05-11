@@ -2,12 +2,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { LayoutDashboard, Users, FolderKanban, FileText, Lightbulb, Link2, Calendar, BookOpen } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, FileText, Lightbulb, Link2, Calendar, BookOpen, CheckSquare, Inbox, Map } from "lucide-react";
 import { searchEntitiesAction, SearchResult } from "@/lib/db/actions/search";
 import { DialogTitle } from "@/components/ui/dialog";
 
 const ACTIONS = [
+  { icon: CheckSquare, label: "Capturar tarea (Ctrl+.)", action: "quickTask", href: "" },
   { icon: LayoutDashboard, label: "Ir al Dashboard", action: "navigate", href: "/os/admin" },
+  { icon: Inbox, label: "Ir a Inbox", action: "navigate", href: "/os/projects/inbox" },
+  { icon: CheckSquare, label: "Ir a mis tareas", action: "navigate", href: "/os/projects/mine" },
+  { icon: Map, label: "Ir a roadmap", action: "navigate", href: "/os/projects/roadmap" },
   { icon: Users, label: "Nuevo cliente", action: "navigate", href: "/os/crm/new" },
   { icon: FolderKanban, label: "Nuevo proyecto", action: "navigate", href: "/os/projects/new" },
   { icon: Lightbulb, label: "Capturar idea (Ctrl+I)", action: "navigate", href: "/os/hub?view=ideas" },
@@ -75,9 +79,13 @@ export function CommandMenu() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const runAction = (href: string) => {
+  const runAction = (item: any) => {
     setOpen(false);
-    router.push(href);
+    if (item.action === "quickTask") {
+      window.dispatchEvent(new CustomEvent("open-quick-task"));
+    } else {
+      router.push(item.href);
+    }
   };
 
   return (
@@ -97,7 +105,7 @@ export function CommandMenu() {
           {searchResults.length > 0 && (
             <Command.Group heading="Entidades" className="[&_[data-value]]:text-xs [&_[data-value]]:font-medium [&_[data-value]]:text-muted-foreground [&_[data-value]]:mb-1 [&_[data-value]]:px-2 [&_[data-value]]:pt-2">
               {searchResults.map((item) => (
-                <Command.Item key={item.id} onSelect={() => runAction(item.href)} className="flex flex-col items-start gap-1 rounded-lg px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-accent aria-selected:bg-accent">
+                <Command.Item key={item.id} onSelect={() => runAction(item)} className="flex flex-col items-start gap-1 rounded-lg px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-accent aria-selected:bg-accent">
                   <span className="font-semibold text-base">{item.label}</span>
                   <span className="text-xs text-muted-foreground">{item.subtitle}</span>
                 </Command.Item>
@@ -109,7 +117,7 @@ export function CommandMenu() {
             <>
               <Command.Group heading="Acciones rapidas" className="[&_[data-value]]:text-xs [&_[data-value]]:font-medium [&_[data-value]]:text-muted-foreground [&_[data-value]]:mb-1 [&_[data-value]]:px-2 [&_[data-value]]:pt-2">
                 {ACTIONS.map((item) => (
-                  <Command.Item key={item.label} onSelect={() => runAction(item.href)} className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-foreground cursor-pointer hover:bg-accent aria-selected:bg-accent">
+                  <Command.Item key={item.label} onSelect={() => runAction(item)} className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-foreground cursor-pointer hover:bg-accent aria-selected:bg-accent">
                     <item.icon className="h-5 w-5 text-muted-foreground" />
                     {item.label}
                   </Command.Item>
@@ -117,7 +125,7 @@ export function CommandMenu() {
               </Command.Group>
               <Command.Group heading="Navegacion" className="[&_[data-value]]:text-xs [&_[data-value]]:font-medium [&_[data-value]]:text-muted-foreground [&_[data-value]]:mb-1 [&_[data-value]]:px-2 [&_[data-value]]:pt-2">
                 {ROUTES.map((item) => (
-                  <Command.Item key={item.href} onSelect={() => runAction(item.href)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-accent aria-selected:bg-accent">
+                  <Command.Item key={item.href} onSelect={() => runAction(item)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-accent aria-selected:bg-accent">
                     {item.label}
                   </Command.Item>
                 ))}

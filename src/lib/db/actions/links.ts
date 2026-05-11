@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { repositories, links } from "@/lib/db/schema";
+import { repositories, links, linkCollections } from "@/lib/db/schema";
 import { fetchGitHubRepo, fetchOpenGraph, fetchGitHubReadme, parseGitHubUrl } from "@/lib/links/service";
 
 import { requireOsUser } from "@/lib/auth/session";
@@ -89,4 +89,29 @@ export async function getRepositoryById(id: string) {
 
 export async function getLinkById(id: string) {
   return db.select().from(links).where(eq(links.id, id)).limit(1).then(rows => rows[0] || null);
+}
+
+export async function updateLinkReadingStatusAction(linkId: string, status: "triage" | "to_read" | "reading" | "done") {
+  await requireOsUser();
+  if (!["triage", "to_read", "reading", "done"].includes(status)) throw new Error("Estado invalido");
+  await db.update(links).set({ readingStatus: status }).where(eq(links.id, linkId));
+  revalidatePath("/os/links");
+}
+
+export async function updateRepoReadingStatusAction(repoId: string, status: string) {
+  await requireOsUser();
+  await db.update(repositories).set({ implementationStatus: status }).where(eq(repositories.id, repoId));
+  revalidatePath("/os/links");
+}
+
+export async function createCollectionAction(name: string, description?: string) {
+  await requireOsUser();
+  const [collection] = await db.insert(linkCollections).values({ name, description: description || null }).returning();
+  revalidatePath("/os/links");
+  return collection;
+}
+
+export async function quickSaveAction(url: string, savedReason?: string) {
+  await requireOsUser();
+  return saveExternalReferenceAction(url, savedReason);
 }

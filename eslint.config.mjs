@@ -35,6 +35,10 @@ const eslintConfig = [
       "src/components/slide-overs/**/*.tsx",
       "src/app/api/**/*.ts",
       "src/app/api/**/*.tsx",
+      "src/app/portal/**/*.ts",
+      "src/app/portal/**/*.tsx",
+      "src/lib/**/*.ts",
+      "src/scripts/**/*.ts",
     ],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",

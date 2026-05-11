@@ -84,6 +84,19 @@
   --color-input: hsl(0 0% 12%);
   --color-ring: hsl(148 100% 50%);
 
+  /* V3 Tokens */
+  --os-priority-urgent: #ef4444;
+  --os-priority-high: #f97316;
+  --os-priority-medium: #facc15;
+  --os-priority-low: #94a3b8;
+  
+  --os-state-backlog: #64748b;
+  --os-state-todo: #94a3b8;
+  --os-state-in-progress: #3b82f6;
+  --os-state-in-review: #a855f7;
+  --os-state-done: #22c55e;
+  --os-state-cancelled: #475569;
+
   color-scheme: dark;
   font-feature-settings: 'rlig' 1, 'calt' 1;
   text-rendering: optimizeLegibility;

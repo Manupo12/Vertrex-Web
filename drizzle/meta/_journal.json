@@ -15,6 +15,13 @@
       "when": 1778129367125,
       "tag": "0001_great_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778491907530,
+      "tag": "0002_bright_catseye",
+      "breakpoints": true
     }
   ]
 }

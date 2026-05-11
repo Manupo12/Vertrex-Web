@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, FolderKanban, FileText, Scale, BookOpen, Shield, DollarSign, Calendar, Link2, Megaphone, Users2, Wand2, Settings, Command, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, FileText, Scale, BookOpen, Shield, DollarSign, Calendar, Link2, Megaphone, Users2, Wand2, Settings, Command, LogOut, Inbox, CheckSquare, Map } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const NAV_GROUPS = [
@@ -14,6 +14,14 @@ const NAV_GROUPS = [
       { href: "/os/projects", label: "Proyectos", icon: FolderKanban },
       { href: "/os/documents", label: "Documentos", icon: FileText },
       { href: "/os/legal", label: "Legal", icon: Scale },
+    ],
+  },
+  {
+    label: "Ejecucion",
+    items: [
+      { href: "/os/projects/inbox", label: "Inbox", icon: Inbox },
+      { href: "/os/projects/mine", label: "Mis tareas", icon: CheckSquare },
+      { href: "/os/projects/roadmap", label: "Roadmap", icon: Map },
     ],
   },
   {

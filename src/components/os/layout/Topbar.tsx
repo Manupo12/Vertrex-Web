@@ -26,6 +26,8 @@ const BREADCRUMB_MAP: Record<string, string> = {
   settings: "Configuracion",
 };
 
+import { NotificationBell } from "@/components/os/Notifications/NotificationBell";
+
 export function Topbar({ user }: TopbarProps) {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
@@ -49,6 +51,7 @@ export function Topbar({ user }: TopbarProps) {
         ))}
       </nav>
       <div className="flex items-center gap-3">
+        <NotificationBell />
         <button 
           onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }))}
           className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent transition-colors"

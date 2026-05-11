@@ -17,16 +17,17 @@ import Image from "next/image";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type Repo = { id: string; url: string; repoName: string; owner: string; description: string | null; language: string | null; languageColor: string | null; stars: number; forks: number; topics: string[]; pushedAt: Date | null; savedReason: string; implementationStatus: string; priority: number };
-type LinkItem = { id: string; url: string; title: string | null; description: string | null; imageUrl: string | null; type: string };
+type Repo = { id: string; url: string; repoName: string; owner: string; description: string | null; language: string | null; languageColor: string | null; stars: number; forks: number; topics: string[]; pushedAt: Date | null; savedReason: string; implementationStatus: string; priority: number; collectionId?: string | null };
+type LinkItem = { id: string; url: string; title: string | null; description: string | null; imageUrl: string | null; type: string; collectionId?: string | null; readingStatus?: string };
 
-export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }) {
+export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; links: LinkItem[]; collections?: any[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [languageFilter, setLanguageFilter] = useState("");
   const [topicFilter, setTopicFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
+  const [collectionFilter, setCollectionFilter] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [savedReason, setSavedReason] = useState("");
@@ -38,11 +39,16 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
     if (topicFilter && topicFilter !== "all" && !r.topics.includes(topicFilter)) return false;
     if (statusFilter && statusFilter !== "all" && r.implementationStatus !== statusFilter) return false;
     if (priorityFilter && priorityFilter !== "all" && r.priority < parseInt(priorityFilter)) return false;
+    if (collectionFilter && collectionFilter !== "all" && r.collectionId !== collectionFilter) return false;
     if (query && !r.repoName.toLowerCase().includes(query.toLowerCase()) && !r.description?.toLowerCase().includes(query.toLowerCase()) && !r.savedReason.toLowerCase().includes(query.toLowerCase())) return false;
     return true;
   });
 
-  const filteredLinks = links.filter(l => !query || l.title?.toLowerCase().includes(query.toLowerCase()) || l.description?.toLowerCase().includes(query.toLowerCase()));
+  const filteredLinks = links.filter(l => {
+    if (collectionFilter && collectionFilter !== "all" && l.collectionId !== collectionFilter) return false;
+    if (query && !l.title?.toLowerCase().includes(query.toLowerCase()) && !l.description?.toLowerCase().includes(query.toLowerCase())) return false;
+    return true;
+  });
 
   const handleUrlChange = (u: string) => {
     setUrl(u);
@@ -104,6 +110,18 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
       <div className="flex items-center gap-2 mb-4"><Button variant="outline" size="sm" onClick={() => setAddOpen(true)}>+ Guardar link</Button></div>
       <Toolbar searchPlaceholder="Buscar en repos y links..." onSearch={setQuery} resultCount={filteredRepos.length + filteredLinks.length} filters={
         <div className="flex flex-wrap gap-2">
+          {collections && collections.length > 0 && (
+            <Select value={collectionFilter} onValueChange={setCollectionFilter}>
+              <SelectTrigger className="w-[140px] bg-background">
+                <SelectValue placeholder="Colección" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                {collections.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+
           <Select value={languageFilter} onValueChange={setLanguageFilter}>
             <SelectTrigger className="w-[140px] bg-background">
               <SelectValue placeholder="Lenguaje" />
@@ -169,18 +187,31 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
       )}
 
       {filteredLinks.length > 0 && (
-        <div><h2 className="text-sm font-medium mb-3">Links ({filteredLinks.length})</h2>
+        <div className="mb-6"><h2 className="text-sm font-medium mb-3">Links ({filteredLinks.length})</h2>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {filteredLinks.map(l => (
-              <div key={l.id} onClick={() => router.push(`/os/links/${l.id}?type=link`)} className="cursor-pointer rounded-xl border border-border bg-card p-3 hover:bg-accent/30 transition-colors">
+              <div key={l.id} onClick={() => router.push(`/os/links/${l.id}?type=link`)} className="flex flex-col cursor-pointer rounded-xl border border-border bg-card p-3 hover:bg-accent/30 transition-colors h-full">
                 {l.imageUrl && (
-                  <div className="relative mb-2 h-32 w-full">
+                  <div className="relative mb-2 h-32 w-full shrink-0">
                     <Image src={l.imageUrl} alt="" fill className="rounded-lg object-cover" unoptimized />
                   </div>
                 )}
                 <p className="font-medium text-sm line-clamp-1">{l.title || l.url}</p>
-                {l.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{l.description}</p>}
-                <Badge variant="neutral" className="text-[10px] mt-2">{l.type}</Badge>
+                {l.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 mb-2">{l.description}</p>}
+                
+                <div className="mt-auto flex items-center justify-between pt-2">
+                  <Badge variant="neutral" className="text-[10px]">{l.type}</Badge>
+                  {l.readingStatus && (
+                    <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
+                      l.readingStatus === 'done' ? 'bg-green-500/10 text-green-500' :
+                      l.readingStatus === 'reading' ? 'bg-blue-500/10 text-blue-500' :
+                      l.readingStatus === 'to_read' ? 'bg-orange-500/10 text-orange-500' :
+                      'bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
+                    }`}>
+                      {l.readingStatus.replace('_', ' ')}
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
           </div>

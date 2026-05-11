@@ -12,12 +12,14 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown } from "lucide-react";
+import { BulkActionBar, BulkActionBarProps } from "./BulkActionBar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onRowClick?: (row: TData) => void;
   pageSize?: number;
+  bulkActions?: BulkActionBarProps["actions"];
 }
 
 export function DataTable<TData, TValue>({
@@ -25,18 +27,50 @@ export function DataTable<TData, TValue>({
   data,
   onRowClick,
   pageSize = 10,
+  bulkActions
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+
+  // Automatically prepend a selection column if bulk actions are provided
+  const tableColumns = bulkActions ? [
+    {
+      id: "select",
+      header: ({ table }: any) => (
+        <div className="px-1" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={table.getToggleAllPageRowsSelectedHandler()}
+            className="rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer w-4 h-4"
+          />
+        </div>
+      ),
+      cell: ({ row }: any) => (
+        <div className="px-1" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            className="rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer w-4 h-4"
+          />
+        </div>
+      ),
+    },
+    ...columns
+  ] : columns;
 
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns as any,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
+      rowSelection,
     },
     initialState: {
       pagination: {
@@ -45,19 +79,29 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const selectedRowsCount = Object.keys(rowSelection).length;
+
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-border bg-card overflow-hidden">
+      {bulkActions && selectedRowsCount > 0 && (
+        <BulkActionBar 
+          selectedCount={selectedRowsCount} 
+          onClearSelection={() => setRowSelection({})} 
+          actions={bulkActions} 
+        />
+      )}
+      
+      <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] overflow-hidden">
         <div className="w-full overflow-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-muted/50 text-muted-foreground border-b border-border">
+            <thead className="bg-[var(--color-muted)]/50 text-[var(--color-muted-foreground)] border-b border-[var(--color-border)]">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
                       <th
                         key={header.id}
-                        className="px-4 py-3 font-medium cursor-pointer hover:bg-accent/50 transition-colors"
+                        className="px-4 py-3 font-medium cursor-pointer hover:bg-[var(--color-muted)]/50 transition-colors"
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         <div className="flex items-center gap-1.5">
@@ -66,7 +110,7 @@ export function DataTable<TData, TValue>({
                             header.getContext()
                           )}
                           {header.column.getCanSort() && (
-                            <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                            <ArrowUpDown className="h-3 w-3 text-[var(--color-muted-foreground)]" />
                           )}
                         </div>
                       </th>
@@ -81,9 +125,9 @@ export function DataTable<TData, TValue>({
                   <tr
                     key={row.id}
                     onClick={() => onRowClick && onRowClick(row.original)}
-                    className={`border-b border-border/50 transition-colors hover:bg-accent/50 ${
+                    className={`border-b border-[var(--color-border)]/50 transition-colors hover:bg-[var(--color-muted)]/50 ${
                       onRowClick ? "cursor-pointer" : ""
-                    }`}
+                    } ${row.getIsSelected() ? 'bg-[var(--color-primary)]/5' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-4 py-3 align-middle">
@@ -94,7 +138,7 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                  <td colSpan={tableColumns.length} className="h-24 text-center text-[var(--color-muted-foreground)]">
                     Sin resultados.
                   </td>
                 </tr>
@@ -105,7 +149,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="flex items-center justify-between px-2">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-[var(--color-muted-foreground)]">
           Mostrando {table.getRowModel().rows.length} de {table.getFilteredRowModel().rows.length} filas.
         </div>
         <div className="flex items-center gap-2">
@@ -114,6 +158,7 @@ export function DataTable<TData, TValue>({
             size="icon"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
+            className="h-8 w-8"
           >
             <ChevronsLeft className="h-4 w-4" />
           </Button>
@@ -122,17 +167,19 @@ export function DataTable<TData, TValue>({
             size="icon"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="h-8 w-8"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="text-sm font-medium px-2">
-            P&aacute;gina {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
+          <span className="text-sm font-medium px-2 text-[var(--color-muted-foreground)]">
+            Pág {table.getState().pagination.pageIndex + 1} de {table.getPageCount() || 1}
           </span>
           <Button
             variant="outline"
             size="icon"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="h-8 w-8"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -141,6 +188,7 @@ export function DataTable<TData, TValue>({
             size="icon"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
+            className="h-8 w-8"
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>

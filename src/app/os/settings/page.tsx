@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { resources } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ResourcesList } from "@/app/os/resources/ResourcesList";
+import { Button } from "@/components/ui/button";
+import { CopyIcon } from "lucide-react";
 
 export default async function SettingsPage() {
   await requireAdminUser();
@@ -14,17 +16,77 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <PageHeader title="Configuracion" description="Ajustes del sistema" breadcrumbs={[{ label: "Configuracion" }]} />
-      <Tabs defaultValue="cuenta" className="max-w-4xl">
-        <TabsList>
-          <TabsTrigger value="cuenta">Cuenta</TabsTrigger>
-          <TabsTrigger value="variables">Variables internas</TabsTrigger>
-          <TabsTrigger value="mcp">MCP</TabsTrigger>
-          <TabsTrigger value="sistema">Sistema</TabsTrigger>
+      <PageHeader title="Configuración" description="Ajustes del sistema y perfil" breadcrumbs={[{ label: "Configuración" }]} />
+      
+      <Tabs defaultValue="cuenta" className="mt-6">
+        <TabsList className="mb-6 bg-transparent border-b border-[var(--color-border)] rounded-none p-0 h-auto justify-start w-full overflow-x-auto flex-nowrap hide-scrollbar">
+          <TabsTrigger value="cuenta" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">Cuenta</TabsTrigger>
+          <TabsTrigger value="notificaciones" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">Notificaciones</TabsTrigger>
+          <TabsTrigger value="integraciones" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">Integraciones</TabsTrigger>
+          <TabsTrigger value="variables" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">Variables internas</TabsTrigger>
+          <TabsTrigger value="mcp" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">MCP API</TabsTrigger>
+          <TabsTrigger value="apariencia" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">Apariencia</TabsTrigger>
+          <TabsTrigger value="sistema" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--color-primary)] data-[state=active]:bg-transparent px-4 py-2">Sistema</TabsTrigger>
         </TabsList>
-        <TabsContent value="cuenta" className="mt-4"><SettingsAccount /></TabsContent>
-        <TabsContent value="variables" className="mt-4">
-          <Card>
+        
+        <TabsContent value="cuenta"><SettingsAccount /></TabsContent>
+        
+        <TabsContent value="notificaciones">
+          <Card className="max-w-2xl bg-[var(--color-card)]">
+            <CardHeader><CardTitle>Preferencias de notificaciones</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <label className="flex items-start gap-3 p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-muted)]/50 hover:bg-[var(--color-muted)] cursor-pointer">
+                <input type="checkbox" defaultChecked className="mt-1 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+                <div>
+                  <p className="text-sm font-medium">Asignaciones de tareas</p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Cuando alguien te asigne una nueva tarea.</p>
+                </div>
+              </label>
+              <label className="flex items-start gap-3 p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-muted)]/50 hover:bg-[var(--color-muted)] cursor-pointer">
+                <input type="checkbox" defaultChecked className="mt-1 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+                <div>
+                  <p className="text-sm font-medium">Menciones y comentarios</p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Cuando te mencionen con @ en un comentario o descripción.</p>
+                </div>
+              </label>
+              <label className="flex items-start gap-3 p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-muted)]/50 hover:bg-[var(--color-muted)] cursor-pointer">
+                <input type="checkbox" defaultChecked className="mt-1 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+                <div>
+                  <p className="text-sm font-medium">Resumen semanal (Email)</p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Recibe un digest cada viernes con las tareas completadas y metas.</p>
+                </div>
+              </label>
+              <div className="pt-4 border-t border-[var(--color-border)]">
+                <Button>Guardar preferencias</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="integraciones">
+          <Card className="max-w-2xl mb-4 bg-[var(--color-card)]">
+            <CardHeader><CardTitle>Google Drive</CardTitle><CardDescription>Almacenamiento de archivos grandes</CardDescription></CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-center p-3 bg-[var(--color-muted)]/20 rounded-lg border border-[var(--color-border)] mb-4">
+                <div className="text-sm">Estado de la conexión</div>
+                <div className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded font-medium">Conectado (OAuth2)</div>
+              </div>
+              <Button variant="outline" size="sm">Renovar token</Button>
+            </CardContent>
+          </Card>
+          <Card className="max-w-2xl mb-4 bg-[var(--color-card)]">
+            <CardHeader><CardTitle>GitHub</CardTitle><CardDescription>Extracción de metadata de repositorios</CardDescription></CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-center p-3 bg-[var(--color-muted)]/20 rounded-lg border border-[var(--color-border)] mb-4">
+                <div className="text-sm">Token configurado</div>
+                <div className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded font-medium">Activo</div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="variables">
+          <Card className="max-w-4xl bg-[var(--color-card)]">
             <CardHeader>
               <CardTitle>Variables de Entorno</CardTitle>
               <CardDescription>Variables internas guardadas como recursos cifrados.</CardDescription>
@@ -34,22 +96,66 @@ export default async function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="mcp" className="mt-4">
-          <Card><CardHeader><CardTitle>Endpoint MCP</CardTitle><CardDescription>Para agentes IA externos (Sofia, OpenClaw).</CardDescription></CardHeader><CardContent>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Endpoint</span><code className="text-xs bg-accent px-2 py-0.5 rounded">GET /api/mcp/graph</code></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Auth</span><code className="text-xs bg-accent px-2 py-0.5 rounded">Bearer MCP_SECRET</code></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Response</span><span>JSON: clients, projects, entity_links</span></div>
-            </div>
-          </CardContent></Card>
+
+        <TabsContent value="mcp">
+          <Card className="max-w-2xl bg-[var(--color-card)]">
+            <CardHeader><CardTitle>Model Context Protocol (MCP)</CardTitle><CardDescription>Endpoints V3 para agentes de IA (ej. OpenClaw)</CardDescription></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-lg bg-[var(--color-muted)]/50 p-4 border border-[var(--color-border)]">
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/mcp/graph <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Snapshot completo de entidades y conexiones.</p>
+                </div>
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/mcp/tasks <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Tareas asignadas, estado, prioridad y proyecto.</p>
+                </div>
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/mcp/activity?since=ISO <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Feed de actividad delta para contexto reciente.</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between text-orange-500">POST /api/mcp/intent <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Endpoint reservado para intenciones de agentes (Stub V3.0).</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
-        <TabsContent value="sistema" className="mt-4">
-          <Card><CardHeader><CardTitle>Informacion</CardTitle></CardHeader><CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Framework</span><span>Next.js 15</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Base de datos</span><span>Neon PostgreSQL</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">ORM</span><span>Drizzle</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Entorno</span><span>{process.env.NODE_ENV || "development"}</span></div>
-          </CardContent></Card>
+
+        <TabsContent value="apariencia">
+          <Card className="max-w-2xl bg-[var(--color-card)]">
+            <CardHeader><CardTitle>Apariencia y UI</CardTitle></CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h4 className="text-sm font-medium mb-3">Densidad de listas (DataTable)</h4>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="density" defaultChecked className="text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+                    <span className="text-sm">Cómoda (44px)</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="density" className="text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+                    <span className="text-sm">Compacta (32px)</span>
+                  </label>
+                </div>
+              </div>
+              <div className="pt-4 border-t border-[var(--color-border)]">
+                <Button>Aplicar cambios</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sistema">
+          <Card className="max-w-2xl bg-[var(--color-card)]">
+            <CardHeader><CardTitle>Salud del sistema</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Modo</span><span className="font-medium">{process.env.NODE_ENV || "development"}</span></div>
+              <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Base de datos</span><span className="font-medium">Neon PostgreSQL</span></div>
+              <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Versión OS</span><span className="font-medium">3.0.0</span></div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

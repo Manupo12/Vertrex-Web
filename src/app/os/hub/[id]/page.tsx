@@ -11,6 +11,11 @@ import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { notFound } from "next/navigation";
 import { NoteEditor } from "./NoteEditor";
+import { db } from "@/lib/db";
+import { entityLinks, knowledgeNotes } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
+import Link from "next/link";
+import { LinkIcon } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -76,6 +81,22 @@ export default async function HubDetailPage({ params }: Props) {
   const isIdea = note.type === "software_idea";
   const projectsList = isIdea ? await getProjectsForPicker() : [];
 
+  // Find backlinks where this note is the target
+  const rawBacklinks = await db.select()
+    .from(entityLinks)
+    .where(and(eq(entityLinks.targetId, id), eq(entityLinks.relationType, 'references')));
+  
+  let backlinks: any[] = [];
+  if (rawBacklinks.length > 0) {
+    const sourceIds = rawBacklinks.map(b => b.sourceId);
+    // Usually they are notes or ideas, so we search in knowledgeNotes
+    const sourceNotes = await db.select({ id: knowledgeNotes.id, title: knowledgeNotes.title }).from(knowledgeNotes);
+    backlinks = sourceIds.map(sourceId => {
+      const sourceNote = sourceNotes.find(n => n.id === sourceId);
+      return sourceNote ? { id: sourceId, title: sourceNote.title } : null;
+    }).filter(Boolean);
+  }
+
   return (
     <div>
       <PageHeader
@@ -111,8 +132,32 @@ export default async function HubDetailPage({ params }: Props) {
             </form>
           )}
         </div>
-        <div className="w-full shrink-0 lg:w-72">
+        <div className="w-full shrink-0 lg:w-72 space-y-6">
           <EntitySidebar entityId={note.id} />
+          
+          <Card>
+            <CardHeader className="py-4">
+              <CardTitle className="text-sm font-semibold text-[var(--color-muted-foreground)] uppercase tracking-wider">
+                Notas que enlazan aquí
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {backlinks.length > 0 ? (
+                <ul className="space-y-2">
+                  {backlinks.map(b => (
+                    <li key={b.id}>
+                      <Link href={`/os/hub/${b.id}`} className="flex items-center gap-2 text-sm hover:bg-[var(--color-muted)] p-2 rounded-md transition-colors text-[var(--color-primary)]">
+                        <LinkIcon className="h-3 w-3 shrink-0" />
+                        <span className="truncate">{b.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-[var(--color-muted-foreground)] p-2">Nadie enlaza a esta nota.</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

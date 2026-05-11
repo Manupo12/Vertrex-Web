@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Toolbar } from "@/components/os/layout/Toolbar";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Calendar as CalendarIcon, Video, LayoutGrid, List } from "lucide-react";
+import { Calendar as CalendarIcon, Video, LayoutGrid, List, RefreshCwIcon, GlobeIcon, ClockIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/format";
 import { Calendar, dateFnsLocalizer, View, Views } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -11,6 +11,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
 
 const locales = {
   "es": es,
@@ -24,7 +25,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-type AgendaEvent = { id: string; title: string; description: string | null; startsAt: Date; endsAt: Date; meetLink: string | null };
+type AgendaEvent = { id: string; title: string; description: string | null; startsAt: Date; endsAt: Date; meetLink: string | null; recurrenceRule?: string; timezone?: string; externalProvider?: string | null };
 
 export function AgendaView({ events }: { events: AgendaEvent[] }) {
   const [query, setQuery] = useState("");
@@ -104,10 +105,13 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
               date={date}
               onNavigate={(d) => setDate(d)}
               onSelectEvent={(e) => setSelectedEvent(e.resource)}
-              eventPropGetter={() => ({
-                className: "bg-primary text-primary-foreground border-none rounded-md px-2 py-0.5 text-xs font-medium",
-                style: { backgroundColor: "var(--primary)" }
-              })}
+              eventPropGetter={(event: any) => {
+                const isExternal = event.resource.externalProvider;
+                return {
+                  className: `border-none rounded-md px-2 py-0.5 text-xs font-medium ${isExternal ? 'bg-blue-500/20 text-blue-600' : 'bg-primary text-primary-foreground'}`,
+                  style: isExternal ? undefined : { backgroundColor: "var(--color-primary)" }
+                };
+              }}
             />
           </div>
         </Card>
@@ -120,7 +124,14 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
                 <div key={e.id} onClick={() => setSelectedEvent(e)} className="flex items-center justify-between rounded-xl border border-border bg-card p-4 hover:bg-accent/30 transition-colors cursor-pointer">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-sm font-bold">{new Date(e.startsAt).getDate()}</div>
-                    <div><p className="font-medium text-sm">{e.title}</p><p className="text-xs text-muted-foreground">{formatDateTime(e.startsAt)} - {formatDateTime(e.endsAt)}</p></div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-sm">{e.title}</p>
+                        {e.externalProvider === "google" && <span className="text-[10px] uppercase font-bold text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded">Google</span>}
+                        {e.recurrenceRule && e.recurrenceRule !== 'none' && <span title="Recurrente"><RefreshCwIcon className="h-3 w-3 text-muted-foreground" /></span>}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{formatDateTime(e.startsAt)} - {formatDateTime(e.endsAt)}</p>
+                    </div>
                   </div>
                   {e.meetLink && <Button variant="ghost" size="sm" onClick={(ev) => { ev.stopPropagation(); window.open(e.meetLink!, "_blank", "noreferrer"); }} className="h-8 w-8 p-0"><Video className="h-4 w-4" /></Button>}
                 </div>
@@ -134,7 +145,10 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
               <div className="space-y-1 opacity-60">
                 {past.map(e => (
                   <div key={e.id} onClick={() => setSelectedEvent(e)} className="flex justify-between rounded-lg border border-border/50 p-3 text-sm cursor-pointer hover:bg-accent/10 transition-colors">
-                    <span>{e.title}</span>
+                    <div className="flex items-center gap-2">
+                      <span>{e.title}</span>
+                      {e.externalProvider === "google" && <span className="text-[10px] uppercase font-bold text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded">Google</span>}
+                    </div>
                     <span className="text-xs text-muted-foreground">{formatDateTime(e.startsAt)}</span>
                   </div>
                 ))}
@@ -149,12 +163,25 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
           {selectedEvent && (
             <>
               <SheetHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  {selectedEvent.externalProvider === "google" && <Badge variant="neutral" className="bg-blue-500/10 text-blue-500 border-none">Google Calendar</Badge>}
+                  {selectedEvent.recurrenceRule && selectedEvent.recurrenceRule !== 'none' && (
+                    <Badge variant="neutral" className="flex items-center gap-1">
+                      <RefreshCwIcon className="h-3 w-3" /> {selectedEvent.recurrenceRule}
+                    </Badge>
+                  )}
+                </div>
                 <SheetTitle className="text-xl">{selectedEvent.title}</SheetTitle>
                 <SheetDescription>
                   {formatDateTime(selectedEvent.startsAt)} - {formatDateTime(selectedEvent.endsAt)}
                 </SheetDescription>
               </SheetHeader>
               <div className="mt-6 space-y-6">
+                <div className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
+                  <ClockIcon className="h-4 w-4" />
+                  <span>Zona horaria: {selectedEvent.timezone || "America/Bogota"}</span>
+                </div>
+                
                 {selectedEvent.description && (
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-muted-foreground">Descripci\u00f3n</p>

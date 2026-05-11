@@ -8,10 +8,12 @@ import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { Button } from "@/components/ui/button";
 import { formatFileSize, formatShortDate } from "@/lib/format";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, ShareIcon, HistoryIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DocPrivacyToggle } from "./DocPrivacyToggle";
+import { ShareDocumentSheet } from "@/components/os/Documents/ShareDocumentSheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -28,6 +30,16 @@ export default async function DocDetailPage({ params }: Props) {
       <PageHeader title={doc.name} breadcrumbs={[{ label: "Documentos", href: "/os/documents" }, { label: doc.name }]} primaryAction={
         <Link href={`/api/documents/${doc.id}`}><Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4" />Descargar</Button></Link>
       } secondaryActions={<EntityConnectSheet sourceId={doc.id} sourceType="document" />} />
+      
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
+        <Link href={`/os/documents/${id}/versions`} className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-card)] border border-[var(--color-border)] rounded-md text-sm font-medium hover:bg-[var(--color-muted)] transition-colors">
+          <HistoryIcon className="h-4 w-4" /> Versiones
+        </Link>
+        <button className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-card)] border border-[var(--color-border)] rounded-md text-sm font-medium hover:bg-[var(--color-muted)] transition-colors">
+          <ShareIcon className="h-4 w-4" /> Compartir con enlace
+        </button>
+      </div>
+
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex-1 space-y-6">
           <Card>

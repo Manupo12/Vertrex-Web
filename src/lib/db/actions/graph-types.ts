@@ -13,6 +13,16 @@ export const ENTITY_TYPES = [
   "legal",
   "social_account",
   "team_member",
+  "task",
+  "cycle",
+  "milestone",
+  "comment",
+  "approval",
+  "signature",
+  "notification",
+  "activity",
+  "saved_view",
+  "tag",
 ] as const;
 
 export type EntityType = (typeof ENTITY_TYPES)[number];

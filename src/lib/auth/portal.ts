@@ -3,14 +3,18 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import * as jose from "jose";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { clients } from "@/lib/db/schema";
+import { clients, clientPortalUsers } from "@/lib/db/schema";
 
 const PORTAL_COOKIE = "portal_session";
 const FALLBACK_SECRET = "default_super_secret_for_dev_only";
 
-export type PortalSession = { clientId: string; slug: string };
+export type PortalSession = { 
+  clientId: string; 
+  slug: string;
+  portalUserId?: string;
+};
 
 function getAuthSecret() {
   if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
@@ -41,7 +45,11 @@ export async function getPortalSession(): Promise<PortalSession | null> {
     const token = (await cookies()).get(PORTAL_COOKIE)?.value;
     if (!token) return null;
     const { payload } = await jose.jwtVerify(token, getAuthSecret(), { audience: "portal" });
-    return { clientId: String(payload.clientId), slug: String(payload.slug) };
+    return { 
+      clientId: String(payload.clientId), 
+      slug: String(payload.slug),
+      portalUserId: payload.portalUserId ? String(payload.portalUserId) : undefined
+    };
   } catch {
     return null;
   }
@@ -54,13 +62,34 @@ export async function requirePortalClient(expectedSlug?: string) {
   return session;
 }
 
-export async function verifyPortalAccess(slug: string, pin: string) {
+export async function verifyPortalAccess(slug: string, pin: string, email?: string) {
   const [client] = await db.select().from(clients).where(eq(clients.slug, slug)).limit(1);
   if (!client) throw new Error("Cliente no encontrado");
+
+  // Si hay email, intentamos loguear como client_portal_users
+  if (email && email.trim() !== "") {
+    const [portalUser] = await db.select()
+      .from(clientPortalUsers)
+      .where(and(eq(clientPortalUsers.clientId, client.id), eq(clientPortalUsers.email, email.trim())))
+      .limit(1);
+      
+    if (portalUser && portalUser.isActive) {
+      const valid = await bcrypt.compare(pin, portalUser.pinHash);
+      if (valid) {
+        await signPortalSession({ clientId: client.id, slug: client.slug, portalUserId: portalUser.id });
+        return { client, portalUser };
+      }
+    }
+    // Si falla el login de portal_user, no caemos al master pin si se especificó email explícitamente
+    throw new Error("Credenciales inválidas");
+  }
+
+  // Fallback a PIN maestro del cliente si no hay email (o por retrocompatibilidad)
   const valid = await bcrypt.compare(pin, client.pinHash);
   if (!valid) throw new Error("PIN invalido");
+  
   await signPortalSession({ clientId: client.id, slug: client.slug });
-  return client;
+  return { client, portalUser: null };
 }
 
 export async function logoutPortalClient() {
