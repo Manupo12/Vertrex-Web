@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { 
-  X, Building2, Mail, Phone, Link2, 
-  MoreHorizontal, CheckCircle2, AlertTriangle, 
-  DollarSign, Clock, Zap, TrendingUp, 
+  X, Building2, Mail, Link2, 
+  MoreHorizontal, CheckCircle2, 
+  DollarSign, Zap, TrendingUp, 
   CalendarDays, Percent, Target, FileText, 
-  MessageSquare, UserCircle, ArrowRight,
+  UserCircle, ArrowRight,
   ShieldCheck, FileSignature
 } from "lucide-react";
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { documents, legalDocuments, projects, entityLinks } from "@/lib/db/schema";
+import { documents, legalDocuments, entityLinks } from "@/lib/db/schema";
 import { eq, or, and, inArray } from "drizzle-orm";
 import { getOsSession } from "@/lib/auth/session";
 import { getPortalSession } from "@/lib/auth/portal";
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       doc = { 
         ...legalDoc, 
         driveFileId: null, 
-        contentBase64: (legalDoc as any).contentBase64 || null,
+        contentBase64: (legalDoc as unknown as { contentBase64?: string | null }).contentBase64 || null,
         mimeType: "application/pdf"
       } as DocumentType;
     }
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         doc = { 
           ...legalDoc, 
           driveFileId: null, 
-          contentBase64: (legalDoc as any).contentBase64 || null,
+          contentBase64: (legalDoc as unknown as { contentBase64?: string | null }).contentBase64 || null,
           mimeType: "application/pdf"
         } as DocumentType;
         isLegal = true;

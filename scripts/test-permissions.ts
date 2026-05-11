@@ -36,9 +36,9 @@ async function test() {
     console.log("Dueños:", JSON.stringify(res.data.owners));
     
   } catch (error) {
-    console.error("❌ Error de permisos:", error.message);
-    if (error.response) {
-      console.error("Detalles:", error.response.data);
+    console.error("❌ Error de permisos:", error instanceof Error ? error.message : String(error));
+    if (error instanceof Error && "response" in error) {
+      console.error("Detalles:", (error as unknown as { response: { data: unknown } }).response.data);
     }
   }
 }

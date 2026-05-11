@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wand2, Download, Upload } from "lucide-react";
+import { Download, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 export default function GeneratorPage() {

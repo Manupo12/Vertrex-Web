@@ -15,19 +15,16 @@ import {
   DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { cn } from "@/lib/utils";
 
 interface KanbanItem {
   id: string;
   status: string;
-  [key: string]: any;
 }
 
 interface KanbanColumn {
@@ -36,16 +33,16 @@ interface KanbanColumn {
   color?: string;
 }
 
-interface KanbanBoardProps {
-  items: KanbanItem[];
+interface KanbanBoardProps<T extends KanbanItem = KanbanItem> {
+  items: T[];
   columns: KanbanColumn[];
-  renderItem: (item: KanbanItem) => React.ReactNode;
+  renderItem: (item: T) => React.ReactNode;
   onItemMove: (itemId: string, newStatus: string) => Promise<void>;
 }
 
-export function KanbanBoard({ items, columns, renderItem, onItemMove }: KanbanBoardProps) {
+export function KanbanBoard<T extends KanbanItem = KanbanItem>({ items, columns, renderItem, onItemMove }: KanbanBoardProps<T>) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [localItems, setLocalItems] = useState<KanbanItem[]>(items);
+  const [localItems, setLocalItems] = useState<T[]>(items);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -79,13 +76,13 @@ export function KanbanBoard({ items, columns, renderItem, onItemMove }: KanbanBo
     if (overColumn) {
       if (activeItem.status !== overColumn.id) {
         setLocalItems((prev) =>
-          prev.map((i) => (i.id === activeId ? { ...i, status: overColumn.id } : i))
+          prev.map((i) => (i.id === activeId ? { ...i, status: overColumn.id } as T : i))
         );
       }
     } else if (overItem) {
       if (activeItem.status !== overItem.status) {
         setLocalItems((prev) =>
-          prev.map((i) => (i.id === activeId ? { ...i, status: overItem.status } : i))
+          prev.map((i) => (i.id === activeId ? { ...i, status: overItem.status } as T : i))
         );
       }
     }
@@ -163,14 +160,14 @@ export function KanbanBoard({ items, columns, renderItem, onItemMove }: KanbanBo
   );
 }
 
-function KanbanColumnComponent({
+function KanbanColumnComponent<T extends KanbanItem>({
   column,
   items,
   renderItem,
 }: {
   column: KanbanColumn;
-  items: KanbanItem[];
-  renderItem: (item: KanbanItem) => React.ReactNode;
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
 }) {
   return (
     <div className="rounded-xl border border-border bg-card/50 p-3 flex flex-col min-h-[200px]">

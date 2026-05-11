@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { updateLegalSettingsAction } from "@/lib/db/actions/legal";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { formatShortDate } from "@/lib/format";
 
 export function LegalSettings({ doc }: { doc: { id: string, type: string, signedAt: Date | null, isPublic: boolean, createdAt: Date } }) {
   const [isPublic, setIsPublic] = useState(doc.isPublic);

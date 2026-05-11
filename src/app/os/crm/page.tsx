@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { clients } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
-import Link from "next/link";
 import { CrmList } from "./CrmList";
 
 import { NewClientDialog } from "./NewClientDialog";

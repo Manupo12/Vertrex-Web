@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RepoActions } from "./RepoActions";
 import ReactMarkdown from "react-markdown";
 import { formatShortDate } from "@/lib/format";
 import { EntityGraph } from "@/components/os/Graph/EntityGraph";
@@ -30,7 +29,7 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
       try {
         const { readmeContent } = await loadRepositoryReadmeAction(repo.id);
         readme = readmeContent;
-      } catch (e) {
+      } catch {
         readme = "No se pudo cargar el README.";
       }
     }

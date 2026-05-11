@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { eq, and, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { projects, finances, entityLinks } from "@/lib/db/schema";
-import { linkEntities, getEntityConnections } from "@/lib/db/actions/graph";
 import { requireOsUser } from "@/lib/auth/session";
 
 export async function createProjectAction(formData: FormData) {

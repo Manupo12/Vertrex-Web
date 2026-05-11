@@ -6,7 +6,7 @@ import { updateTeamMemberRoleAction, deactivateTeamMemberAction } from "@/lib/db
 import { toast } from "sonner";
 
 export function ManageMember({ userId, currentRole, isActive }: { userId: string; currentRole: string; isActive: boolean }) {
-  const [deactivating, setDeactivating] = useState(false);
+  const [, setDeactivating] = useState(false);
 
   const handleRoleChange = async (role: "team" | "admin") => {
     try { await updateTeamMemberRoleAction(userId, role); toast.success("Rol actualizado"); } catch { toast.error("Error"); }

@@ -16,6 +16,8 @@
 .env.local
 .env.development.local
 .env.production.local
+.env.drive
+.env
 
 # 3. Archivos de Log y Debug
 # Ignora los registros de errores y depuración generados automáticamente.

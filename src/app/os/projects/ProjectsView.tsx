@@ -8,7 +8,6 @@ import { FolderKanban, AlertTriangle } from "lucide-react";
 import { updateProjectAction } from "@/lib/db/actions/projects";
 import { KanbanBoard } from "@/components/os/data/KanbanBoard";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -63,7 +62,7 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
     }
   };
 
-  const renderProjectCard = (p: any) => (
+  const renderProjectCard = (p: { id: string; name: string; progress: number; currentVersion: string | null; hasPaidAdvance: boolean; clientName: string | null; status: string }) => (
     <div 
       onClick={() => router.push(`/os/projects/${p.id}`)} 
       className="cursor-pointer rounded-lg border border-border bg-card p-3 hover:bg-accent/30 transition-colors shadow-sm"

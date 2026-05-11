@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { LayoutDashboard, Users, FolderKanban, FileText, Lightbulb, Link2, Calendar, BookOpen, Search } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, FileText, Lightbulb, Link2, Calendar, BookOpen } from "lucide-react";
 import { searchEntitiesAction, SearchResult } from "@/lib/db/actions/search";
 import { DialogTitle } from "@/components/ui/dialog";
 

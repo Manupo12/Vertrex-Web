@@ -24,8 +24,8 @@ export function NewClientDialog() {
             await createClientAction(fd); 
             setOpen(false); 
             toast.success("Cliente creado"); 
-          } catch (e: any) {
-            toast.error(e.message || "Error al crear cliente");
+          } catch (e: unknown) {
+            toast.error(e instanceof Error ? e.message : "Error al crear cliente");
           }
         }} className="space-y-4">
           <div>

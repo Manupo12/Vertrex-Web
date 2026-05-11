@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
-  Search, Zap, Plus, ArrowRight, FolderKanban, 
+  Zap, Plus, FolderKanban, 
   Users, FileText, Settings, Command, CornerDownLeft, 
-  Sparkles, Clock, Calculator
+  Sparkles, Calculator
 } from "lucide-react";
 
 export default function CommandCenter() {

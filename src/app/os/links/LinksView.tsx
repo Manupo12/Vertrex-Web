@@ -13,6 +13,7 @@ import { GitFork, Star, Link2, Pin } from "lucide-react";
 import { formatShortDate } from "@/lib/format";
 import { saveExternalReferenceAction } from "@/lib/db/actions/links";
 import { toast } from "sonner";
+import Image from "next/image";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -172,7 +173,11 @@ export function LinksView({ repos, links }: { repos: Repo[]; links: LinkItem[] }
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {filteredLinks.map(l => (
               <div key={l.id} onClick={() => router.push(`/os/links/${l.id}?type=link`)} className="cursor-pointer rounded-xl border border-border bg-card p-3 hover:bg-accent/30 transition-colors">
-                {l.imageUrl && <img src={l.imageUrl} alt="" className="mb-2 h-32 w-full rounded-lg object-cover" />}
+                {l.imageUrl && (
+                  <div className="relative mb-2 h-32 w-full">
+                    <Image src={l.imageUrl} alt="" fill className="rounded-lg object-cover" unoptimized />
+                  </div>
+                )}
                 <p className="font-medium text-sm line-clamp-1">{l.title || l.url}</p>
                 {l.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{l.description}</p>}
                 <Badge variant="neutral" className="text-[10px] mt-2">{l.type}</Badge>

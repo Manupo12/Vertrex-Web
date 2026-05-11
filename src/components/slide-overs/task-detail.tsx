@@ -1,7 +1,7 @@
 import React from "react";
 import { 
   X, Maximize2, MoreHorizontal, Link2, GitCommit, 
-  Clock, User, Calendar, Paperclip, MessageSquare, 
+  Clock, User, Calendar, Paperclip, 
   Zap, ArrowRight, Play, CheckCircle2, ChevronDown,
   Database, FileText
 } from "lucide-react";

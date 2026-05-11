@@ -4,14 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Toolbar } from "@/components/os/layout/Toolbar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataTable } from "@/components/os/data/DataTable";
 import { MobileCardList } from "@/components/os/data/MobileCardList";
-import { Shield, Eye } from "lucide-react";
+import { Shield } from "lucide-react";
 import { formatShortDate } from "@/lib/format";
-import { revealResourceAction } from "@/lib/db/actions/resources";
-import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 import { RevealButton } from "./[id]/RevealButton";
 

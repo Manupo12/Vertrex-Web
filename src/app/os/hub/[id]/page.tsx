@@ -11,7 +11,6 @@ import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { notFound } from "next/navigation";
 import { NoteEditor } from "./NoteEditor";
-import { Lightbulb, Rocket, Target } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;

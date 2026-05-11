@@ -283,7 +283,7 @@ function getPrimaryAccess(session: HeaderSession | null | undefined) {
   }
 
   if (session?.user.role === 'client') {
-    return { href: getLocalClientPortalPath(session.user.clientSlug ?? 'budaphone') }
+    return { href: getLocalClientPortalPath() }
   }
 
   return { href: getLocalTeamLoginPath() }

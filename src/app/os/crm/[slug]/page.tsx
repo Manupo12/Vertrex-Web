@@ -8,7 +8,7 @@ import { getClientBySlug, generateClientPinAction, createClientAction } from "@/
 import { getEntityConnections, getResolvedEntityConnections } from "@/lib/db/actions/graph";
 import { db } from "@/lib/db";
 import { projects, documents, tickets, finances } from "@/lib/db/schema";
-import { eq, or, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { formatShortDate, formatCurrencyCop } from "@/lib/format";
 import { notFound } from "next/navigation";
 import { PinManager } from "./PinManager";

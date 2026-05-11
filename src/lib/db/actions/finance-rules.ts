@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { finances, entityLinks } from "@/lib/db/schema";
-import { eq, or, ilike } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export async function projectHasPaidAdvance(projectId: string): Promise<boolean> {
   const connections = await db.select().from(entityLinks)

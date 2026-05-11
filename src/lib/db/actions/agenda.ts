@@ -2,10 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { agendaEvents } from "@/lib/db/schema";
-import { linkEntities, getEntityConnections } from "@/lib/db/actions/graph";
+import { linkEntities } from "@/lib/db/actions/graph";
 import { requireOsUser } from "@/lib/auth/session";
 
 export async function createAgendaEventAction(formData: FormData) {

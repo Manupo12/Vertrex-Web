@@ -1,10 +1,10 @@
 import { db } from "@/lib/db";
-import { clients, documents, entityLinks } from "@/lib/db/schema";
+import { documents, entityLinks } from "@/lib/db/schema";
 import { eq, or, inArray, and } from "drizzle-orm";
 import { requirePortalClient } from "@/lib/auth/portal";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Upload, Download } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import { formatFileSize } from "@/lib/format";
 import { SmartUploader } from "@/components/os/Uploader/SmartUploader";
 

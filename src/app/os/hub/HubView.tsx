@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toolbar } from "@/components/os/layout/Toolbar";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Lightbulb, BookOpen } from "lucide-react";
 import { formatShortDate } from "@/lib/format";
@@ -63,7 +62,7 @@ export function HubView({
 
   const handleItemMove = async (itemId: string, newStatus: string) => {
     try {
-      await updateIdeaStatus(itemId, newStatus as any);
+      await updateIdeaStatus(itemId, newStatus as "semilla" | "laboratorio" | "ejecutar" | "congelador");
       toast.success("Estado actualizado");
       router.refresh();
     } catch {
@@ -72,7 +71,7 @@ export function HubView({
     }
   };
 
-  const renderIdeaCard = (i: any) => (
+  const renderIdeaCard = (i: { id: string; title: string; contentJson: unknown; nextStep: string | null; status: string }) => (
     <div
       onClick={() => router.push(`/os/hub/${i.id}`)}
       className={cn(

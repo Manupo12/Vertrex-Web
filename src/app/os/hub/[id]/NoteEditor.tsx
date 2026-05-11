@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { saveKnowledgeNote } from "@/lib/db/actions/hub";
 import { toast } from "sonner";
 import { BlockEditor } from "@/components/os/Editor/BlockEditor";

@@ -24,8 +24,8 @@ export function StatsUpdateDialog({ account }: { account: { id: string, follower
             await updateSocialAccountStatsAction(account.id, fd); 
             setOpen(false); 
             toast.success("Estad\u00edsticas actualizadas"); 
-          } catch (e: any) {
-            toast.error(e.message || "Error al actualizar");
+          } catch (e: unknown) {
+            toast.error(e instanceof Error ? e.message : "Error al actualizar");
           }
         }} className="space-y-4">
           <div>

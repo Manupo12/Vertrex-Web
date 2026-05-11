@@ -1,4 +1,4 @@
-import { getProjectById, createProjectAction, updateProjectAction, addProjectReferenceLinkAction, removeProjectReferenceLinkAction } from "@/lib/db/actions/projects";
+import { getProjectById, createProjectAction } from "@/lib/db/actions/projects";
 import { projectHasPaidAdvance } from "@/lib/db/actions/finance-rules";
 import { getResolvedEntityConnections } from "@/lib/db/actions/graph";
 import { PageHeader } from "@/components/os/layout/PageHeader";

@@ -43,7 +43,7 @@ async function generateToken() {
       console.log(`GOOGLE_CLIENT_ID='${clientId}'`);
       console.log(`GOOGLE_CLIENT_SECRET='${clientSecret}'`);
     } catch (error) {
-      console.error("❌ Error al obtener el token:", error.message);
+      console.error("❌ Error al obtener el token:", error instanceof Error ? error.message : String(error));
     }
     rl.close();
   });

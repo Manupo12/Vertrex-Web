@@ -28,7 +28,7 @@ export function BlockEditor({ initialContent, onChange, editable = true }: Block
         setInitialData(initialContent);
       } else if (typeof initialContent === 'object' && initialContent !== null) {
         // Fallback for old ProseMirror objects or unknown objects
-        const legacyContent = initialContent as any;
+        const legacyContent = initialContent as Record<string, unknown>;
         
         // If it's a legacy ProseMirror doc
         if (legacyContent.type === 'doc' && Array.isArray(legacyContent.content)) {
@@ -92,9 +92,9 @@ export function BlockEditor({ initialContent, onChange, editable = true }: Block
   );
 }
 
-function BlockNoteInternal({ initialData, onChange, editable }: { initialData: any, onChange: (c: any) => void, editable: boolean }) {
+function BlockNoteInternal({ initialData, onChange, editable }: { initialData: unknown, onChange: (c: unknown) => void, editable: boolean }) {
   const editor = useCreateBlockNote({
-    initialContent: initialData,
+    initialContent: initialData as NonNullable<Parameters<typeof useCreateBlockNote>[0]>["initialContent"],
   });
 
   return (

@@ -1,10 +1,10 @@
 import React from "react";
 import { 
-  X, Building2, Mail, Phone, ExternalLink, 
-  Activity, FileText, DollarSign, Clock, 
+  X, Building2, Mail, Phone, 
+  Activity, 
   Zap, MapPin, MoreHorizontal, Link2, 
-  CheckCircle2, AlertTriangle, ArrowUpRight,
-  MessageSquare, CalendarDays
+  CheckCircle2, ArrowUpRight,
+  MessageSquare
 } from "lucide-react";
 
 export default function ClientDetailSlideOver() {
@@ -93,8 +93,8 @@ export default function ClientDetailSlideOver() {
                   <Activity className="w-3.5 h-3.5" /> Contactos Clave
                 </h4>
                 <div className="space-y-2">
-                  <ContactCard name="Elena Rostova" role="CTO" email="elena@globalbank.com" isPrimary />
-                  <ContactCard name="Marcus Vance" role="Lead Procurement" email="mvance@globalbank.com" />
+                  <ContactCard name="Elena Rostova" role="CTO" isPrimary />
+                  <ContactCard name="Marcus Vance" role="Lead Procurement" />
                 </div>
               </div>
 
@@ -161,7 +161,7 @@ function TabButton({ label, count, active }: { label: string; count?: number; ac
   );
 }
 
-function ContactCard({ name, role, email, isPrimary }: { name: string; role: string; email?: string; isPrimary?: boolean }) {
+function ContactCard({ name, role, isPrimary }: { name: string; role: string; isPrimary?: boolean }) {
   return (
     <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-primary/30 transition-colors group">
       <div className="flex items-center gap-3">

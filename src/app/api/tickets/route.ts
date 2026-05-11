@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     await linkEntities(session.clientId, "client", ticket.id, "ticket", "created_ticket");
 
     return NextResponse.json(ticket);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error al crear ticket" }, { status: 500 });
   }
 }

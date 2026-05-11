@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { searchEntitiesAction, SearchResult } from "@/lib/db/actions/search";
 
 export function RepoMentionPicker({ open, onClose, onSelect }: { open: boolean, onClose: () => void, onSelect: (repo: SearchResult) => void }) {

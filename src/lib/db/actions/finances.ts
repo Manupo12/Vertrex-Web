@@ -2,10 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq, and, or, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { finances, entityLinks } from "@/lib/db/schema";
-import { linkEntities } from "@/lib/db/actions/graph";
+import { finances } from "@/lib/db/schema";
 import { requireOsUser } from "@/lib/auth/session";
 
 export async function createFinanceAction(formData: FormData) {
