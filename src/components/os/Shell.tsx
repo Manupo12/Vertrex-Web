@@ -4,7 +4,7 @@ import { ToasterVertrex } from "@/components/ui/toaster";
 import { CommandMenu } from "@/components/os/CommandMenu";
 import { QuickIdeaModal } from "@/components/os/Hub/QuickIdeaModal";
 import { QuickTaskProvider } from "@/components/os/Tasks/QuickTaskProvider";
-import { GlobalHotkeys } from "@/components/os/Shortcuts/GlobalHotkeys";
+import { GlobalHotkeysWrapper } from "@/components/os/Shortcuts/GlobalHotkeysWrapper";
 import { getOsSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { projects, users } from "@/lib/db/schema";
@@ -30,7 +30,7 @@ export async function Shell({ children }: ShellProps) {
       <CommandMenu />
       <QuickIdeaModal />
       <QuickTaskProvider projects={allProjects} users={allUsers} currentUserId={session?.userId} />
-      <GlobalHotkeys onQuickTask={() => window.dispatchEvent(new CustomEvent('open-quick-task'))} />
+      <GlobalHotkeysWrapper />
       <ToasterVertrex />
     </div>
   );
