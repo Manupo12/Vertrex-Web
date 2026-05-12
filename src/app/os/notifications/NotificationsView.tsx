@@ -7,17 +7,28 @@ import { formatRelativeTime } from "@/lib/format";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { markNotificationReadAction, markAllNotificationsReadAction } from "@/lib/db/actions/notifications";
 
 export function NotificationsView({ initialNotifications }: { initialNotifications: any[] }) {
   const [items, setItems] = useState(initialNotifications);
 
-  const handleMarkAllRead = () => {
-    setItems(items.map(n => ({ ...n, readAt: new Date() })));
-    toast.success("Todas marcadas como leídas");
+  const handleMarkAllRead = async () => {
+    try {
+      await markAllNotificationsReadAction();
+      setItems(items.map(n => ({ ...n, readAt: new Date().toISOString() })));
+      toast.success("Todas marcadas como leídas");
+    } catch {
+      toast.error("Error al marcar notificaciones");
+    }
   };
 
-  const handleMarkRead = (id: string) => {
-    setItems(items.map(n => n.id === id ? { ...n, readAt: new Date() } : n));
+  const handleMarkRead = async (id: string) => {
+    try {
+      await markNotificationReadAction(id);
+      setItems(items.map(n => n.id === id ? { ...n, readAt: new Date().toISOString() } : n));
+    } catch {
+      // silent
+    }
   };
 
   const getIcon = (type: string) => {

@@ -8,7 +8,9 @@ const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 60000;
 
 export async function loginAction(formData: FormData) {
-  const ip = "server-action";
+  const { headers } = await import("next/headers");
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") ?? headersList.get("x-real-ip") ?? "unknown";
   const now = Date.now();
   const attempt = loginAttempts.get(ip) || { count: 0, timestamp: now };
   if (now - attempt.timestamp > WINDOW_MS) {

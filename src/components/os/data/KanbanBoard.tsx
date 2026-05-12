@@ -21,6 +21,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { GripVertical } from "lucide-react";
 
 interface KanbanItem {
   id: string;
@@ -47,7 +48,7 @@ export function KanbanBoard<T extends KanbanItem = KanbanItem>({ items, columns,
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -219,7 +220,10 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} className="relative group">
+      <div {...attributes} {...listeners} className="absolute top-1 left-1 z-10 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[var(--color-muted)]">
+        <GripVertical className="h-4 w-4 text-[var(--color-muted-foreground)]" />
+      </div>
       {children}
     </div>
   );

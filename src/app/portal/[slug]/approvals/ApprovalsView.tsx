@@ -6,19 +6,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { CheckCircle2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { respondApprovalFromPortalAction } from "@/lib/db/actions/approvals";
 
 export function ApprovalsView({ initialApprovals }: { initialApprovals: any[] }) {
   const [items, setItems] = useState(initialApprovals);
 
   const handleRespond = async (id: string, status: string, note?: string) => {
     try {
-      // In a real implementation this would call a server action
+      await respondApprovalFromPortalAction(id, status as "approved" | "changes_requested", note);
       setItems(items.map(a => a.id === id ? { 
         ...a, 
         status, 
-        responseNote: note, 
-        respondedAt: new Date(),
-        respondedBy: "current_portal_user" // mocked
+        responseNote: note || null, 
+        respondedAt: new Date().toISOString(),
+        respondedBy: "current_portal_user"
       } : a));
       toast.success("Respuesta enviada correctamente");
     } catch (e) {

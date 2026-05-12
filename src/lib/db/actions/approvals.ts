@@ -5,6 +5,7 @@ import { approvals, activity } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { requireOsUser } from "@/lib/auth/session";
 import { logActivity } from "@/lib/activity/log";
+import { getPortalSession } from "@/lib/auth/portal";
 import { revalidatePath } from "next/cache";
 
 export async function requestApprovalAction(data: {
@@ -39,7 +40,6 @@ export async function requestApprovalAction(data: {
 }
 
 export async function respondApprovalAction(id: string, status: "approved" | "changes_requested", note?: string) {
-  // Nota: Esto sería llamado desde el portal, requiere autenticación portal
   const [approval] = await db.update(approvals).set({
     status,
     responseNote: note,
@@ -48,4 +48,29 @@ export async function respondApprovalAction(id: string, status: "approved" | "ch
 
   revalidatePath(`/portal/approvals`);
   return approval;
+}
+
+export async function respondApprovalFromPortalAction(approvalId: string, status: "approved" | "changes_requested", note?: string) {
+  const session = await getPortalSession();
+  if (!session) throw new Error("No autorizado");
+
+  const [approval] = await db.select().from(approvals).where(eq(approvals.id, approvalId)).limit(1);
+  if (!approval) throw new Error("Aprobación no encontrada");
+  if (approval.clientId !== session.clientId) throw new Error("No autorizado para esta aprobación");
+
+  await db.update(approvals).set({
+    status,
+    responseNote: note || null,
+    respondedAt: new Date(),
+    respondedBy: session.portalUserId || session.clientId,
+  }).where(eq(approvals.id, approvalId));
+
+  await logActivity({
+    actorType: "client", actorId: session.portalUserId || session.clientId,
+    verb: status === "approved" ? "approved" : "rejected",
+    targetType: "approval", targetId: approvalId,
+    payload: { note },
+  });
+
+  revalidatePath(`/portal/${session.slug}/approvals`);
 }

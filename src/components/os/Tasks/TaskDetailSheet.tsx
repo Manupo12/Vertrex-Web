@@ -104,7 +104,28 @@ export function TaskDetailSheet({ task, open, onOpenChange, onEditFull, onDelete
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-6">
               <div className="text-sm text-[var(--color-foreground)]">
-                <p className="opacity-70 italic">Descripción de la tarea...</p>
+                {task.descriptionJson && typeof task.descriptionJson === "object" && task.descriptionJson.content ? (
+                  <div className="prose prose-sm max-w-none">
+                    {task.descriptionJson.content.map((node: any, i: number) => {
+                      if (node.type === "paragraph") {
+                        return <p key={i} className="mb-2">{node.content?.map((c: any) => c.text || "").join("") || ""}</p>;
+                      }
+                      if (node.type === "heading") {
+                        const level = node.attrs?.level || 3;
+                        const className = "font-semibold mb-1";
+                        const text = node.content?.map((c: any) => c.text || "").join("") || "";
+                        if (level === 1) return <h1 key={i} className={className}>{text}</h1>;
+                        if (level === 2) return <h2 key={i} className={className}>{text}</h2>;
+                        return <h3 key={i} className={className}>{text}</h3>;
+                      }
+                      return null;
+                    })}
+                  </div>
+                ) : task.descriptionJson && typeof task.descriptionJson === "object" ? (
+                  <p className="opacity-70">{JSON.stringify(task.descriptionJson).slice(0, 200)}</p>
+                ) : (
+                  <p className="opacity-70 italic">Sin descripción</p>
+                )}
               </div>
               {onEditFull && (
                 <button

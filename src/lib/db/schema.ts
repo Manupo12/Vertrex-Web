@@ -96,6 +96,7 @@ export const projects = pgTable("projects", {
   budgetCop: integer("budget_cop"),
   status: text("status").notNull().default("active"),
   progress: integer("progress").notNull().default(0),
+  progressMode: text("progress_mode").notNull().default("auto"),
   currentVersion: text("current_version").default("v1.0"),
   referenceLinks: jsonb("reference_links").notNull().default(sql`'[]'::jsonb`),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),

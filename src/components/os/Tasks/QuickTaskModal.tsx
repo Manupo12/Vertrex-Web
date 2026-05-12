@@ -54,6 +54,10 @@ export function QuickTaskModal({
 
     setIsSubmitting(true);
     try {
+      const descriptionJson = description
+        ? { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: description }] }] } as any
+        : undefined;
+
       const task = await createTaskAction({
         title,
         projectId,
@@ -65,6 +69,8 @@ export function QuickTaskModal({
         estimatePoints: estimatePoints || undefined,
         cycleId,
         milestoneId,
+        descriptionJson,
+        state: "todo",
       });
       toast.success(`Tarea creada · ${task.identifier}`);
       setTitle("");

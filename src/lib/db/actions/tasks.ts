@@ -21,6 +21,8 @@ export async function createTaskAction(input: {
   taskType?: string;
   dueDate?: Date | string;
   estimatePoints?: number;
+  descriptionJson?: any;
+  state?: string;
 }) {
   const user = await requireOsUser();
   let identifier = `INBOX-${Math.floor(Math.random() * 10000)}`;
@@ -28,6 +30,9 @@ export async function createTaskAction(input: {
   if (input.projectId) {
     identifier = await nextTaskIdentifier(input.projectId);
   }
+
+  const validStates = ["backlog", "todo", "in_progress", "in_review", "done", "cancelled"];
+  const taskState = input.state && validStates.includes(input.state) ? input.state : "todo";
 
   const [task] = await db.insert(tasks).values({
     title: input.title,
@@ -42,7 +47,8 @@ export async function createTaskAction(input: {
     dueDate: input.dueDate ? new Date(input.dueDate) : null,
     estimatePoints: input.estimatePoints || null,
     createdBy: user.userId,
-    state: "todo",
+    state: taskState,
+    descriptionJson: input.descriptionJson || {},
   }).returning();
 
   await logActivity({
@@ -99,6 +105,8 @@ export async function moveTaskToProjectAction(id: string, projectId: string, cyc
 }
 
 async function recalculateProjectProgress(projectId: string) {
+  const [project] = await db.select({ progressMode: projects.progressMode }).from(projects).where(eq(projects.id, projectId)).limit(1);
+  if (!project || project.progressMode === "manual") return;
   const projectTasks = await db.select({ state: tasks.state }).from(tasks).where(eq(tasks.projectId, projectId));
   if (projectTasks.length === 0) return;
   const doneTasks = projectTasks.filter(t => t.state === 'done' || t.state === 'cancelled').length;

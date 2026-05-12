@@ -3,16 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAdminUser } from "@/lib/auth/session";
 import { SettingsAccount } from "./SettingsAccount";
+import { SettingsNotifications } from "./SettingsNotifications";
+import { SettingsAppearance } from "./SettingsAppearance";
 import { db } from "@/lib/db";
 import { resources } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ResourcesList } from "@/app/os/resources/ResourcesList";
 import { Button } from "@/components/ui/button";
 import { CopyIcon } from "lucide-react";
+import { readFileSync } from "fs";
 
 export default async function SettingsPage() {
   await requireAdminUser();
   const internalVars = await db.select().from(resources).where(eq(resources.type, "env"));
+  const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
+  const osVersion = pkg.version || "3.0.0";
 
   return (
     <div>
@@ -32,35 +37,7 @@ export default async function SettingsPage() {
         <TabsContent value="cuenta"><SettingsAccount /></TabsContent>
         
         <TabsContent value="notificaciones">
-          <Card className="max-w-2xl bg-[var(--color-card)]">
-            <CardHeader><CardTitle>Preferencias de notificaciones</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <label className="flex items-start gap-3 p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-muted)]/50 hover:bg-[var(--color-muted)] cursor-pointer">
-                <input type="checkbox" defaultChecked className="mt-1 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
-                <div>
-                  <p className="text-sm font-medium">Asignaciones de tareas</p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Cuando alguien te asigne una nueva tarea.</p>
-                </div>
-              </label>
-              <label className="flex items-start gap-3 p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-muted)]/50 hover:bg-[var(--color-muted)] cursor-pointer">
-                <input type="checkbox" defaultChecked className="mt-1 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
-                <div>
-                  <p className="text-sm font-medium">Menciones y comentarios</p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Cuando te mencionen con @ en un comentario o descripción.</p>
-                </div>
-              </label>
-              <label className="flex items-start gap-3 p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-muted)]/50 hover:bg-[var(--color-muted)] cursor-pointer">
-                <input type="checkbox" defaultChecked className="mt-1 rounded text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
-                <div>
-                  <p className="text-sm font-medium">Resumen semanal (Email)</p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Recibe un digest cada viernes con las tareas completadas y metas.</p>
-                </div>
-              </label>
-              <div className="pt-4 border-t border-[var(--color-border)]">
-                <Button>Guardar preferencias</Button>
-              </div>
-            </CardContent>
-          </Card>
+          <SettingsNotifications />
         </TabsContent>
 
         <TabsContent value="integraciones">
@@ -124,27 +101,7 @@ export default async function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="apariencia">
-          <Card className="max-w-2xl bg-[var(--color-card)]">
-            <CardHeader><CardTitle>Apariencia y UI</CardTitle></CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h4 className="text-sm font-medium mb-3">Densidad de listas (DataTable)</h4>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="density" defaultChecked className="text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
-                    <span className="text-sm">Cómoda (44px)</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="density" className="text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
-                    <span className="text-sm">Compacta (32px)</span>
-                  </label>
-                </div>
-              </div>
-              <div className="pt-4 border-t border-[var(--color-border)]">
-                <Button>Aplicar cambios</Button>
-              </div>
-            </CardContent>
-          </Card>
+          <SettingsAppearance />
         </TabsContent>
 
         <TabsContent value="sistema">
@@ -153,7 +110,7 @@ export default async function SettingsPage() {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Modo</span><span className="font-medium">{process.env.NODE_ENV || "development"}</span></div>
               <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Base de datos</span><span className="font-medium">Neon PostgreSQL</span></div>
-              <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Versión OS</span><span className="font-medium">3.0.0</span></div>
+              <div className="flex justify-between text-sm p-3 bg-[var(--color-muted)]/20 rounded border border-[var(--color-border)]"><span className="text-[var(--color-muted-foreground)]">Versión OS</span><span className="font-medium">{osVersion}</span></div>
             </CardContent>
           </Card>
         </TabsContent>

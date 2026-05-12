@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { KanbanIcon } from "lucide-react";
 import { changeTaskStateAction } from "@/lib/db/actions/tasks";
 import { toast } from "sonner";
@@ -20,7 +19,7 @@ const COLUMNS = [
   { id: "done", label: "Listo" }
 ];
 
-export function BoardView({ initialTasks, users, projectId, projects }: { initialTasks: any[], users: any[], projectId: string, projects?: any[] }) {
+export function BoardView({ initialTasks, users, projectId, projects, cycles, milestones }: { initialTasks: any[], users: any[], projectId: string, projects?: any[], cycles?: any[], milestones?: any[] }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const router = useRouter();
@@ -28,13 +27,12 @@ export function BoardView({ initialTasks, users, projectId, projects }: { initia
   if (tasks.length === 0) {
     return (
       <div className="mt-8">
-        <EmptyState 
-          icon={KanbanIcon} 
-          title="Tablero vacío" 
-          description="Crea la primera tarea para activar el tablero." 
-          actionLabel="Ir a la lista de tareas"
-          onAction={() => router.push(`/os/projects/${projectId}/tasks`)}
-        />
+        <div className="text-center py-12">
+          <KanbanIcon className="h-12 w-12 mx-auto mb-4 text-[var(--color-muted-foreground)] opacity-30" />
+          <h3 className="text-lg font-medium mb-2">Tablero vacío</h3>
+          <p className="text-sm text-[var(--color-muted-foreground)] mb-6">Crea la primera tarea para activar el tablero.</p>
+          <TaskCreateButton projectId={projectId} users={users} projects={projects} cycles={cycles} milestones={milestones} label="+ Crear primera tarea" />
+        </div>
       </div>
     );
   }
@@ -55,7 +53,7 @@ export function BoardView({ initialTasks, users, projectId, projects }: { initia
     <div className="mt-6">
       <div className="flex items-center justify-between mb-4">
         <div />
-        <TaskCreateButton projectId={projectId} users={users} projects={projects} />
+        <TaskCreateButton projectId={projectId} users={users} projects={projects} cycles={cycles} milestones={milestones} />
       </div>
 
       <KanbanBoard

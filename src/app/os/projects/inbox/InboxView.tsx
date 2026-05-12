@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { TaskRow } from "@/components/os/Tasks/TaskRow";
-import { EmptyState } from "@/components/ui/empty-state";
 import { InboxIcon } from "lucide-react";
 import { changeTaskStateAction, setTaskPriorityAction, assignTaskAction } from "@/lib/db/actions/tasks";
 import { toast } from "sonner";
@@ -18,11 +17,12 @@ export function InboxView({ initialTasks, users, currentUserId }: { initialTasks
   if (tasks.length === 0) {
     return (
       <div className="mt-8">
-        <EmptyState 
-          icon={InboxIcon} 
-          title="Bandeja vacía" 
-          description="Sin tareas para triage. Presiona Ctrl+. para capturar." 
-        />
+        <div className="text-center py-12">
+          <InboxIcon className="h-12 w-12 mx-auto mb-4 text-[var(--color-muted-foreground)] opacity-30" />
+          <h3 className="text-lg font-medium mb-2">Bandeja vacía</h3>
+          <p className="text-sm text-[var(--color-muted-foreground)] mb-6">Sin tareas para triage.</p>
+          <TaskCreateButton users={users} currentUserId={currentUserId} label="+ Capturar tarea" />
+        </div>
       </div>
     );
   }
