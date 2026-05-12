@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Toolbar } from "@/components/os/layout/Toolbar";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -14,6 +14,8 @@ import { formatShortDate } from "@/lib/format";
 import { useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SavedViewBar } from "@/components/os/SavedViews/SavedViewBar";
+import { bulkDeleteClientsAction } from "@/lib/db/actions/crm";
+import { listSavedViewsAction, createSavedViewAction, updateSavedViewAction, deleteSavedViewAction } from "@/lib/db/actions/saved-views";
 
 type ClientRow = { id: string; slug: string; name: string; email: string | null; phone: string | null; status: string; createdAt: Date };
 
@@ -27,6 +29,11 @@ export function CrmList({ clients }: CrmListProps) {
   const [query, setQuery] = useState("");
   const statusFilter = searchParams.get("status") || "all";
   const [currentViewId, setCurrentViewId] = useState<string | null>(null);
+  const [savedViews, setSavedViews] = useState<any[]>([]);
+
+  useEffect(() => {
+    listSavedViewsAction("/os/crm").then(setSavedViews);
+  }, []);
 
   const setStatusFilter = (newStatus: string) => {
     const params = new URLSearchParams(searchParams);
@@ -34,6 +41,8 @@ export function CrmList({ clients }: CrmListProps) {
     else params.delete("status");
     router.push(`/os/crm?${params.toString()}`);
   };
+
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const filtered = clients.filter(c => {
     if (statusFilter !== "all" && c.status !== statusFilter) return false;
@@ -88,13 +97,14 @@ export function CrmList({ clients }: CrmListProps) {
   ];
 
   const bulkActions = [
-    { label: "Etiquetar", icon: TagsIcon, onClick: () => console.log("Etiquetar") },
-    { label: "Eliminar", icon: TrashIcon, variant: "danger" as const, onClick: () => console.log("Eliminar") }
-  ];
-
-  const mockViews = [
-    { id: "active", name: "Activos" },
-    { id: "paused", name: "Pausados" }
+    { label: "Etiquetar", icon: TagsIcon, onClick: () => toast.info("Etiquetar próximamente") },
+    { label: "Eliminar", icon: TrashIcon, variant: "danger" as const, onClick: () => {
+      const ids = filtered.filter((_, i) => rowSelection[String(i)]).map(c => c.id);
+      bulkDeleteClientsAction(ids).then(() => {
+        setRowSelection({});
+        toast.success(`${ids.length} cliente(s) eliminado(s)`);
+      });
+    }}
   ];
 
   if (clients.length === 0 && statusFilter === "all" && !query) {
@@ -113,15 +123,34 @@ export function CrmList({ clients }: CrmListProps) {
     <div>
       <SavedViewBar 
         route="/os/crm" 
-        views={mockViews} 
+        views={savedViews} 
         currentViewId={currentViewId} 
         onSelectView={(id) => {
           setCurrentViewId(id === 'default' ? null : id);
-          if (id === 'active') setStatusFilter('active');
-          else if (id === 'paused') setStatusFilter('paused');
-          else setStatusFilter('all');
+          const view = savedViews.find(v => v.id === id);
+          if (view?.queryJson?.status) {
+            setStatusFilter(view.queryJson.status as string);
+          } else {
+            setStatusFilter('all');
+          }
         }} 
-        onSaveView={() => toast.success("Vista guardada")}
+        onSaveView={async () => {
+          const name = prompt("Nombre de la vista:");
+          if (!name) return;
+          await createSavedViewAction(name, "/os/crm", { status: statusFilter !== "all" ? statusFilter : undefined } as Record<string, unknown>);
+          setSavedViews(await listSavedViewsAction("/os/crm"));
+          toast.success("Vista guardada");
+        }}
+        onUpdateView={async (viewId) => {
+          await updateSavedViewAction(viewId, { queryJson: { status: statusFilter !== "all" ? statusFilter : undefined } as Record<string, unknown> });
+          setSavedViews(await listSavedViewsAction("/os/crm"));
+          toast.success("Vista actualizada");
+        }}
+        onDeleteView={async (viewId) => {
+          await deleteSavedViewAction(viewId);
+          setSavedViews(await listSavedViewsAction("/os/crm"));
+          toast.success("Vista eliminada");
+        }}
       />
       
       <Toolbar
@@ -149,6 +178,8 @@ export function CrmList({ clients }: CrmListProps) {
           data={filtered} 
           onRowClick={(row) => router.push(`/os/crm/${row.slug}`)} 
           bulkActions={bulkActions}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
         />
       </div>
 

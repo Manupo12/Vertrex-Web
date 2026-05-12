@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TaskRow } from "@/components/os/Tasks/TaskRow";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CheckCircle2Icon } from "lucide-react";
@@ -10,18 +10,33 @@ import { TaskDetailSheet } from "@/components/os/Tasks/TaskDetailSheet";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
+import TaskFilters, { type TaskFilterValues } from "@/components/os/Tasks/TaskFilters";
+
+const DEFAULT_FILTERS: TaskFilterValues = {
+  state: "", priority: "", assigneeId: "", cycleId: "", milestoneId: "", tagId: "", taskType: "", search: "", groupBy: "",
+};
 
 export function MineView({ initialTasks, projects, users, currentUserId }: { initialTasks: any[], projects: any[], users: any[], currentUserId?: string }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
+  const [filters, setFilters] = useState<TaskFilterValues>(DEFAULT_FILTERS);
   const router = useRouter();
+
+  const filteredTasks = tasks.filter(t => {
+    if (filters.priority && String(t.priority) !== filters.priority) return false;
+    if (filters.state && t.state !== filters.state) return false;
+    if (filters.milestoneId && t.milestoneId !== filters.milestoneId) return false;
+    if (filters.taskType && t.taskType !== filters.taskType) return false;
+    if (filters.search && !t.title?.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    return true;
+  });
 
   const handleStateChange = async (id: string, state: string) => {
     try {
       await changeTaskStateAction(id, state);
       setTasks(tasks.map(t => t.id === id ? { ...t, state } : t));
       toast.success("Estado actualizado");
-    } catch (e) {
+    } catch {
       toast.error("Error al actualizar");
     }
   };
@@ -31,7 +46,7 @@ export function MineView({ initialTasks, projects, users, currentUserId }: { ini
       await setTaskPriorityAction(id, priority);
       setTasks(tasks.map(t => t.id === id ? { ...t, priority } : t));
       toast.success("Prioridad actualizada");
-    } catch (e) {
+    } catch {
       toast.error("Error al actualizar");
     }
   };
@@ -41,14 +56,14 @@ export function MineView({ initialTasks, projects, users, currentUserId }: { ini
       await assignTaskAction(id, assigneeId);
       setTasks(tasks.map(t => t.id === id ? { ...t, assigneeId } : t));
       toast.success("Asignado actualizado");
-    } catch (e) {
+    } catch {
       toast.error("Error al actualizar");
     }
   };
 
-  const todoTasks = tasks.filter(t => ["todo", "in_progress", "in_review"].includes(t.state));
-  const backlogTasks = tasks.filter(t => t.state === "backlog");
-  const completedTasks = tasks.filter(t => ["done", "cancelled"].includes(t.state));
+  const todoTasks = filteredTasks.filter(t => ["todo", "in_progress", "in_review"].includes(t.state));
+  const backlogTasks = filteredTasks.filter(t => t.state === "backlog");
+  const completedTasks = filteredTasks.filter(t => ["done", "cancelled"].includes(t.state));
 
   const renderTaskList = (list: any[]) => {
     if (list.length === 0) {
@@ -65,7 +80,6 @@ export function MineView({ initialTasks, projects, users, currentUserId }: { ini
       );
     }
     
-    // Group by project
     const grouped = list.reduce((acc: any, task: any) => {
       const p = task.projectId || 'inbox';
       if (!acc[p]) acc[p] = [];
@@ -102,7 +116,13 @@ export function MineView({ initialTasks, projects, users, currentUserId }: { ini
 
   return (
     <div className="mt-6">
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <TaskFilters
+          filters={filters}
+          onChange={setFilters}
+          onReset={() => setFilters(DEFAULT_FILTERS)}
+          users={users}
+        />
         <TaskCreateButton projects={projects} users={users} currentUserId={currentUserId} label="+ Nueva tarea" />
       </div>
       <Tabs defaultValue="todo" className="w-full">

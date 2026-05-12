@@ -20,6 +20,8 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: TData) => void;
   pageSize?: number;
   bulkActions?: BulkActionBarProps["actions"];
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export function DataTable<TData, TValue>({
@@ -27,10 +29,15 @@ export function DataTable<TData, TValue>({
   data,
   onRowClick,
   pageSize = 10,
-  bulkActions
+  bulkActions,
+  rowSelection: controlledRowSelection,
+  onRowSelectionChange: controlledOnRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
+  const [internalRowSelection, setInternalRowSelection] = useState({});
+  const useControlled = controlledRowSelection !== undefined && controlledOnRowSelectionChange !== undefined;
+  const rowSelection = useControlled ? controlledRowSelection! : internalRowSelection;
+  const onRowSelectionChange = useControlled ? controlledOnRowSelectionChange! : setInternalRowSelection;
 
   // Automatically prepend a selection column if bulk actions are provided
   const tableColumns = bulkActions ? [
@@ -67,7 +74,7 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange,
     state: {
       sorting,
       rowSelection,
@@ -86,7 +93,7 @@ export function DataTable<TData, TValue>({
       {bulkActions && selectedRowsCount > 0 && (
         <BulkActionBar 
           selectedCount={selectedRowsCount} 
-          onClearSelection={() => setRowSelection({})} 
+          onClearSelection={() => onRowSelectionChange({})} 
           actions={bulkActions} 
         />
       )}

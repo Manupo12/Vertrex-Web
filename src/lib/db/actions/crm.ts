@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { clients } from "@/lib/db/schema";
 import { hashPin, generateSixDigitPin } from "@/lib/security/password";
@@ -51,6 +51,12 @@ export async function updateClientAction(slug: string, formData: FormData) {
 export async function getClientBySlug(slug: string) {
   await requireOsUser();
   return db.select().from(clients).where(eq(clients.slug, slug)).limit(1).then(rows => rows[0] || null);
+}
+
+export async function bulkDeleteClientsAction(ids: string[]) {
+  await requireOsUser();
+  await db.delete(clients).where(inArray(clients.id, ids));
+  revalidatePath("/os/crm");
 }
 
 export async function getClientGraphSummary(slug: string) {

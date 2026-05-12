@@ -18,6 +18,10 @@ export function CreateCycleDialog({ projectId }: { projectId: string }) {
       toast.error("Nombre, inicio y fin son obligatorios");
       return;
     }
+    if (new Date(endsAt) <= new Date(startsAt)) {
+      toast.error("La fecha de fin debe ser posterior a la fecha de inicio");
+      return;
+    }
     setSubmitting(true);
     try {
       await createCycleAction(projectId, { name: name.trim(), startsAt: new Date(startsAt), endsAt: new Date(endsAt), goal: goal.trim() || undefined });

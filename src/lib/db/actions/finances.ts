@@ -118,6 +118,29 @@ export async function exportFinancesCSVAction() {
   return csv;
 }
 
+export async function updateFinanceAction(id: string, formData: FormData) {
+  await requireOsUser();
+  const type = String(formData.get("type") || "ingreso");
+  const amountCop = parseInt(String(formData.get("amount_cop") || "0"), 10);
+  const concept = String(formData.get("concept") || "").trim();
+  const status = String(formData.get("status") || "pending");
+  const dueDateStr = String(formData.get("due_date") || "");
+  if (!concept || !amountCop) throw new Error("Concepto y monto son obligatorios");
+  await db.update(finances).set({
+    type, amountCop, concept, status,
+    dueDate: dueDateStr ? new Date(dueDateStr) : null,
+  }).where(eq(finances.id, id));
+  revalidatePath("/os/finances");
+  revalidatePath(`/os/finances/${id}`);
+}
+
+export async function deleteFinanceAction(id: string) {
+  await requireOsUser();
+  await db.delete(finances).where(eq(finances.id, id));
+  revalidatePath("/os/finances");
+  redirect("/os/finances");
+}
+
 export async function getMonthlyFinanceSummary() {
   await requireOsUser();
   const all = await db.select().from(finances);

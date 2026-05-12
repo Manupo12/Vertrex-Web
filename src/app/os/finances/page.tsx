@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/os/layout/PageHeader";
 import { getMonthlyFinanceSummary } from "@/lib/db/actions/finances";
 import Link from "next/link";
 import { FinancesList } from "./FinancesList";
+import { ExportCSVButton } from "./ExportCSVButton";
 
 export default async function FinancesPage() {
   const allFinances = await db
@@ -20,12 +21,15 @@ export default async function FinancesPage() {
         description="Control de ingresos y gastos en COP"
         breadcrumbs={[{ label: "Finanzas" }]}
         primaryAction={
-          <Link
-            href="/os/finances/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            + Nuevo movimiento
-          </Link>
+          <div className="flex items-center gap-2">
+            <ExportCSVButton />
+            <Link
+              href="/os/finances/new"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              + Nuevo movimiento
+            </Link>
+          </div>
         }
       />
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

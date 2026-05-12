@@ -6,32 +6,34 @@ import { TaskStatePill } from "@/components/os/Tasks/TaskStatePill";
 import { PriorityDot } from "@/components/os/Tasks/PriorityDot";
 import { TaskAssigneeSelect } from "@/components/os/Tasks/TaskAssigneeSelect";
 import { IdentifierChip } from "@/components/os/Tasks/IdentifierChip";
-import { updateTaskAction, changeTaskStateAction, assignTaskAction, setTaskPriorityAction, createSubtaskAction } from "@/lib/db/actions/tasks";
+import { updateTaskAction, changeTaskStateAction, assignTaskAction, setTaskPriorityAction, createSubtaskAction, linkTaskBlocksAction, unlinkTaskBlocksAction } from "@/lib/db/actions/tasks";
 import { TASK_TYPES } from "@/components/os/Tasks/TaskFilters";
 import { formatShortDate } from "@/lib/format";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { FlagIcon, ChevronDownIcon } from "lucide-react";
+import { FlagIcon, ChevronDownIcon, PlusIcon, X, Search } from "lucide-react";
 
 const VALID_STATES = ["backlog", "todo", "in_progress", "in_review", "done", "cancelled"];
 
 export function TaskDetailClient({
   task: initialTask, allUsers, project, subtasks: initialSubtasks,
-  blockingTasks: initialBlockingTasks, blockedByTasks: initialBlockedByTasks,
-  cycles, milestones
+  blockingWithLinks: initialBlockingWithLinks, blockedByWithLinks: initialBlockedByWithLinks,
+  cycles, milestones, allProjectTasks = []
 }: {
   task: any; allUsers: any[]; project: any;
-  subtasks: any[]; blockingTasks: any[]; blockedByTasks: any[];
-  cycles?: any[]; milestones?: any[];
+  subtasks: any[]; blockingWithLinks: Array<{ task: any; linkId: string }>; blockedByWithLinks: Array<{ task: any; linkId: string }>;
+  cycles?: any[]; milestones?: any[]; allProjectTasks?: Array<{ id: string; identifier: string; title: string }>;
 }) {
   const [task, setTask] = useState(initialTask);
   const [subtasks, setSubtasks] = useState(initialSubtasks);
-  const [blockingTasks] = useState(initialBlockingTasks);
-  const [blockedByTasks] = useState(initialBlockedByTasks);
+  const [blockingWithLinks, setBlockingWithLinks] = useState(initialBlockingWithLinks);
+  const [blockedByWithLinks, setBlockedByWithLinks] = useState(initialBlockedByWithLinks);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [subtaskInput, setSubtaskInput] = useState("");
   const [isCreatingSubtask, setIsCreatingSubtask] = useState(false);
+  const [showBlockSearch, setShowBlockSearch] = useState(false);
+  const [blockSearchQuery, setBlockSearchQuery] = useState("");
 
   const handleTitleSave = async () => {
     if (!title.trim()) return;
@@ -103,6 +105,56 @@ export function TaskDetailClient({
       setIsCreatingSubtask(false);
     }
   };
+
+  const handleAddBlock = async (targetTaskId: string) => {
+    try {
+      await linkTaskBlocksAction(task.id, targetTaskId);
+      const found = allProjectTasks.find(t => t.id === targetTaskId);
+      if (found) {
+        setBlockingWithLinks([...blockingWithLinks, { task: { ...found, state: "todo" }, linkId: "" }]);
+      }
+      setShowBlockSearch(false);
+      setBlockSearchQuery("");
+      toast.success("Bloqueo añadido");
+    } catch {
+      toast.error("Error al añadir bloqueo");
+    }
+  };
+
+  const handleRemoveBlock = async (linkId: string) => {
+    try {
+      await unlinkTaskBlocksAction(linkId);
+      setBlockingWithLinks(blockingWithLinks.filter(b => b.linkId !== linkId));
+      toast.success("Bloqueo eliminado");
+    } catch {
+      toast.error("Error al eliminar bloqueo");
+    }
+  };
+
+  const handleRemoveBlockedBy = async (linkId: string) => {
+    try {
+      await unlinkTaskBlocksAction(linkId);
+      setBlockedByWithLinks(blockedByWithLinks.filter(b => b.linkId !== linkId));
+      toast.success("Bloqueo eliminado");
+    } catch {
+      toast.error("Error al eliminar bloqueo");
+    }
+  };
+
+  const blockedTaskIds = new Set([
+    ...blockingWithLinks.map(b => b.task.id),
+    ...blockedByWithLinks.map(b => b.task.id),
+    task.id,
+  ]);
+
+  const availableTasks = allProjectTasks.filter(t => !blockedTaskIds.has(t.id));
+
+  const filteredAvailableTasks = blockSearchQuery
+    ? availableTasks.filter(t =>
+        t.title.toLowerCase().includes(blockSearchQuery.toLowerCase()) ||
+        t.identifier.toLowerCase().includes(blockSearchQuery.toLowerCase())
+      )
+    : availableTasks;
 
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -207,38 +259,104 @@ export function TaskDetailClient({
         </div>
 
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-6">
-          <h3 className="text-lg font-medium mb-4">Bloqueos</h3>
-          {blockingTasks.length > 0 && (
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium">Bloqueos</h3>
+            <button
+              onClick={() => { setShowBlockSearch(true); setBlockSearchQuery(""); }}
+              className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <PlusIcon className="h-3 w-3" />
+              Añadir bloqueo
+            </button>
+          </div>
+
+          {blockingWithLinks.length > 0 && (
             <div className="mb-4">
               <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase mb-2">Esta tarea bloquea</p>
               <div className="space-y-2">
-                {blockingTasks.map(bt => (
+                {blockingWithLinks.map(({ task: bt, linkId }) => (
                   <div key={bt.id} className="flex items-center gap-2 text-sm py-1.5 px-3 rounded-lg bg-red-500/5 border border-red-500/10">
                     <span className="font-mono text-[var(--color-muted-foreground)]">{bt.identifier}</span>
-                    <span>{bt.title}</span>
+                    <span className="flex-1">{bt.title}</span>
+                    <button
+                      onClick={() => handleRemoveBlock(linkId)}
+                      className="text-[var(--color-muted-foreground)] hover:text-[var(--color-destructive)] transition-colors"
+                      title="Quitar bloqueo"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
           )}
-          {blockedByTasks.length > 0 && (
+          {blockedByWithLinks.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-[var(--color-muted-foreground)] uppercase mb-2">Bloqueada por</p>
               <div className="space-y-2">
-                {blockedByTasks.map(bt => (
+                {blockedByWithLinks.map(({ task: bt, linkId }) => (
                   <div key={bt.id} className="flex items-center gap-2 text-sm py-1.5 px-3 rounded-lg bg-orange-500/5 border border-orange-500/10">
                     <span className="font-mono text-[var(--color-muted-foreground)]">{bt.identifier}</span>
-                    <span>{bt.title}</span>
-                    {bt.state === 'done' && <span className="text-[10px] text-green-500 ml-auto">✓ Resuelto</span>}
+                    <span className="flex-1">{bt.title}</span>
+                    {bt.state === 'done' && <span className="text-[10px] text-green-500">✓ Resuelto</span>}
+                    <button
+                      onClick={() => handleRemoveBlockedBy(linkId)}
+                      className="text-[var(--color-muted-foreground)] hover:text-[var(--color-destructive)] transition-colors"
+                      title="Quitar bloqueo"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
           )}
-          {blockingTasks.length === 0 && blockedByTasks.length === 0 && (
+          {blockingWithLinks.length === 0 && blockedByWithLinks.length === 0 && (
             <p className="text-sm text-[var(--color-muted-foreground)]">Sin bloqueos registrados.</p>
           )}
         </div>
+
+        {showBlockSearch && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowBlockSearch(false)}>
+            <div className="bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] p-6 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+              <h3 className="text-lg font-semibold mb-4">Añadir bloqueo</h3>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-muted-foreground)]" />
+                <input
+                  type="text"
+                  placeholder="Buscar tarea para bloquear..."
+                  value={blockSearchQuery}
+                  onChange={e => setBlockSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg pl-9 pr-3 py-2 text-sm"
+                />
+              </div>
+              <div className="max-h-60 overflow-y-auto space-y-1">
+                {filteredAvailableTasks.length === 0 ? (
+                  <p className="text-sm text-[var(--color-muted-foreground)] text-center py-4">
+                    {blockSearchQuery ? "Sin resultados" : "No hay tareas disponibles para bloquear"}
+                  </p>
+                ) : (
+                  filteredAvailableTasks.slice(0, 20).map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleAddBlock(t.id)}
+                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-[var(--color-muted)] transition-colors flex items-center gap-2"
+                    >
+                      <span className="font-mono text-xs text-[var(--color-muted-foreground)]">{t.identifier}</span>
+                      <span className="text-sm">{t.title}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+              <div className="flex justify-end mt-4">
+                <button onClick={() => setShowBlockSearch(false)} className="px-4 py-2 text-sm font-medium rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-muted)] transition-colors">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="space-y-6">

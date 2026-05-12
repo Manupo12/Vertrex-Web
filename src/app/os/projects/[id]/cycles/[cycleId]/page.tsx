@@ -1,11 +1,12 @@
 import { db } from "@/lib/db";
 import { cycles, tasks, projects } from "@/lib/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, asc, desc } from "drizzle-orm";
 import { differenceInDays, format, addDays } from "date-fns";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
 import { BurndownChart } from "@/components/os/Tasks/BurndownChart";
 import { formatShortDate } from "@/lib/format";
+import { CycleActions } from "./CycleActions";
 
 export default async function CycleDetailPage({ params }: { params: Promise<{ id: string, cycleId: string }> }) {
   await requireOsUser();
@@ -17,11 +18,13 @@ export default async function CycleDetailPage({ params }: { params: Promise<{ id
   const [cycle] = await db.select().from(cycles).where(eq(cycles.id, cycleId));
   if (!cycle) throw new Error("Ciclo no encontrado");
 
-  // In a real implementation we would fetch tasks for this cycle
-  // For the V3 visual requirement, we will render a placeholder if there are no tasks
   const cycleTasks = await db.select().from(tasks).where(eq(tasks.cycleId, cycleId));
 
-  // Compute real burndown data from cycle tasks
+  const [nextPlannedCycle] = await db.select().from(cycles)
+    .where(and(eq(cycles.projectId, id), eq(cycles.status, "planned")))
+    .orderBy(asc(cycles.startsAt))
+    .limit(1);
+
   const now = new Date();
   const totalDays = differenceInDays(cycle.endsAt, cycle.startsAt) || 1;
   const periodCount = Math.min(totalDays, 14);
@@ -53,9 +56,12 @@ export default async function CycleDetailPage({ params }: { params: Promise<{ id
         badge={cycle.status === 'active' ? 'Activo' : cycle.status === 'completed' ? 'Completado' : 'Planificado'}
         primaryAction={
           cycle.status !== 'completed' && (
-            <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-              {cycle.status === 'planned' ? 'Activar ciclo' : 'Cerrar ciclo'}
-            </button>
+            <CycleActions
+              cycleId={cycleId}
+              projectId={id}
+              status={cycle.status}
+              nextCycleId={nextPlannedCycle?.id}
+            />
           )
         }
       />
