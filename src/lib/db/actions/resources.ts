@@ -7,9 +7,11 @@ import { resources, resourceAccessLog, resourceFolders } from "@/lib/db/schema";
 import { encrypt, decrypt } from "@/lib/security/encryption";
 import { linkEntities } from "@/lib/db/actions/graph";
 import { requireOsUser, requireAdminUser } from "@/lib/auth/session";
+import { requireModuleAccess } from "@/lib/auth/permissions";
 
 export async function createResourceAction(formData: FormData) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "resources", "write");
   const title = String(formData.get("title") || "").trim();
   const type = String(formData.get("type") || "otro");
   const value = String(formData.get("value") || "").trim();
@@ -22,6 +24,7 @@ export async function createResourceAction(formData: FormData) {
 
 export async function revealResourceAction(id: string) {
   const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "resources", "read");
   const [resource] = await db.select().from(resources).where(eq(resources.id, id)).limit(1);
   if (!resource) throw new Error("Recurso no encontrado");
 
@@ -41,26 +44,30 @@ export async function revealResourceAction(id: string) {
 }
 
 export async function connectResourceEntityAction(resourceId: string, targetId: string, targetType: "project" | "client" | "note" | "idea") {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "resources", "write");
   await linkEntities(resourceId, "resource", targetId, targetType);
   revalidatePath(`/os/resources/${resourceId}`);
 }
 
 export async function setRotationAction(resourceId: string, rotationDueAt: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "resources", "write");
   await db.update(resources).set({ rotationDueAt: new Date(rotationDueAt) }).where(eq(resources.id, resourceId));
   revalidatePath(`/os/resources/${resourceId}`);
 }
 
 export async function createResourceFolderAction(name: string, parentId?: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "resources", "write");
   const [folder] = await db.insert(resourceFolders).values({ name, parentId: parentId || null }).returning();
   revalidatePath("/os/resources");
   return folder;
 }
 
 export async function setResourceVisibilityAction(resourceId: string, visibility: "team" | "admin" | "owner") {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "resources", "write");
   if (!["team", "admin", "owner"].includes(visibility)) throw new Error("Visibilidad invalida");
   await db.update(resources).set({ visibility }).where(eq(resources.id, resourceId));
   revalidatePath(`/os/resources/${resourceId}`);

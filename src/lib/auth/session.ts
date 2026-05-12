@@ -73,6 +73,15 @@ export async function requireAdminUser() {
   return session;
 }
 
+export class TwoFactorRequiredError extends Error {
+  public userId: string;
+  constructor(userId: string) {
+    super("2FA_REQUIRED");
+    this.userId = userId;
+    this.name = "TwoFactorRequiredError";
+  }
+}
+
 export async function loginTeam(email: string, password: string) {
   const [user] = await db
     .select()
@@ -83,6 +92,11 @@ export async function loginTeam(email: string, password: string) {
   if (!user) throw new Error("Credenciales inv\u00e1lidas");
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) throw new Error("Credenciales inv\u00e1lidas");
+
+  const prefs = user.preferences as Record<string, unknown> | null;
+  if (prefs?.twoFactorEnabled) {
+    throw new TwoFactorRequiredError(user.id);
+  }
 
   await signOsSession({ userId: user.id, email: user.email, name: user.name, role: user.role });
   return { userId: user.id, role: user.role };

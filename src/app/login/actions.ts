@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { loginTeam, logoutTeam } from "@/lib/auth/session";
+import { loginTeam, logoutTeam, TwoFactorRequiredError } from "@/lib/auth/session";
 
 const loginAttempts = new Map<string, { count: number; timestamp: number }>();
 const MAX_ATTEMPTS = 5;
@@ -30,12 +30,14 @@ export async function loginAction(formData: FormData) {
   try {
     await loginTeam(email, password);
   } catch (e) {
+    if (e instanceof TwoFactorRequiredError) {
+      redirect(`/login/2fa?userId=${e.userId}`);
+    }
     const message = e instanceof Error ? e.message : String(e);
     console.error("[LOGIN ERROR]", message);
     if (message.includes("Credenciales")) {
       redirect("/login?error=1");
     }
-    // DB or server error — show generic message  
     redirect("/login?error=2");
   }
 

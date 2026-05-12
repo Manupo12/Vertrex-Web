@@ -4,31 +4,36 @@ import { documents, documentFolders, shareTokens } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireOsUser } from "@/lib/auth/session";
+import { requireModuleAccess } from "@/lib/auth/permissions";
 import { linkEntities } from "@/lib/db/actions/graph";
 import crypto from "crypto";
 
 export async function updateDocumentPrivacyAction(id: string, isPublic: boolean) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "documents", "write");
   await db.update(documents).set({ isPublic }).where(eq(documents.id, id));
   revalidatePath(`/os/documents/${id}`);
   revalidatePath("/os/documents");
 }
 
 export async function createFolderAction(name: string, parentId?: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "documents", "write");
   const [folder] = await db.insert(documentFolders).values({ name, parentId: parentId || null }).returning();
   revalidatePath("/os/documents");
   return folder;
 }
 
 export async function moveDocumentToFolderAction(docId: string, folderId?: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "documents", "write");
   await db.update(documents).set({ folderId: folderId || null }).where(eq(documents.id, docId));
   revalidatePath("/os/documents");
 }
 
 export async function uploadDocumentVersionAction(formData: FormData) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "documents", "write");
   const name = String(formData.get("name") || "").trim();
   const folderId = String(formData.get("folder_id") || "").trim() || null;
   const contentBase64 = String(formData.get("content_base64") || "");
@@ -59,7 +64,8 @@ export async function uploadDocumentVersionAction(formData: FormData) {
 }
 
 export async function createShareTokenAction(documentId: string, ttlHours: number) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "documents", "write");
   const token = crypto.randomUUID();
   const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
   const [st] = await db.insert(shareTokens).values({ documentId, token, expiresAt }).returning();
@@ -67,6 +73,7 @@ export async function createShareTokenAction(documentId: string, ttlHours: numbe
 }
 
 export async function revokeShareTokenAction(tokenId: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "documents", "write");
   await db.delete(shareTokens).where(eq(shareTokens.id, tokenId));
 }

@@ -8,11 +8,11 @@ import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { Button } from "@/components/ui/button";
 import { formatFileSize, formatShortDate } from "@/lib/format";
-import { Download, FileText, ShareIcon, HistoryIcon } from "lucide-react";
+import { Download, FileText, HistoryIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DocPrivacyToggle } from "./DocPrivacyToggle";
-import { ShareDocumentSheet } from "@/components/os/Documents/ShareDocumentSheet";
+import { ShareDocumentButton } from "@/components/os/Documents/ShareDocumentButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Props { params: Promise<{ id: string }> }
@@ -35,9 +35,7 @@ export default async function DocDetailPage({ params }: Props) {
         <Link href={`/os/documents/${id}/versions`} className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-card)] border border-[var(--color-border)] rounded-md text-sm font-medium hover:bg-[var(--color-muted)] transition-colors">
           <HistoryIcon className="h-4 w-4" /> Versiones
         </Link>
-        <button className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-card)] border border-[var(--color-border)] rounded-md text-sm font-medium hover:bg-[var(--color-muted)] transition-colors">
-          <ShareIcon className="h-4 w-4" /> Compartir con enlace
-        </button>
+        <ShareDocumentButton documentId={doc.id} documentName={doc.name} />
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">

@@ -38,15 +38,21 @@ export async function POST(request: NextRequest) {
     let contentBase64: string | null = null;
 
     if (shouldUseDrive) {
-      const uploaded = await uploadToDrive(
-        file.name,
-        buffer,
-        file.type || "application/octet-stream",
-        process.env.DRIVE_FOLDER_ID
-      );
-      storageProvider = "drive";
-      driveFileId = uploaded.driveFileId;
-      url = uploaded.url || null;
+      try {
+        const uploaded = await uploadToDrive(
+          file.name,
+          buffer,
+          file.type || "application/octet-stream",
+          process.env.DRIVE_FOLDER_ID
+        );
+        storageProvider = "drive";
+        driveFileId = uploaded.driveFileId;
+        url = uploaded.url || null;
+      } catch (driveError) {
+        console.warn("Drive upload failed, falling back to Neon storage:", driveError);
+        storageProvider = "neon";
+        contentBase64 = buffer.toString("base64");
+      }
     } else {
       contentBase64 = buffer.toString("base64");
     }

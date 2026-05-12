@@ -6,6 +6,7 @@ import { eq, and, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { finances, legalDocuments, entityLinks } from "@/lib/db/schema";
 import { requireOsUser } from "@/lib/auth/session";
+import { requireModuleAccess } from "@/lib/auth/permissions";
 import { linkEntities } from "@/lib/db/actions/graph";
 
 function addMonths(date: Date, months: number) {
@@ -21,7 +22,8 @@ function addYears(date: Date, years: number) {
 }
 
 export async function createFinanceAction(formData: FormData) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "write");
   const type = String(formData.get("type") || "ingreso");
   const amountCop = parseInt(String(formData.get("amount_cop") || "0"), 10);
   const concept = String(formData.get("concept") || "").trim();
@@ -50,7 +52,8 @@ export async function createFinanceAction(formData: FormData) {
 }
 
 export async function markFinancePaidAction(id: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "write");
   const [finance] = await db.select().from(finances).where(eq(finances.id, id)).limit(1);
   if (!finance) throw new Error("Finanza no encontrada");
 
@@ -96,7 +99,8 @@ export async function exportFinancesCSVAction() {
   const { db } = await import("@/lib/db");
   const { finances } = await import("@/lib/db/schema");
   const { desc } = await import("drizzle-orm");
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "read");
 
   const all = await db.select().from(finances).orderBy(desc(finances.createdAt));
 
@@ -119,7 +123,8 @@ export async function exportFinancesCSVAction() {
 }
 
 export async function updateFinanceAction(id: string, formData: FormData) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "write");
   const type = String(formData.get("type") || "ingreso");
   const amountCop = parseInt(String(formData.get("amount_cop") || "0"), 10);
   const concept = String(formData.get("concept") || "").trim();
@@ -135,14 +140,16 @@ export async function updateFinanceAction(id: string, formData: FormData) {
 }
 
 export async function deleteFinanceAction(id: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "write");
   await db.delete(finances).where(eq(finances.id, id));
   revalidatePath("/os/finances");
   redirect("/os/finances");
 }
 
 export async function getMonthlyFinanceSummary() {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "read");
   const all = await db.select().from(finances);
   const now = new Date();
   const thisMonth = all.filter(f => {
@@ -160,7 +167,8 @@ export async function getFinanceById(id: string) {
 }
 
 export async function generateInvoiceAction(projectId: string, milestoneId: string | null, items: { description: string; amount: number }[]) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "write");
   const total = items.reduce((s, i) => s + i.amount, 0);
   const itemsHtml = items.map(i => `<tr><td>${i.description}</td><td>$${i.amount.toLocaleString("es-CO")}</td></tr>`).join("");
   const bodyHtml = `<html><body><h1>Cuenta de Cobro</h1><table>${itemsHtml}</table><h3>Total: $${total.toLocaleString("es-CO")}</h3></body></html>`;
@@ -178,7 +186,8 @@ export async function generateInvoiceAction(projectId: string, milestoneId: stri
 }
 
 export async function getProjectPnLAction(projectId: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
+  await requireModuleAccess(user.userId, "finances", "read");
   const linked = await db.select().from(entityLinks).where(
     and(
       eq(entityLinks.sourceId, projectId),
