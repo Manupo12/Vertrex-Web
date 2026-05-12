@@ -26,13 +26,13 @@ const TASK_TYPES = [
 
 export function QuickTaskModal({
   open, onOpenChange, projects, users, currentUserId,
-  cycles, milestones, taskTypes,
+  cycles, milestones, taskTypes, parentTaskId: defaultParentTaskId,
   defaultProjectId, defaultCycleId, defaultMilestoneId
 }: {
   open: boolean; onOpenChange: (open: boolean) => void;
   projects: any[]; users: any[]; currentUserId?: string;
   cycles?: any[]; milestones?: any[]; taskTypes?: { value: string; label: string }[];
-  defaultProjectId?: string; defaultCycleId?: string; defaultMilestoneId?: string;
+  parentTaskId?: string; defaultProjectId?: string; defaultCycleId?: string; defaultMilestoneId?: string;
 }) {
   const [title, setTitle] = useState("");
   const [projectId, setProjectId] = useState<string | undefined>(defaultProjectId || undefined);
@@ -43,6 +43,7 @@ export function QuickTaskModal({
   const [estimatePoints, setEstimatePoints] = useState<number>(0);
   const [cycleId, setCycleId] = useState<string | undefined>(defaultCycleId || undefined);
   const [milestoneId, setMilestoneId] = useState<string | undefined>(defaultMilestoneId || undefined);
+  const [parentTaskId] = useState<string | undefined>(defaultParentTaskId || undefined);
   const [description, setDescription] = useState("");
   const [showExtraOptions, setShowExtraOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,6 +57,7 @@ export function QuickTaskModal({
       const task = await createTaskAction({
         title,
         projectId,
+        parentTaskId,
         assigneeId: assigneeId || undefined,
         priority,
         taskType,
@@ -97,6 +99,11 @@ export function QuickTaskModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px] p-0 overflow-hidden gap-0 border-[var(--color-border)] bg-[var(--color-card)]">
         <div className="p-4">
+          {parentTaskId && (
+            <div className="text-xs text-[var(--color-muted-foreground)] mb-2 bg-[var(--color-primary)]/5 px-2 py-1 rounded-md border border-[var(--color-primary)]/10">
+              Creando subtarea
+            </div>
+          )}
           <input
             autoFocus
             type="text"
@@ -115,7 +122,7 @@ export function QuickTaskModal({
               value={projectId || ""}
               onChange={(e) => setProjectId(e.target.value || undefined)}
             >
-              <option value="">Inbox</option>
+              <option value="">Bandeja (sin proyecto)</option>
               {projects.map(p => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}

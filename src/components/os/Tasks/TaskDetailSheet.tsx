@@ -7,7 +7,7 @@ import { PriorityDot } from "./PriorityDot";
 import { formatShortDate } from "@/lib/format";
 import { TASK_TYPE_COLORS, TASK_TYPES } from "./TaskFilters";
 import { useState, useEffect } from "react";
-import { deleteTaskAction } from "@/lib/db/actions/tasks";
+import { deleteTaskAction, createSubtaskAction } from "@/lib/db/actions/tasks";
 import { listCommentsAction, addCommentAction } from "@/lib/db/actions/comments";
 import { toast } from "sonner";
 import { TrashIcon } from "lucide-react";
@@ -27,12 +27,28 @@ export function TaskDetailSheet({ task, open, onOpenChange, onEditFull, onDelete
   const [newComment, setNewComment] = useState("");
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [subtaskTitle, setSubtaskTitle] = useState("");
+  const [isCreatingSubtask, setIsCreatingSubtask] = useState(false);
 
   useEffect(() => {
     if (open && task) {
       listCommentsAction("task", task.id).then(setComments).catch(() => {});
     }
   }, [open, task]);
+
+  const handleCreateSubtask = async () => {
+    if (!subtaskTitle.trim() || !task) return;
+    setIsCreatingSubtask(true);
+    try {
+      await createSubtaskAction(task.id, subtaskTitle.trim());
+      setSubtaskTitle("");
+      toast.success("Subtarea creada");
+    } catch {
+      toast.error("Error al crear subtarea");
+    } finally {
+      setIsCreatingSubtask(false);
+    }
+  };
 
   const handleAddComment = async () => {
     if (!newComment.trim() || !task) return;
@@ -122,6 +138,33 @@ export function TaskDetailSheet({ task, open, onOpenChange, onEditFull, onDelete
               </div>
             </div>
           </div>
+
+          <details className="mt-6 border-t border-[var(--color-border)] pt-4">
+            <summary className="text-sm font-semibold cursor-pointer text-[var(--color-foreground)]">
+              Subtareas
+            </summary>
+            <div className="mt-3 flex gap-2">
+              <input
+                className="flex-1 text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1.5"
+                placeholder="Nombre de la subtarea..."
+                value={subtaskTitle}
+                onChange={(e) => setSubtaskTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleCreateSubtask();
+                  }
+                }}
+              />
+              <button
+                onClick={handleCreateSubtask}
+                disabled={isCreatingSubtask || !subtaskTitle.trim()}
+                className="text-xs px-3 py-1.5 rounded-md bg-[var(--color-primary)] text-[var(--color-primary-foreground)] font-medium hover:opacity-90 disabled:opacity-50 transition-opacity shrink-0"
+              >
+                {isCreatingSubtask ? "..." : "+"}
+              </button>
+            </div>
+          </details>
 
           <details className="mt-6 border-t border-[var(--color-border)] pt-4">
             <summary className="text-sm font-semibold cursor-pointer text-[var(--color-foreground)]">

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { cycles, projects } from "@/lib/db/schema";
+import { cycles, projects, users } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
@@ -16,6 +16,7 @@ export default async function CyclesPage({ params }: { params: Promise<{ id: str
   if (!project) throw new Error("Proyecto no encontrado");
 
   const projectCycles = await db.select().from(cycles).where(eq(cycles.projectId, id)).orderBy(desc(cycles.createdAt));
+  const allUsers = await db.select().from(users);
 
   return (
     <div>
@@ -24,7 +25,7 @@ export default async function CyclesPage({ params }: { params: Promise<{ id: str
         description={`Sprints de ${project.name}`}
         breadcrumbs={[{ label: "Proyectos", href: "/os/projects" }, { label: project.name, href: `/os/projects/${id}` }, { label: "Ciclos" }]}
         secondaryActions={
-          <TaskCreateButton projectId={id} label="+ Tarea" />
+          <TaskCreateButton projectId={id} label="+ Tarea" projects={[project]} users={allUsers} />
         }
         primaryAction={
           <CreateCycleDialog projectId={id} />

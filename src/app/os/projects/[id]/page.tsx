@@ -16,7 +16,7 @@ import { ReferenceLinks } from "./ReferenceLinks";
 import { AlertTriangle, CheckSquareIcon, KanbanIcon, RotateCwIcon, FlagIcon } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { tasks, finances, entityLinks } from "@/lib/db/schema";
+import { tasks, finances, entityLinks, users } from "@/lib/db/schema";
 import { eq, or, and } from "drizzle-orm";
 import { formatCurrencyCop } from "@/lib/format";
 
@@ -57,6 +57,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   }
 
   const projectTasks = await db.select().from(tasks).where(eq(tasks.projectId, id));
+  const allUsers = await db.select().from(users);
   const doneTasks = projectTasks.filter(t => t.state === 'done').length;
   const inProgressTasks = projectTasks.filter(t => t.state === 'in_progress').length;
 
@@ -106,7 +107,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       </div>
 
       <div className="mb-6">
-        <TaskCreateButton projectId={id} label="+ Nueva tarea" />
+        <TaskCreateButton projectId={id} label="+ Nueva tarea" projects={[project]} users={allUsers} />
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">

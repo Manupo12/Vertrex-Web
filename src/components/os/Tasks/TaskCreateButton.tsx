@@ -4,6 +4,7 @@ import { QuickTaskModal } from "./QuickTaskModal";
 
 interface TaskCreateButtonProps {
   projectId?: string;
+  parentTaskId?: string;
   cycleId?: string;
   milestoneId?: string;
   label?: string;
@@ -15,7 +16,7 @@ interface TaskCreateButtonProps {
   milestones?: any[];
 }
 
-export function TaskCreateButton({ projectId, cycleId, milestoneId, label = "+ Tarea", className, projects, users, currentUserId, cycles, milestones }: TaskCreateButtonProps) {
+export function TaskCreateButton({ projectId, parentTaskId, cycleId, milestoneId, label = "+ Tarea", className, projects, users, currentUserId, cycles, milestones }: TaskCreateButtonProps) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -26,6 +27,7 @@ export function TaskCreateButton({ projectId, cycleId, milestoneId, label = "+ T
         <QuickTaskModal
           open={open}
           onOpenChange={setOpen}
+          parentTaskId={parentTaskId}
           defaultProjectId={projectId}
           defaultCycleId={cycleId}
           defaultMilestoneId={milestoneId}

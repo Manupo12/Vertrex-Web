@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 export async function createTaskAction(input: {
   title: string;
   projectId?: string;
+  parentTaskId?: string;
   assigneeId?: string;
   priority?: number;
   cycleId?: string;
@@ -36,6 +37,7 @@ export async function createTaskAction(input: {
     priority: input.priority || 0,
     cycleId: input.cycleId,
     milestoneId: input.milestoneId,
+    parentTaskId: input.parentTaskId || null,
     taskType: (input.taskType as any) || "other",
     dueDate: input.dueDate ? new Date(input.dueDate) : null,
     estimatePoints: input.estimatePoints || null,
