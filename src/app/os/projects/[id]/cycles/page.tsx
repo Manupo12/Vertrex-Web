@@ -6,6 +6,7 @@ import { requireOsUser } from "@/lib/auth/session";
 import Link from "next/link";
 import { formatShortDate } from "@/lib/format";
 import { CreateCycleDialog } from "./CreateCycleDialog";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 
 export default async function CyclesPage({ params }: { params: Promise<{ id: string }> }) {
   await requireOsUser();
@@ -22,6 +23,9 @@ export default async function CyclesPage({ params }: { params: Promise<{ id: str
         title="Ciclos" 
         description={`Sprints de ${project.name}`}
         breadcrumbs={[{ label: "Proyectos", href: "/os/projects" }, { label: project.name, href: `/os/projects/${id}` }, { label: "Ciclos" }]}
+        secondaryActions={
+          <TaskCreateButton projectId={id} label="+ Tarea" />
+        }
         primaryAction={
           <CreateCycleDialog projectId={id} />
         }

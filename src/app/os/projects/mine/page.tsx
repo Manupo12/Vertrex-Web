@@ -18,7 +18,7 @@ export default async function MinePage() {
         description="Lo que tienes asignado." 
         breadcrumbs={[{ label: "Proyectos", href: "/os/projects" }, { label: "Mis tareas" }]}
       />
-      <MineView initialTasks={myTasks} projects={allProjects} users={allUsers} />
+      <MineView initialTasks={myTasks} projects={allProjects} users={allUsers} currentUserId={session.userId} />
     </div>
   );
 }

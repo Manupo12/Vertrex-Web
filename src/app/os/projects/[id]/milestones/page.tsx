@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/format";
 import { CreateMilestoneDialog } from "./CreateMilestoneDialog";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 
 export default async function MilestonesPage({ params }: { params: Promise<{ id: string }> }) {
   await requireOsUser();
@@ -31,6 +32,9 @@ export default async function MilestonesPage({ params }: { params: Promise<{ id:
         title="Hitos" 
         description={`Milestones de ${project.name}`}
         breadcrumbs={[{ label: "Proyectos", href: "/os/projects" }, { label: project.name, href: `/os/projects/${id}` }, { label: "Hitos" }]}
+        secondaryActions={
+          <TaskCreateButton projectId={id} label="+ Tarea" />
+        }
         primaryAction={
           <CreateMilestoneDialog projectId={id} />
         }

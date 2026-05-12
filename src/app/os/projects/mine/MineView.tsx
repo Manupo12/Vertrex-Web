@@ -9,8 +9,9 @@ import { toast } from "sonner";
 import { TaskDetailSheet } from "@/components/os/Tasks/TaskDetailSheet";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 
-export function MineView({ initialTasks, projects, users }: { initialTasks: any[], projects: any[], users: any[] }) {
+export function MineView({ initialTasks, projects, users, currentUserId }: { initialTasks: any[], projects: any[], users: any[], currentUserId?: string }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const router = useRouter();
@@ -101,6 +102,9 @@ export function MineView({ initialTasks, projects, users }: { initialTasks: any[
 
   return (
     <div className="mt-6">
+      <div className="mb-4">
+        <TaskCreateButton projects={projects} users={users} currentUserId={currentUserId} label="+ Nueva tarea" />
+      </div>
       <Tabs defaultValue="todo" className="w-full">
         <TabsList>
           <TabsTrigger value="todo">Por hacer ({todoTasks.length})</TabsTrigger>

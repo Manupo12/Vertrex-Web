@@ -8,8 +8,9 @@ import { changeTaskStateAction, setTaskPriorityAction, assignTaskAction } from "
 import { toast } from "sonner";
 import { TaskDetailSheet } from "@/components/os/Tasks/TaskDetailSheet";
 import { useRouter } from "next/navigation";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 
-export function InboxView({ initialTasks, users }: { initialTasks: any[], users: any[] }) {
+export function InboxView({ initialTasks, users, currentUserId }: { initialTasks: any[], users: any[], currentUserId?: string }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const router = useRouter();
@@ -57,7 +58,11 @@ export function InboxView({ initialTasks, users }: { initialTasks: any[], users:
   };
 
   return (
-    <div className="mt-6 bg-[var(--color-card)] rounded-lg border border-[var(--color-border)] overflow-hidden">
+    <div className="mt-6">
+      <div className="mb-4">
+        <TaskCreateButton users={users} currentUserId={currentUserId} label="+ Nueva tarea" />
+      </div>
+      <div className="bg-[var(--color-card)] rounded-lg border border-[var(--color-border)] overflow-hidden">
       {tasks.map(t => (
         <TaskRow 
           key={t.id} 
@@ -75,6 +80,7 @@ export function InboxView({ initialTasks, users }: { initialTasks: any[], users:
         onOpenChange={(open) => !open && setSelectedTask(null)} 
         onEditFull={() => router.push(`/t/${selectedTask?.identifier}`)}
       />
+    </div>
     </div>
   );
 }

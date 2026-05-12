@@ -7,6 +7,7 @@ import { PriorityDot } from "./PriorityDot";
 import { TaskAssigneeSelect } from "./TaskAssigneeSelect";
 import { TaskQuickEditMenu } from "./TaskQuickEditMenu";
 import { formatShortDate } from "@/lib/format";
+import { TASK_TYPE_COLORS, TASK_TYPES } from "./TaskFilters";
 
 export interface TaskRowProps {
   task: any;
@@ -36,6 +37,12 @@ export function TaskRow({ task, users, onClick, onStateChange, onPriorityChange,
       
       <div className="flex-1 truncate font-medium text-[var(--color-foreground)]">
         {task.title}
+        {task.taskType && task.taskType !== "other" && (
+          <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border"
+            style={{ backgroundColor: `${TASK_TYPE_COLORS[task.taskType] || "#94a3b8"}15`, color: TASK_TYPE_COLORS[task.taskType] || "#94a3b8", borderColor: `${TASK_TYPE_COLORS[task.taskType] || "#94a3b8"}30` }}>
+            {TASK_TYPES.find(t => t.value === task.taskType)?.label || task.taskType}
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-2 shrink-0">

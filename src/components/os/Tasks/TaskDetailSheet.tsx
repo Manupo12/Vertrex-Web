@@ -5,6 +5,7 @@ import { IdentifierChip } from "./IdentifierChip";
 import { TaskStatePill } from "./TaskStatePill";
 import { PriorityDot } from "./PriorityDot";
 import { formatShortDate } from "@/lib/format";
+import { TASK_TYPE_COLORS, TASK_TYPES } from "./TaskFilters";
 import { useState, useEffect } from "react";
 import { deleteTaskAction } from "@/lib/db/actions/tasks";
 import { listCommentsAction, addCommentAction } from "@/lib/db/actions/comments";
@@ -106,6 +107,15 @@ export function TaskDetailSheet({ task, open, onOpenChange, onEditFull, onDelete
                   <span>{task.state}</span>
                   <span className="text-[var(--color-muted-foreground)]">Prioridad</span>
                   <span>{task.priority}</span>
+                  <span className="text-[var(--color-muted-foreground)]">Tipo</span>
+                  <span>
+                    {task.taskType ? (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border"
+                        style={{ backgroundColor: `${TASK_TYPE_COLORS[task.taskType] || "#94a3b8"}15`, color: TASK_TYPE_COLORS[task.taskType] || "#94a3b8", borderColor: `${TASK_TYPE_COLORS[task.taskType] || "#94a3b8"}30` }}>
+                        {TASK_TYPES.find(t => t.value === task.taskType)?.label || task.taskType}
+                      </span>
+                    ) : "-"}
+                  </span>
                   <span className="text-[var(--color-muted-foreground)]">Vencimiento</span>
                   <span>{formatShortDate(task.dueDate) || "-"}</span>
                 </div>

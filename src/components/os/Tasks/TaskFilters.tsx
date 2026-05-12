@@ -5,6 +5,28 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { TextInput, Select, Group, ActionIcon, Tooltip } from "@mantine/core";
 import { Search, X } from "lucide-react";
 
+export const TASK_TYPES = [
+  { value: "code", label: "Código", color: "#3b82f6" },
+  { value: "design", label: "Diseño", color: "#ec4899" },
+  { value: "marketing", label: "Marketing", color: "#f97316" },
+  { value: "content", label: "Contenido", color: "#8b5cf6" },
+  { value: "document", label: "Documento", color: "#14b8a6" },
+  { value: "meeting", label: "Reunión", color: "#64748b" },
+  { value: "research", label: "Investigación", color: "#06b6d4" },
+  { value: "ops", label: "Operaciones", color: "#84cc16" },
+  { value: "support", label: "Soporte", color: "#22c55e" },
+  { value: "bug", label: "Bug", color: "#ef4444" },
+  { value: "feature", label: "Feature", color: "#a855f7" },
+  { value: "other", label: "Otro", color: "#94a3b8" },
+];
+
+export const TASK_TYPE_COLORS: Record<string, string> = {
+  code: "#3b82f6", design: "#ec4899", marketing: "#f97316",
+  content: "#8b5cf6", document: "#14b8a6", meeting: "#64748b",
+  research: "#06b6d4", ops: "#84cc16", support: "#22c55e",
+  bug: "#ef4444", feature: "#a855f7", other: "#94a3b8",
+};
+
 export interface TaskFilterValues {
   state: string;
   priority: string;
@@ -12,6 +34,7 @@ export interface TaskFilterValues {
   cycleId: string;
   milestoneId: string;
   tagId: string;
+  taskType: string;
   search: string;
   groupBy: string;
 }
@@ -34,6 +57,7 @@ const DEFAULT_FILTERS: TaskFilterValues = {
   cycleId: "",
   milestoneId: "",
   tagId: "",
+  taskType: "",
   search: "",
   groupBy: "",
 };
@@ -171,6 +195,19 @@ export default function TaskFilters({
         onChange={(val) => setFilter("priority", val || "")}
         size="sm"
         className="w-32"
+        clearable
+      />
+
+      <Select
+        placeholder="Tipo"
+        data={[
+          { value: "", label: "Todos" },
+          ...TASK_TYPES.map((t) => ({ value: t.value, label: t.label })),
+        ]}
+        value={filters.taskType}
+        onChange={(val) => setFilter("taskType", val || "")}
+        size="sm"
+        className="w-36"
         clearable
       />
 

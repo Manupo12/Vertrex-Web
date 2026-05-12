@@ -11,6 +11,7 @@ import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { EntityGraph } from "@/components/os/Graph/EntityGraph";
 import { notFound } from "next/navigation";
 import { EditProjectForm } from "./EditProjectForm";
+import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 import { ReferenceLinks } from "./ReferenceLinks";
 import { AlertTriangle, CheckSquareIcon, KanbanIcon, RotateCwIcon, FlagIcon } from "lucide-react";
 import Link from "next/link";
@@ -102,6 +103,10 @@ export default async function ProjectDetailPage({ params }: Props) {
         <Link href={`/os/projects/${id}/milestones`} className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-card)] border border-[var(--color-border)] rounded-md text-sm font-medium hover:bg-[var(--color-muted)] transition-colors">
           <FlagIcon className="h-4 w-4" /> Hitos
         </Link>
+      </div>
+
+      <div className="mb-6">
+        <TaskCreateButton projectId={id} label="+ Nueva tarea" />
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">
