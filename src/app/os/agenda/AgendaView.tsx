@@ -1,17 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Toolbar } from "@/components/os/layout/Toolbar";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Calendar as CalendarIcon, Video, LayoutGrid, List, RefreshCwIcon, GlobeIcon, ClockIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Video, LayoutGrid, List, RefreshCwIcon, ClockIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/format";
 import { Calendar, dateFnsLocalizer, View, Views } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay } from "date-fns";
+import { format, parse, startOfWeek, getDay, startOfMonth, endOfMonth, startOfWeek as startOfWeekFns, endOfWeek, startOfDay, endOfDay, subMonths, addMonths } from "date-fns";
 import { es } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { expandRecurringEvents } from "@/lib/agenda/recurrence";
 
 const locales = {
   "es": es,
@@ -34,7 +35,28 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
   const [date, setDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<AgendaEvent | null>(null);
 
-  const filtered = events.filter(e => !query || e.title.toLowerCase().includes(query.toLowerCase()));
+  const { start: rangeStart, end: rangeEnd } = useMemo(() => {
+    if (viewMode === "list") {
+      return { start: subMonths(new Date(), 1), end: addMonths(new Date(), 12) };
+    }
+    switch (currentView) {
+      case Views.MONTH:
+        return { start: startOfMonth(date), end: endOfMonth(date) };
+      case Views.WEEK:
+        return { start: startOfWeekFns(date, { weekStartsOn: 1 }), end: endOfWeek(date, { weekStartsOn: 1 }) };
+      case Views.DAY:
+        return { start: startOfDay(date), end: endOfDay(date) };
+      default:
+        return { start: subMonths(date, 1), end: addMonths(date, 1) };
+    }
+  }, [viewMode, currentView, date]);
+
+  const expanded = useMemo(
+    () => expandRecurringEvents(events, rangeStart, rangeEnd),
+    [events, rangeStart, rangeEnd]
+  );
+
+  const filtered = expanded.filter(e => !query || e.title.toLowerCase().includes(query.toLowerCase()));
 
   const calendarEvents = filtered.map(e => ({
     id: e.id,
@@ -44,7 +66,7 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
     resource: e,
   }));
 
-  if (events.length === 0) {
+  if (events.length === 0 && !expanded.some(e => e.isRecurrence)) {
     return <EmptyState icon={CalendarIcon} title="Sin eventos" description="Agenda tu primera reunion o entrega." />;
   }
 
