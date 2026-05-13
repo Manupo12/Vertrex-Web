@@ -19,7 +19,7 @@ export async function createResourceAction(formData: FormData) {
   const encryptedValue = encrypt(value);
   const [resource] = await db.insert(resources).values({ title, type, encryptedValue }).returning();
   revalidatePath("/os/resources");
-  return resource;
+  return { id: resource.id, title: resource.title };
 }
 
 export async function revealResourceAction(id: string) {

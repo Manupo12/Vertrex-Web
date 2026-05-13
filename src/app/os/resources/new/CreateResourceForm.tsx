@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createResourceAction } from "@/lib/db/actions/resources";
 import { toast } from "sonner";
 
 export function CreateResourceForm() {
@@ -15,9 +14,11 @@ export function CreateResourceForm() {
     setError("");
     try {
       const formData = new FormData(e.currentTarget);
-      const result = await createResourceAction(formData);
+      const res = await fetch("/api/resources/new", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al guardar");
       toast.success("Recurso guardado");
-      router.push(`/os/resources/${result.id}`);
+      router.push(`/os/resources/${data.id}`);
     } catch (err: any) {
       const message = err?.message || "Error desconocido al guardar recurso";
       setError(message);
