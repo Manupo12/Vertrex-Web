@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Chakra_Petch } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { MantineProvider } from '@mantine/core'
+import '@mantine/core/styles.css'
 import './globals.css'
 import './os-theme.css'
 import { AppChrome } from '@/components/AppChrome'
@@ -45,7 +47,9 @@ export default function RootLayout({
     <html lang="es" className="h-full scroll-smooth">
       {/* Aplicamos las variables de fuente y clases globales en el body */}
       <body className={`${inter.variable} ${chakraPetch.variable} h-full flex flex-col bg-background font-sans text-foreground`}>
-        <AppChrome>{children}</AppChrome>
+        <MantineProvider>
+          <AppChrome>{children}</AppChrome>
+        </MantineProvider>
         <Analytics />
       </body>
     </html>
