@@ -25,7 +25,7 @@ export async function getModulePermission(
       ),
     )
     .limit(1);
-  if (!row) return "none";
+  if (!row) return "write";
   if (row.permission === "admin") return "admin";
   if (row.permission === "write") return "write";
   if (row.permission === "read") return "read";
