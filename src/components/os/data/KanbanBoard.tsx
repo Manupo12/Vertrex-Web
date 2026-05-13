@@ -220,8 +220,9 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group">
-      <div {...attributes} {...listeners} className="absolute top-1 left-1 z-10 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[var(--color-muted)]">
+    <div ref={setNodeRef} style={style} className="relative">
+      <div {...attributes} {...listeners} className="absolute -top-1 -left-1 z-10 cursor-grab active:cursor-grabbing opacity-60 hover:opacity-100 transition-opacity p-1.5 rounded hover:bg-[var(--color-muted)]"
+        onClick={(e) => e.stopPropagation()}>
         <GripVertical className="h-4 w-4 text-[var(--color-muted-foreground)]" />
       </div>
       {children}
