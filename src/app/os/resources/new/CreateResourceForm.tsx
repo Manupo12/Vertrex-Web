@@ -6,18 +6,22 @@ import { toast } from "sonner";
 
 export function CreateResourceForm() {
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
+    setError("");
     try {
       const formData = new FormData(e.currentTarget);
-      const resource = await createResourceAction(formData);
-      toast.success("Recurso creado");
-      router.push(`/os/resources/${resource.id}`);
+      const result = await createResourceAction(formData);
+      toast.success("Recurso guardado");
+      router.push(`/os/resources/${result.id}`);
     } catch (err: any) {
-      toast.error(err.message || "Error al crear recurso");
+      const message = err?.message || "Error desconocido al guardar recurso";
+      setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -25,6 +29,11 @@ export function CreateResourceForm() {
 
   return (
     <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
+      {error && (
+        <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-[var(--color-muted-foreground)] mb-1">
