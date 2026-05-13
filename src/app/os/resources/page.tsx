@@ -1,14 +1,17 @@
 import { db } from "@/lib/db";
 import { resources, resourceFolders } from "@/lib/db/schema";
+import { desc } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import Link from "next/link";
 import { ResourcesList } from "./ResourcesList";
+import { requireOsUser } from "@/lib/auth/session";
 
 export default async function ResourcesPage() {
+  await requireOsUser();
   const allResources = await db
     .select()
     .from(resources)
-    .orderBy(resources.createdAt);
+    .orderBy(desc(resources.createdAt));
     
   const allFolders = await db.select().from(resourceFolders).orderBy(resourceFolders.name);
 
