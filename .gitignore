@@ -54,4 +54,5 @@ next-env.d.ts
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
-!.yarn/versions
+!.yarn/versionsdist/
+cli/node_modules/

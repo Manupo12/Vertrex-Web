@@ -1,0 +1,29 @@
+{
+  "name": "@vertrex/cli",
+  "version": "0.1.0",
+  "description": "CLI para operar Vertrex OS (humanos y agentes)",
+  "bin": { "vertrex": "./bin/run.js" },
+  "type": "module",
+  "files": ["bin", "dist", "oclif.manifest.json"],
+  "dependencies": {
+    "@oclif/core": "^4",
+    "yaml": "^2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "oclif": "^4",
+    "typescript": "^5",
+    "vitest": "^4"
+  },
+  "oclif": {
+    "bin": "vertrex",
+    "dirname": "vertrex",
+    "commands": "./dist/commands",
+    "topicSeparator": " "
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "postpack": "oclif manifest",
+    "test": "vitest run"
+  }
+}

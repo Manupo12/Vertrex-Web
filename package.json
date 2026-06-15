@@ -2,6 +2,7 @@
   "name": "mi-empresa-web",
   "version": "0.1.0",
   "private": true,
+  "workspaces": ["cli"],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
