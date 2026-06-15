@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
+import { getInjectedActor } from "@/lib/auth/actor-context";
 
 const OS_COOKIE = "os_session";
 const FALLBACK_SECRET = "default_super_secret_for_dev_only";
@@ -62,6 +63,8 @@ export async function getOsSession(): Promise<OsSession | null> {
 }
 
 export async function requireOsUser() {
+  const injected = getInjectedActor();
+  if (injected) return injected;
   const session = await getOsSession();
   if (!session) redirect("/login");
   return session;
