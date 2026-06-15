@@ -1,7 +1,7 @@
 import { getProfile, defaultApiUrl } from "./config.js";
 
 export class CliError extends Error {
-  constructor(message: string, public exitCode = 1) {
+  constructor(message: string, public exitCode = 1, public code?: string) {
     super(message);
   }
 }
@@ -34,7 +34,7 @@ export async function api<T = unknown>(
           : res.status >= 500
             ? 70 /*EX_SOFTWARE*/
             : 65 /*EX_DATAERR*/;
-    throw new CliError(`${code ? `[${code}] ` : ""}${msg}`, exit);
+    throw new CliError(`${code ? `[${code}] ` : ""}${msg}`, exit, code);
   }
   return json.data as T;
 }
