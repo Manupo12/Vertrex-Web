@@ -174,7 +174,7 @@ export function FinanceDetailClient({ finance }: { finance: FinanceDetail }) {
       </Card>
 
       {finance.status !== "paid" && (
-        <form action={markFinancePaidAction.bind(null, finance.id)}>
+        <form action={async () => { await markFinancePaidAction(finance.id); }}>
           <Button type="submit" variant="outline">
             <CheckCircle className="mr-2 h-4 w-4" />
             Marcar como pagado
