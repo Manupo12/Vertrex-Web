@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, FolderKanban, FileText, Scale, BookOpen, Shield, DollarSign, Calendar, Link2, Megaphone, Users2, Wand2, Settings, Command, LogOut, Inbox, CheckSquare, Map } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, FileText, Scale, BookOpen, Shield, DollarSign, Calendar, Link2, Megaphone, Users2, Wand2, Settings, Command, LogOut, Inbox, CheckSquare, Map, Share2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const NAV_GROUPS = [
@@ -29,6 +29,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/os/hub", label: "Hub", icon: BookOpen },
       { href: "/os/links", label: "Links", icon: Link2 },
+      { href: "/os/graph", label: "Grafo", icon: Share2 },
       { href: "/os/resources", label: "Recursos", icon: Shield },
     ],
   },
