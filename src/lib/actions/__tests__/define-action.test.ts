@@ -22,11 +22,11 @@ describe("defineAction", () => {
     const mockActor = { userId: "user-1", email: "user@test.com", name: "User", role: "team" as const };
     (requireOsUser as any).mockResolvedValue(mockActor);
 
-    const action = defineAction({}, async (input: { x: number }, { actor }) => {
-      return { result: input.x * 2, actor };
+    const action = defineAction({}, async ({ actor }, x: number) => {
+      return { result: x * 2, actor };
     });
 
-    const res = await action({ x: 5 });
+    const res = await action(5);
     expect(requireOsUser).toHaveBeenCalled();
     expect(res.result).toBe(10);
     expect(res.actor).toEqual(mockActor);
@@ -42,7 +42,7 @@ describe("defineAction", () => {
 
     const action = defineAction(
       { module: "finances", level: "write" },
-      async (input: string) => {
+      async ({ actor }, input: string) => {
         return { ok: true };
       }
     );
@@ -61,12 +61,12 @@ describe("defineAction", () => {
 
     const action = defineAction(
       { audit: { verb: "create_task", targetType: "task" } },
-      async () => {
+      async ({ actor }) => {
         return { id: "task-123", title: "Nueva tarea" };
       }
     );
 
-    const res = await action({});
+    const res = await action();
     expect(res.id).toBe("task-123");
     expect(logActivity).toHaveBeenCalledWith({
       actorType: "team",
@@ -75,5 +75,20 @@ describe("defineAction", () => {
       targetType: "task",
       targetId: "task-123"
     });
+  });
+
+  it("funciona con multiples argumentos en la accion", async () => {
+    const { defineAction } = await import("../define-action");
+    const { requireOsUser } = await import("@/lib/auth/session");
+
+    const mockActor = { userId: "user-1", email: "user@test.com", name: "User", role: "team" as const };
+    (requireOsUser as any).mockResolvedValue(mockActor);
+
+    const action = defineAction({}, async ({ actor }, arg1: string, arg2: number) => {
+      return { msg: `${arg1}-${arg2}` };
+    });
+
+    const res = await action("hello", 42);
+    expect(res.msg).toBe("hello-42");
   });
 });
