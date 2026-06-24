@@ -4,6 +4,7 @@ import { eq, or, and } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
 import { ProjectsFinanceView } from "./ProjectsFinanceView";
+import { FinanceTabs } from "../FinanceTabs";
 
 export default async function FinancesProjectsPage() {
   await requireOsUser();
@@ -54,6 +55,9 @@ export default async function FinancesProjectsPage() {
         description="Estado financiero y margen de los proyectos activos." 
         breadcrumbs={[{ label: "Finanzas", href: "/os/finances" }, { label: "P&L Proyectos" }]}
       />
+      
+      <FinanceTabs activeTab="projects" />
+      
       <ProjectsFinanceView projects={projectStats} />
     </div>
   );

@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SavedViewBar } from "@/components/os/SavedViews/SavedViewBar";
 import { bulkDeleteClientsAction } from "@/lib/db/actions/crm";
+import { bulkTagEntitiesAction } from "@/lib/db/actions/tags";
 import { listSavedViewsAction, createSavedViewAction, updateSavedViewAction, deleteSavedViewAction } from "@/lib/db/actions/saved-views";
 
 type ClientRow = { id: string; slug: string; name: string; email: string | null; phone: string | null; status: string; createdAt: Date };
@@ -97,7 +98,17 @@ export function CrmList({ clients }: CrmListProps) {
   ];
 
   const bulkActions = [
-    { label: "Etiquetar", icon: TagsIcon, onClick: () => toast.info("Etiquetar próximamente") },
+    { label: "Etiquetar", icon: TagsIcon, onClick: () => {
+      const ids = filtered.filter((_, i) => rowSelection[String(i)]).map(c => c.id);
+      const tagLabel = prompt("Ingresa la etiqueta (ej. VIP, Nuevo):");
+      if (!tagLabel) return;
+      bulkTagEntitiesAction(ids, "client", tagLabel).then(() => {
+        setRowSelection({});
+        toast.success(`${ids.length} cliente(s) etiquetado(s)`);
+      }).catch(err => {
+        toast.error("Error al etiquetar: " + err.message);
+      });
+    } },
     { label: "Eliminar", icon: TrashIcon, variant: "danger" as const, onClick: () => {
       const ids = filtered.filter((_, i) => rowSelection[String(i)]).map(c => c.id);
       bulkDeleteClientsAction(ids).then(() => {

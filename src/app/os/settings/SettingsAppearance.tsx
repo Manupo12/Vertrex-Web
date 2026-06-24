@@ -1,15 +1,28 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { updateUserPreferencesAction } from "@/lib/db/actions/settings";
 
-export function SettingsAppearance() {
-  const [density, setDensity] = useState("comfortable");
+interface SettingsAppearanceProps {
+  initialPreferences?: any;
+}
 
-  const handleApply = () => {
+export function SettingsAppearance({ initialPreferences }: SettingsAppearanceProps) {
+  const [density, setDensity] = useState(initialPreferences?.appearance?.density || "comfortable");
+
+  useEffect(() => {
     document.documentElement.style.setProperty("--table-row-height", density === "comfortable" ? "44px" : "32px");
-    toast.success("Cambios aplicados");
+  }, [density]);
+
+  const handleApply = async () => {
+    try {
+      await updateUserPreferencesAction({ appearance: { density } });
+      toast.success("Cambios aplicados");
+    } catch {
+      toast.error("Error al guardar apariencia");
+    }
   };
 
   return (

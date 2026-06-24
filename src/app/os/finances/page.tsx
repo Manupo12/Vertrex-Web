@@ -6,6 +6,8 @@ import Link from "next/link";
 import { FinancesList } from "./FinancesList";
 import { ExportCSVButton } from "./ExportCSVButton";
 
+import { FinanceTabs } from "./FinanceTabs";
+
 export default async function FinancesPage() {
   const allFinances = await db
     .select()
@@ -32,6 +34,9 @@ export default async function FinancesPage() {
           </div>
         }
       />
+      
+      <FinanceTabs activeTab="movimientos" />
+
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="mb-1 text-xs text-muted-foreground">

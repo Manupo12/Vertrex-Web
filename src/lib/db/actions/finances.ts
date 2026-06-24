@@ -201,6 +201,7 @@ export const generateInvoiceAction = defineAction(
       name: `Cuenta de Cobro - ${new Date().toISOString().split("T")[0]}`,
       type: "cuenta_cobro",
       sizeBytes: bodyHtml.length,
+      bodyHtml,
     }).returning();
 
     await linkEntities(projectId, "project", doc.id, "legal", "has_invoice");

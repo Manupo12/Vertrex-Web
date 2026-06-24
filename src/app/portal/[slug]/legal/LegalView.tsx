@@ -17,21 +17,29 @@ export function LegalView({ initialDocuments, clientSignatures, clientId }: { in
   const handleSign = async (data: { name: string, email: string, accepted: boolean }) => {
     setIsSubmitting(true);
     try {
-      // In a real implementation this would call a server action pointing to /api/portal/signature
-      const newSignature = {
-        id: Math.random().toString(),
-        legalId: signingDoc.id,
-        signerName: data.name,
-        signerEmail: data.email,
-        clientId,
-        signedAt: new Date()
-      };
-      
+      const res = await fetch("/api/portal/signature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          legalId: signingDoc.id,
+          signerName: data.name,
+          signerEmail: data.email,
+          checkboxAccepted: data.accepted,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Error al firmar");
+      }
+
+      const newSignature = await res.json();
       setSignatures([...signatures, newSignature]);
       toast.success("Documento firmado correctamente");
       setSigningDoc(null);
-    } catch (e) {
-      toast.error("Error al firmar el documento");
+      window.location.reload();
+    } catch (e: any) {
+      toast.error("Error al firmar el documento: " + e.message);
     } finally {
       setIsSubmitting(false);
     }

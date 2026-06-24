@@ -4,6 +4,8 @@ import { eq, desc, and } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
 import { InvoicesView } from "./InvoicesView";
+import { GenerateInvoiceButton } from "./GenerateInvoiceButton";
+import { FinanceTabs } from "../FinanceTabs";
 
 export default async function InvoicesPage() {
   await requireOsUser();
@@ -18,11 +20,11 @@ export default async function InvoicesPage() {
         description="Facturación y cuentas generadas." 
         breadcrumbs={[{ label: "Finanzas", href: "/os/finances" }, { label: "Cuentas de cobro" }]}
         primaryAction={
-          <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-            + Generar cuenta
-          </button>
+          <GenerateInvoiceButton projects={allProjects} />
         }
       />
+      
+      <FinanceTabs activeTab="invoices" />
       
       <InvoicesView initialInvoices={invoices} clients={allClients} projects={allProjects} />
     </div>

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { clients } from "@/lib/db/schema";
+import { clients, clientPortalUsers } from "@/lib/db/schema";
 import { hashPin, generateSixDigitPin } from "@/lib/security/password";
 import { getEntityConnections } from "@/lib/db/actions/graph";
 import { requireOsUser } from "@/lib/auth/session";
@@ -22,6 +22,18 @@ export async function createClientAction(formData: FormData) {
   const pinHash = await hashPin(pin);
   
   const [client] = await db.insert(clients).values({ name, slug, email: email || null, phone: phone || null, pinHash }).returning();
+  
+  if (email) {
+    await db.insert(clientPortalUsers).values({
+      clientId: client.id,
+      name,
+      email,
+      roleLabel: "Contacto principal",
+      pinHash,
+      isActive: true,
+    });
+  }
+  
   revalidatePath("/os/crm");
   redirect(`/os/crm/${client.slug}?pin=${pin}`);
 }

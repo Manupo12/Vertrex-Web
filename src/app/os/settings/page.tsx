@@ -6,7 +6,7 @@ import { SettingsAccount } from "./SettingsAccount";
 import { SettingsNotifications } from "./SettingsNotifications";
 import { SettingsAppearance } from "./SettingsAppearance";
 import { db } from "@/lib/db";
-import { resources } from "@/lib/db/schema";
+import { resources, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ResourcesList } from "@/app/os/resources/ResourcesList";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { CopyIcon } from "lucide-react";
 import { readFileSync } from "fs";
 
 export default async function SettingsPage() {
-  await requireAdminUser();
+  const session = await requireAdminUser();
   const internalVars = await db.select().from(resources).where(eq(resources.type, "env"));
   const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
   const osVersion = pkg.version || "3.0.0";
@@ -25,6 +25,9 @@ export default async function SettingsPage() {
     process.env.GOOGLE_OAUTH_REFRESH_TOKEN
   );
   const hasGithub = !!process.env.GITHUB_TOKEN;
+
+  const [userRecord] = await db.select().from(users).where(eq(users.id, session.userId)).limit(1);
+  const initialPreferences = userRecord?.preferences || {};
 
   return (
     <div>
@@ -44,7 +47,7 @@ export default async function SettingsPage() {
         <TabsContent value="cuenta"><SettingsAccount /></TabsContent>
         
         <TabsContent value="notificaciones">
-          <SettingsNotifications />
+          <SettingsNotifications initialPreferences={initialPreferences} />
         </TabsContent>
 
         <TabsContent value="integraciones">
@@ -126,7 +129,7 @@ export default async function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="apariencia">
-          <SettingsAppearance />
+          <SettingsAppearance initialPreferences={initialPreferences} />
         </TabsContent>
 
         <TabsContent value="sistema">

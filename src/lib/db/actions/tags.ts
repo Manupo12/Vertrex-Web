@@ -52,3 +52,34 @@ export async function untagEntityAction(entityId: string, entityType: EntityType
     eq(entityLinks.relationType, "tagged_with")
   ));
 }
+
+export async function bulkTagEntitiesAction(entityIds: string[], entityType: EntityType, tagLabel: string) {
+  await requireOsUser();
+  const slug = tagLabel.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  if (!slug) throw new Error("Etiqueta inválida");
+  
+  let tag = await db.select().from(tags).where(eq(tags.slug, slug)).limit(1).then(rows => rows[0]);
+  if (!tag) {
+    [tag] = await db.insert(tags).values({ slug, label: tagLabel.trim(), color: "#3b82f6" }).returning();
+  }
+  
+  for (const entityId of entityIds) {
+    const existing = await db.select().from(entityLinks).where(and(
+      eq(entityLinks.sourceId, entityId),
+      eq(entityLinks.sourceType, entityType),
+      eq(entityLinks.targetId, tag.id),
+      eq(entityLinks.targetType, "tag"),
+      eq(entityLinks.relationType, "tagged_with")
+    ));
+    if (existing.length === 0) {
+      await db.insert(entityLinks).values({
+        sourceId: entityId,
+        sourceType: entityType,
+        targetId: tag.id,
+        targetType: "tag",
+        relationType: "tagged_with"
+      });
+    }
+  }
+}
+

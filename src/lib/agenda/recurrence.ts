@@ -13,13 +13,13 @@ export function expandRecurringEvents(events: any[], viewStart: Date, viewEnd: D
       let rule: RRule;
       switch (event.recurrenceRule) {
         case "daily":
-          rule = new RRule({ freq: RRule.DAILY, dtstart: new Date(event.startsAt), until: event.endsAt || viewEnd });
+          rule = new RRule({ freq: RRule.DAILY, dtstart: new Date(event.startsAt), until: viewEnd });
           break;
         case "weekly":
-          rule = new RRule({ freq: RRule.WEEKLY, dtstart: new Date(event.startsAt), until: event.endsAt || viewEnd });
+          rule = new RRule({ freq: RRule.WEEKLY, dtstart: new Date(event.startsAt), until: viewEnd });
           break;
         case "monthly":
-          rule = new RRule({ freq: RRule.MONTHLY, dtstart: new Date(event.startsAt), until: event.endsAt || viewEnd });
+          rule = new RRule({ freq: RRule.MONTHLY, dtstart: new Date(event.startsAt), until: viewEnd });
           break;
         default:
           expanded.push(event);

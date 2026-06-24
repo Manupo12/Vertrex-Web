@@ -10,6 +10,7 @@ import { createTeamMemberAction } from "@/lib/db/actions/team";
 import { formatShortDate } from "@/lib/format";
 import { ManageMember } from "./ManageMember";
 import { CopyButton } from "./CopyButton";
+import { PermissionsEditor } from "./PermissionsEditor";
 
 interface Props { params: Promise<{ userId: string }>; searchParams: Promise<{ pass?: string }> }
 
@@ -59,6 +60,7 @@ export default async function TeamDetailPage({ params, searchParams }: Props) {
           <div className="flex justify-between"><span className="text-muted-foreground">Creado</span><span>{formatShortDate(user.createdAt)}</span></div>
         </CardContent></Card>
         <ManageMember userId={user.id} currentRole={user.role} isActive={user.isActive} />
+        <PermissionsEditor userId={user.id} />
       </div>
     </div>
   );

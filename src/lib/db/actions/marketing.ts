@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { socialAccounts, contentPlan, marketingHashtags } from "@/lib/db/schema";
 import { encrypt, decrypt } from "@/lib/security/encryption";
 import { requireOsUser } from "@/lib/auth/session";
+import { logActivity } from "@/lib/activity/log";
 
 export async function createSocialAccountAction(formData: FormData) {
   await requireOsUser();
@@ -23,9 +24,18 @@ export async function createSocialAccountAction(formData: FormData) {
 }
 
 export async function revealSocialPasswordAction(accountId: string) {
-  await requireOsUser();
+  const user = await requireOsUser();
   const [account] = await db.select().from(socialAccounts).where(eq(socialAccounts.id, accountId)).limit(1);
   if (!account || !account.passwordEncrypted) throw new Error("No hay contrasena guardada");
+  
+  await logActivity({
+    actorType: "team",
+    actorId: user.userId,
+    verb: "reveal_password",
+    targetType: "social_account",
+    targetId: accountId,
+  });
+
   return { password: decrypt(account.passwordEncrypted) };
 }
 

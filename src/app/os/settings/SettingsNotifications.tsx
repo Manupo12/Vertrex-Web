@@ -3,22 +3,27 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { updateUserPreferencesAction } from "@/lib/db/actions/settings";
 
-export function SettingsNotifications() {
-  const [prefs, setPrefs] = useState({
-    taskAssigned: true,
-    mentions: true,
-    weeklyDigest: true,
+interface SettingsNotificationsProps {
+  initialPreferences?: any;
+}
+
+export function SettingsNotifications({ initialPreferences }: SettingsNotificationsProps) {
+  const [prefs, setPrefs] = useState(() => {
+    const defaults = {
+      taskAssigned: true,
+      mentions: true,
+      weeklyDigest: true,
+    };
+    return initialPreferences?.notifications 
+      ? { ...defaults, ...initialPreferences.notifications }
+      : defaults;
   });
 
   const handleSave = async () => {
     try {
-      const res = await fetch("/api/user/notification-preferences", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ preferences: prefs }),
-      });
-      if (!res.ok) throw new Error("Error");
+      await updateUserPreferencesAction({ notifications: prefs });
       toast.success("Preferencias guardadas");
     } catch {
       toast.error("Error al guardar preferencias");

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { legalDocuments, clients, signatures } from "@/lib/db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { legalDocuments, clients, signatures, entityLinks } from "@/lib/db/schema";
+import { eq, desc, and, or, inArray } from "drizzle-orm";
 import { requirePortalClient } from "@/lib/auth/portal";
 import { LegalView } from "./LegalView";
 
@@ -11,14 +11,23 @@ export default async function PortalLegalPage({ params }: { params: Promise<{ sl
   const [client] = await db.select().from(clients).where(eq(clients.id, session.clientId));
   if (!client) throw new Error("Cliente no encontrado");
 
-  // In a real app we'd filter by entityLinks pointing to this client
-  // For V3 spec simplicity, we fetch all public legal documents.
-  const publicLegals = await db.select()
-    .from(legalDocuments)
-    .where(eq(legalDocuments.isPublic, true))
-    .orderBy(desc(legalDocuments.createdAt));
+  const connections = await db.select()
+    .from(entityLinks)
+    .where(
+      and(
+        or(eq(entityLinks.sourceId, client.id), eq(entityLinks.targetId, client.id)),
+        or(eq(entityLinks.sourceType, "legal"), eq(entityLinks.targetType, "legal"))
+      )
+    );
 
-  const legalIds = publicLegals.map(l => l.id);
+  const legalIds = connections.map(l => l.sourceId === client.id ? l.targetId : l.sourceId);
+
+  const publicLegals = legalIds.length > 0
+    ? await db.select()
+        .from(legalDocuments)
+        .where(and(eq(legalDocuments.isPublic, true), inArray(legalDocuments.id, legalIds)))
+        .orderBy(desc(legalDocuments.createdAt))
+    : [];
   
   let clientSignatures: any[] = [];
   if (legalIds.length > 0) {

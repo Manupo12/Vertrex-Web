@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
 import { addWeeks, format, startOfWeek } from "date-fns";
 import { es } from "date-fns/locale";
+import { FinanceTabs } from "../FinanceTabs";
 
 export default async function CashflowPage() {
   await requireOsUser();
@@ -56,6 +57,9 @@ export default async function CashflowPage() {
   return (
     <div>
       <PageHeader title="Proyección de Caja" description="Ingresos pendientes y gastos recurrentes a 90 días." breadcrumbs={[{ label: "Finanzas", href: "/os/finances" }, { label: "Cashflow" }]} />
+      
+      <FinanceTabs activeTab="cashflow" />
+      
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-4">
           <div className="text-xs text-[var(--color-muted-foreground)] uppercase tracking-wider mb-1">Ingresos pendientes</div>

@@ -51,3 +51,8 @@ export async function addTasksToMilestoneAction(milestoneId: string, taskIds: st
   await db.update(tasks).set({ milestoneId }).where(inArray(tasks.id, taskIds));
   revalidatePath("/os/projects");
 }
+
+export async function getProjectMilestonesAction(projectId: string) {
+  await requireOsUser();
+  return db.select().from(milestones).where(eq(milestones.projectId, projectId));
+}
