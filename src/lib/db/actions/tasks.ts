@@ -203,7 +203,16 @@ export async function assignTaskAction(id: string, assigneeId: string | null) {
 }
 
 export async function setTaskPriorityAction(id: string, priority: number) {
+  const user = await requireOsUser();
   const [task] = await db.update(tasks).set({ priority, updatedAt: new Date() }).where(eq(tasks.id, id)).returning();
+  await logActivity({
+    actorType: "team",
+    actorId: user.userId,
+    verb: "priority_changed",
+    targetType: "task",
+    targetId: id,
+    payload: { priority },
+  });
   revalidatePath("/os/projects");
   return task;
 }
