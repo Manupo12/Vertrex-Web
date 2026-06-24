@@ -5,12 +5,8 @@ import { db } from "@/lib/db";
 import { entityLinks } from "@/lib/db/schema";
 import type { EntityType } from "@/lib/db/actions/graph-types";
 import { SearchResult } from "@/lib/db/actions/search";
-import { 
-  clients, projects, documents, legalDocuments, knowledgeNotes, resources, finances, 
-  agendaEvents, repositories, links, socialAccounts, users, tickets,
-  tasks, cycles, milestones, tags
-} from "@/lib/db/schema";
 import { requireOsUser } from "@/lib/auth/session";
+import { getDescriptor } from "@/lib/entities/registry";
 
 export async function linkEntities(
   sourceId: string,
@@ -93,12 +89,16 @@ export async function getResolvedEntityConnections(entityId: string): Promise<Re
 
   const resolved: ResolvedConnection[] = [];
 
-  const resolveType = async (type: string, table: any, mapper: (row: any) => Pick<SearchResult, "label" | "subtitle" | "href">) => {
-    if (!targetsByType[type] || targetsByType[type].length === 0) return;
-    const ids = targetsByType[type].map(t => t.id);
-    const rows = await db.select().from(table as any).where(inArray((table as any).id, ids));
+  const promises = Object.entries(targetsByType).map(async ([type, targets]) => {
+    if (targets.length === 0) return;
+    const desc = getDescriptor(type as EntityType);
+    if (!desc) return;
+
+    const ids = targets.map(t => t.id);
+    const rows = await db.select().from(desc.table).where(inArray(desc.table.id, ids));
+
     for (const row of rows) {
-      const targetData = targetsByType[type].find(t => t.id === row.id);
+      const targetData = targets.find(t => t.id === row.id);
       if (targetData) {
         resolved.push({
           id: row.id,
@@ -106,32 +106,12 @@ export async function getResolvedEntityConnections(entityId: string): Promise<Re
           linkId: targetData.linkId,
           relationType: targetData.relationType,
           isSource: targetData.isSource,
-          ...mapper(row)
+          ...desc.toDisplay(row)
         });
       }
     }
-  };
+  });
 
-  await Promise.all([
-    resolveType("client", clients, c => ({ label: c.name, subtitle: `Cliente (${c.slug})`, href: `/os/crm/${c.slug}` })),
-    resolveType("project", projects, p => ({ label: p.name, subtitle: `Proyecto (${p.status})`, href: `/os/projects/${p.id}` })),
-    resolveType("document", documents, d => ({ label: d.name, subtitle: `Documento`, href: `/os/documents/${d.id}` })),
-    resolveType("legal", legalDocuments, l => ({ label: l.name, subtitle: `Legal (${l.type})`, href: `/os/legal/${l.id}` })),
-    resolveType("idea", knowledgeNotes, n => ({ label: n.title, subtitle: `Idea`, href: `/os/hub/${n.id}` })),
-    resolveType("note", knowledgeNotes, n => ({ label: n.title, subtitle: `Nota`, href: `/os/hub/${n.id}` })),
-    resolveType("resource", resources, r => ({ label: r.title, subtitle: `Recurso (${r.type})`, href: `/os/resources/${r.id}` })),
-    resolveType("finance", finances, f => ({ label: f.concept, subtitle: `Finanza (${f.type})`, href: `/os/finances/${f.id}` })),
-    resolveType("agenda", agendaEvents, e => ({ label: e.title, subtitle: `Evento`, href: `/os/agenda` })),
-    resolveType("repository", repositories, r => ({ label: `${r.owner}/${r.repoName}`, subtitle: `Repositorio GitHub`, href: `/os/links/${r.id}` })),
-    resolveType("link", links, l => ({ label: l.title || l.url, subtitle: `Link (${l.type})`, href: `/os/links/${l.id}` })),
-    resolveType("social_account", socialAccounts, s => ({ label: s.handle, subtitle: `Red Social (${s.platform})`, href: `/os/marketing/${s.id}` })),
-    resolveType("team_member", users, u => ({ label: u.name, subtitle: `Equipo (${u.role})`, href: `/os/team/${u.id}` })),
-    resolveType("ticket", tickets, t => ({ label: t.title, subtitle: `Ticket (${t.status})`, href: `/os/crm` })),
-    resolveType("task", tasks, t => ({ label: t.title, subtitle: `Tarea (${t.identifier})`, href: `/t/${t.identifier}` })),
-    resolveType("cycle", cycles, c => ({ label: c.name, subtitle: `Ciclo (${c.status})`, href: `/os/projects/${c.projectId}/cycles/${c.id}` })),
-    resolveType("milestone", milestones, m => ({ label: m.name, subtitle: `Hito (${m.status})`, href: `/os/projects/${m.projectId}/milestones` })),
-    resolveType("tag", tags, t => ({ label: t.label, subtitle: `Etiqueta`, href: `#` })),
-  ]);
-
+  await Promise.all(promises);
   return resolved;
 }
