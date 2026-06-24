@@ -20,12 +20,26 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
   const subtasks = await db.select().from(tasks).where(eq(tasks.parentTaskId, taskId));
 
   const blockingLinks = await db.select().from(entityLinks)
-    .where(and(eq(entityLinks.sourceId, taskId), eq(entityLinks.relationType, "blocks")));
+    .where(and(
+      eq(entityLinks.sourceId, taskId),
+      eq(entityLinks.sourceType, "task"),
+      eq(entityLinks.targetType, "task"),
+      eq(entityLinks.relationType, "blocks")
+    ));
   const blockedByLinks = await db.select().from(entityLinks)
-    .where(and(eq(entityLinks.targetId, taskId), eq(entityLinks.relationType, "blocked_by")));
+    .where(and(
+      eq(entityLinks.targetId, taskId),
+      eq(entityLinks.sourceType, "task"),
+      eq(entityLinks.targetType, "task"),
+      eq(entityLinks.relationType, "blocks")
+    ));
 
-  const blockingTasks = await db.select().from(tasks).where(inArray(tasks.id, blockingLinks.map(l => l.targetId)));
-  const blockedByTasks = await db.select().from(tasks).where(inArray(tasks.id, blockedByLinks.map(l => l.sourceId)));
+  const blockingTasks = blockingLinks.length > 0
+    ? await db.select().from(tasks).where(inArray(tasks.id, blockingLinks.map(l => l.targetId)))
+    : [];
+  const blockedByTasks = blockedByLinks.length > 0
+    ? await db.select().from(tasks).where(inArray(tasks.id, blockedByLinks.map(l => l.sourceId)))
+    : [];
 
   const blockingWithLinks = blockingTasks.map(t => ({
     task: t,
