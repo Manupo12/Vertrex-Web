@@ -29,7 +29,7 @@ test.describe('Autenticacion Portal Cliente', () => {
   });
 
   test('Login de portal fallido muestra mensaje de error', async ({ page }) => {
-    await page.goto('/portal/login?error=1');
-    await expect(page.locator('text=El PIN o codigo no coinciden')).toBeVisible();
+    await page.goto('/portal/login?error=invalid_pin');
+    await expect(page.locator('text=Los datos no coinciden')).toBeVisible();
   });
 });

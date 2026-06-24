@@ -11,6 +11,6 @@ test.describe("Task critical flow", () => {
     await page.goto("/os/projects");
     await page.waitForLoadState("networkidle");
 
-    await expect(page.locator("text=Proyectos")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=Proyectos").first()).toBeVisible({ timeout: 5000 });
   });
 });

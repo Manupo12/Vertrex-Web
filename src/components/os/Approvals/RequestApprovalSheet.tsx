@@ -5,6 +5,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
+import { requestApprovalAction } from "@/lib/db/actions/approvals";
+
 export interface RequestApprovalSheetProps {
   targetType: string;
   targetId: string;
@@ -25,7 +27,13 @@ export function RequestApprovalSheet({ targetType, targetId, targetName, clientI
     if (!title.trim() || !clientId) return;
     setIsSubmitting(true);
     try {
-      // In a real app, this would call requestApprovalAction
+      await requestApprovalAction({
+        title,
+        description: description || undefined,
+        targetType,
+        targetId,
+        clientId,
+      });
       toast.success("Aprobación solicitada al cliente");
       onOpenChange(false);
     } catch (e) {
