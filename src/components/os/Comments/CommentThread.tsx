@@ -4,8 +4,7 @@ import { formatRelativeTime } from "@/lib/format";
 import { UserIcon } from "lucide-react";
 import { EntityMentionRenderer } from "../Editor/EntityMentionRenderer";
 
-// Simple parser for demonstration.
-// In a real app, this would use a proper parser to find @type:id[label] and replace with EntityMentionRenderer
+// Parser for rich @mentions within comment bodies, rendering them as EntityMentionRenderer chips.
 const renderBody = (text: string) => {
   // Regex to match mentions: @type:id[label]
   const mentionRegex = /@(\w+):([a-zA-Z0-9-]+)\[([^\]]+)\]/g;

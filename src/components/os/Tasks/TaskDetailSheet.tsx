@@ -9,6 +9,7 @@ import { TASK_TYPE_COLORS, TASK_TYPES } from "./TaskFilters";
 import { useState, useEffect } from "react";
 import { deleteTaskAction, createSubtaskAction } from "@/lib/db/actions/tasks";
 import { listCommentsAction, addCommentAction } from "@/lib/db/actions/comments";
+import { CommentThread } from "../Comments/CommentThread";
 import { toast } from "sonner";
 import { TrashIcon } from "lucide-react";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
@@ -191,25 +192,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, onEditFull, onDelete
             <summary className="text-sm font-semibold cursor-pointer text-[var(--color-foreground)]">
               Comentarios ({comments.length})
             </summary>
-            <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
-              {comments.length === 0 ? (
-                <p className="text-sm text-[var(--color-muted-foreground)] py-2">No hay comentarios todavía.</p>
-              ) : (
-                comments.map(c => {
-                  const author = users.find(u => u.id === c.authorId);
-                  return (
-                    <div key={c.id} className="text-sm p-3 bg-[var(--color-muted)]/20 rounded-lg border border-[var(--color-border)]">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-xs">{author?.name || "Usuario"}</span>
-                        <span className="text-xs text-[var(--color-muted-foreground)]">
-                          {c.authorType === "team" ? "Equipo" : "Cliente"}
-                        </span>
-                      </div>
-                      <p className="text-[var(--color-foreground)] whitespace-pre-wrap">{c.body}</p>
-                    </div>
-                  );
-                })
-              )}
+            <div className="mt-3 max-h-60 overflow-y-auto pr-1">
+              <CommentThread 
+                comments={comments} 
+                users={users} 
+              />
             </div>
             <div className="mt-3 flex gap-2">
               <textarea
