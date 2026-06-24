@@ -19,6 +19,13 @@ export default async function SettingsPage() {
   const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
   const osVersion = pkg.version || "3.0.0";
 
+  const hasDrive = !!(
+    process.env.GOOGLE_OAUTH_CLIENT_ID &&
+    process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
+    process.env.GOOGLE_OAUTH_REFRESH_TOKEN
+  );
+  const hasGithub = !!process.env.GITHUB_TOKEN;
+
   return (
     <div>
       <PageHeader title="Configuración" description="Ajustes del sistema y perfil" breadcrumbs={[{ label: "Configuración" }]} />
@@ -46,9 +53,15 @@ export default async function SettingsPage() {
             <CardContent>
               <div className="flex justify-between items-center p-3 bg-[var(--color-muted)]/20 rounded-lg border border-[var(--color-border)] mb-4">
                 <div className="text-sm">Estado de la conexión</div>
-                <div className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded font-medium">Conectado (OAuth2)</div>
+                {hasDrive ? (
+                  <div className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded font-medium">Conectado (OAuth2)</div>
+                ) : (
+                  <div className="text-xs px-2 py-1 bg-red-500/10 text-red-500 rounded font-medium">Desconectado</div>
+                )}
               </div>
-              <Button variant="outline" size="sm">Renovar token</Button>
+              {hasDrive && (
+                <Button variant="outline" size="sm">Renovar token</Button>
+              )}
             </CardContent>
           </Card>
           <Card className="max-w-2xl mb-4 bg-[var(--color-card)]">
@@ -56,7 +69,11 @@ export default async function SettingsPage() {
             <CardContent>
               <div className="flex justify-between items-center p-3 bg-[var(--color-muted)]/20 rounded-lg border border-[var(--color-border)] mb-4">
                 <div className="text-sm">Token configurado</div>
-                <div className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded font-medium">Activo</div>
+                {hasGithub ? (
+                  <div className="text-xs px-2 py-1 bg-green-500/10 text-green-500 rounded font-medium">Activo</div>
+                ) : (
+                  <div className="text-xs px-2 py-1 bg-red-500/10 text-red-500 rounded font-medium">Inactivo</div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -76,24 +93,32 @@ export default async function SettingsPage() {
 
         <TabsContent value="mcp">
           <Card className="max-w-2xl bg-[var(--color-card)]">
-            <CardHeader><CardTitle>Model Context Protocol (MCP)</CardTitle><CardDescription>Endpoints V3 para agentes de IA (ej. OpenClaw)</CardDescription></CardHeader>
+            <CardHeader><CardTitle>API REST V1 & MCP</CardTitle><CardDescription>Endpoints API V1 para agentes y automatizaciones</CardDescription></CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg bg-[var(--color-muted)]/50 p-4 border border-[var(--color-border)]">
                 <div className="mb-4">
-                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/mcp/graph <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Snapshot completo de entidades y conexiones.</p>
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/v1/search?q=QUERY <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Búsqueda global y unificada de entidades en el OS.</p>
                 </div>
                 <div className="mb-4">
-                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/mcp/tasks <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Tareas asignadas, estado, prioridad y proyecto.</p>
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/v1/tasks <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Listado de tareas del OS con filtros opcionales.</p>
                 </div>
                 <div className="mb-4">
-                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/mcp/activity?since=ISO <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Feed de actividad delta para contexto reciente.</p>
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between">GET /api/v1/activity <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Feed de actividad reciente en tiempo real.</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium mb-1 flex items-center justify-between text-orange-500">POST /api/mcp/intent <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
-                  <p className="text-xs text-[var(--color-muted-foreground)]">Endpoint reservado para intenciones de agentes (Stub V3.0).</p>
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-1 flex items-center justify-between text-green-500">POST /api/v1/intent <Button variant="ghost" size="sm" className="h-6"><CopyIcon className="h-3 w-3" /></Button></p>
+                  <p className="text-xs text-[var(--color-muted-foreground)]">Motor de intenciones de lenguaje natural (reemplaza stubs antiguos).</p>
+                </div>
+                <div className="mt-4 pt-4 border-t border-[var(--color-border)] space-y-2">
+                  <p className="text-xs text-[var(--color-muted-foreground)]">
+                    Para autenticar tus llamadas API, genera tus <strong>tokens personales de API</strong> haciendo un POST con JSON <code className="text-primary font-mono">{`{"name": "nombre-del-token"}`}</code> a:
+                  </p>
+                  <p className="text-sm font-semibold text-primary font-mono bg-black/40 p-2 rounded border border-[var(--color-border)]">
+                    /api/v1/auth/tokens
+                  </p>
                 </div>
               </div>
             </CardContent>
