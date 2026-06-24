@@ -1,11 +1,12 @@
 import { db } from "@/lib/db";
 import { activity } from "@/lib/db/schema";
+import type { EntityType } from "@/lib/db/actions/graph-types";
 
 export async function logActivity(params: {
   actorType: "team" | "client" | "system";
   actorId?: string;
   verb: string;
-  targetType: any;
+  targetType: EntityType;
   targetId: string;
   payload?: Record<string, any>;
 }) {
