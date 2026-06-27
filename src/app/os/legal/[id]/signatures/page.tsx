@@ -28,7 +28,7 @@ export default async function LegalSignaturesPage({ params }: { params: Promise<
         ]}
       />
 
-      <div className="mt-6 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+      <div className="mt-6 bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg overflow-x-auto">
         {allSignatures.length > 0 ? (
           <table className="w-full text-sm">
             <thead>

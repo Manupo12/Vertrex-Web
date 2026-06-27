@@ -83,7 +83,7 @@ export default async function CashflowPage() {
           <div className={`font-medium text-2xl ${runningBalance >= 0 ? 'text-green-500' : 'text-red-500'}`}>${runningBalance.toLocaleString()}</div>
         </div>
       </div>
-      <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+      <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] bg-[var(--color-muted)]/30">

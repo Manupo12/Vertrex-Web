@@ -37,7 +37,7 @@ const SheetContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 gap-4 border border-border bg-card p-6 shadow-lg transition-transform duration-300",
+        "fixed z-50 gap-4 border border-border bg-card p-6 shadow-lg transition-transform duration-300 overflow-y-auto",
         side === "right" &&
           "inset-y-0 right-0 h-full w-full sm:max-w-md data-[state=open]:translate-x-0 data-[state=closed]:translate-x-full",
         side === "left" &&
