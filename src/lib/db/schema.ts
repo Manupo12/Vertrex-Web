@@ -54,6 +54,7 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").notNull().default(true),
   status: text("status").notNull().default("active"),
   preferences: jsonb("preferences").default(sql`'{}'::jsonb`),
+  telegramUsername: text("telegram_username"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
