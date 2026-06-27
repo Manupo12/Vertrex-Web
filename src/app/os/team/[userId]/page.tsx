@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 import { requireAdminUser } from "@/lib/auth/session";
-import { createTeamMemberAction } from "@/lib/db/actions/team";
+import { createTeamMemberAction, setTelegramUsernameAction } from "@/lib/db/actions/team";
 import { formatShortDate } from "@/lib/format";
 import { ManageMember } from "./ManageMember";
 import { CopyButton } from "./CopyButton";
@@ -59,6 +59,38 @@ export default async function TeamDetailPage({ params, searchParams }: Props) {
           <div className="flex justify-between"><span className="text-muted-foreground">Estado</span><Badge variant={user.isActive ? "success" : "danger"}>{user.isActive ? "Activo" : "Inactivo"}</Badge></div>
           <div className="flex justify-between"><span className="text-muted-foreground">Creado</span><span>{formatShortDate(user.createdAt)}</span></div>
         </CardContent></Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Integración de Telegram</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <form 
+              action={async (fd: FormData) => {
+                "use server";
+                const username = String(fd.get("telegramUsername") || "");
+                await setTelegramUsernameAction(userId, username);
+              }} 
+              className="flex items-center gap-2"
+            >
+              <div className="flex-1">
+                <input 
+                  name="telegramUsername"
+                  placeholder="Usuario de Telegram (ej: manuel_v)"
+                  defaultValue={user.telegramUsername || ""}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <button type="submit" className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shrink-0">
+                Guardar
+              </button>
+            </form>
+            <p className="text-xs text-muted-foreground">
+              Ingresa el usuario sin el símbolo @. Esto permite vincular las tareas de este miembro al bot notificador de Telegram.
+            </p>
+          </CardContent>
+        </Card>
+
         <ManageMember userId={user.id} currentRole={user.role} isActive={user.isActive} />
         <PermissionsEditor userId={user.id} />
       </div>

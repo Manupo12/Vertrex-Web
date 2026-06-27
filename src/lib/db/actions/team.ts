@@ -82,7 +82,31 @@ export async function setModulePermissionAction(userId: string, module: string, 
   revalidatePath("/os/team");
 }
 
+import { normalizeTelegramUsername } from "@/lib/telegram/mention";
+import { logActivity } from "@/lib/activity/log";
+
+export async function setTelegramUsernameAction(userId: string, rawUsername: string) {
+  const adminUser = await requireAdminUser();
+  const normalized = normalizeTelegramUsername(rawUsername);
+
+  await db.update(users).set({ telegramUsername: normalized || null }).where(eq(users.id, userId));
+
+  await logActivity({
+    actorType: "team",
+    actorId: adminUser.userId,
+    verb: "telegram_linked",
+    targetType: "user",
+    targetId: userId,
+    payload: { telegramUsername: normalized }
+  });
+
+  revalidatePath("/os/team");
+  revalidatePath(`/os/team/${userId}`);
+}
+
 export async function getModulePermissionsAction(userId: string) {
   await requireAdminUser();
   return db.select().from(modulePermissions).where(eq(modulePermissions.userId, userId));
 }
+
+
