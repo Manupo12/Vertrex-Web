@@ -9,8 +9,8 @@ const NAV_GROUPS = [
   {
     label: "Operacion",
     items: [
-      { href: "/os/admin", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/os/crm", label: "CRM", icon: Users },
+      { href: "/os/admin", label: "Panel", icon: LayoutDashboard },
+      { href: "/os/crm", label: "Clientes", icon: Users },
       { href: "/os/projects", label: "Proyectos", icon: FolderKanban },
       { href: "/os/documents", label: "Documentos", icon: FileText },
       { href: "/os/legal", label: "Legal", icon: Scale },
@@ -21,16 +21,16 @@ const NAV_GROUPS = [
     items: [
       { href: "/os/projects/inbox", label: "Inbox", icon: Inbox },
       { href: "/os/projects/mine", label: "Mis tareas", icon: CheckSquare },
-      { href: "/os/projects/roadmap", label: "Roadmap", icon: Map },
+      { href: "/os/projects/roadmap", label: "Calendario guía", icon: Map },
     ],
   },
   {
     label: "Inteligencia",
     items: [
-      { href: "/os/hub", label: "Hub", icon: BookOpen },
+      { href: "/os/hub", label: "Ideas/Notas", icon: BookOpen },
       { href: "/os/links", label: "Links", icon: Link2 },
       { href: "/os/graph", label: "Grafo", icon: Share2 },
-      { href: "/os/resources", label: "Recursos", icon: Shield },
+      { href: "/os/resources", label: "Variables de entorno y claves", icon: Shield },
     ],
   },
   {
