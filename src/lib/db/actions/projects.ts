@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, and, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { projects, finances, entityLinks } from "@/lib/db/schema";
+import { projects, finances, entityLinks, knowledgeNotes, comments } from "@/lib/db/schema";
 import { requireOsUser } from "@/lib/auth/session";
 
 export async function createProjectAction(formData: FormData) {
@@ -69,4 +69,34 @@ export async function projectHasPaidAdvance(projectId: string): Promise<boolean>
 export async function getProjectById(id: string) {
   await requireOsUser();
   return db.select().from(projects).where(eq(projects.id, id)).limit(1).then(rows => rows[0] || null);
+}
+
+export async function deleteProject(id: string) {
+  await db.transaction(async (tx) => {
+    // 1. Set relatedProjectId = null in knowledgeNotes
+    await tx.update(knowledgeNotes).set({ relatedProjectId: null }).where(eq(knowledgeNotes.relatedProjectId, id));
+    
+    // 2. Delete polymorphic links (entityLinks) where project is source or target
+    await tx.delete(entityLinks).where(
+      or(
+        and(eq(entityLinks.sourceId, id), eq(entityLinks.sourceType, "project")),
+        and(eq(entityLinks.targetId, id), eq(entityLinks.targetType, "project"))
+      )
+    );
+
+    // 3. Delete comments where target is project
+    await tx.delete(comments).where(
+      and(eq(comments.targetId, id), eq(comments.targetType, "project"))
+    );
+
+    // 4. Delete the project itself (this will cascade delete cycles, milestones, and tasks)
+    await tx.delete(projects).where(eq(projects.id, id));
+  });
+}
+
+export async function deleteProjectAction(id: string) {
+  await requireOsUser();
+  await deleteProject(id);
+  revalidatePath("/os/projects");
+  redirect("/os/projects");
 }

@@ -1,11 +1,8 @@
 import { authed } from "@/lib/api/handler";
 import { assertPermission } from "@/lib/api/rbac";
-import { updateProjectAction, getProjectById } from "@/lib/db/actions/projects";
+import { updateProjectAction, getProjectById, deleteProject } from "@/lib/db/actions/projects";
 import { updateProjectSchema } from "@/lib/validation/v1/projects";
 import { ApiError } from "@/lib/api/errors";
-import { db } from "@/lib/db";
-import { projects } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -25,6 +22,6 @@ export const PATCH = authed<{ id: string }>(async ({ req, session, params }) => 
 
 export const DELETE = authed<{ id: string }>(async ({ session, params }) => {
   await assertPermission(session, "projects", "write");
-  await db.delete(projects).where(eq(projects.id, params.id));
+  await deleteProject(params.id);
   return { deleted: params.id };
 });
