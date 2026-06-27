@@ -95,7 +95,7 @@ export async function setTelegramUsernameAction(userId: string, rawUsername: str
     actorType: "team",
     actorId: adminUser.userId,
     verb: "telegram_linked",
-    targetType: "user",
+    targetType: "team_member",
     targetId: userId,
     payload: { telegramUsername: normalized }
   });

@@ -29,6 +29,13 @@
       "when": 1781502367786,
       "tag": "0003_noisy_crusher_hogan",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782580223127,
+      "tag": "0004_huge_grandmaster",
+      "breakpoints": true
     }
   ]
 }
