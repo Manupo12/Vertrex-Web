@@ -1,13 +1,14 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { tasks, projects, entityLinks, milestones } from "@/lib/db/schema";
+import { tasks, projects, entityLinks, milestones, users } from "@/lib/db/schema";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
 import { requireOsUser } from "@/lib/auth/session";
 import { nextTaskIdentifier } from "@/lib/identifiers/project-key";
 import { materializeMentions } from "@/lib/db/actions/mentions";
 import { logActivity } from "@/lib/activity/log";
 import { pushNotification } from "@/lib/notifications/service";
+import { notifyTaskAssigned } from "@/lib/telegram/notify-tasks";
 import { revalidatePath } from "next/cache";
 
 export async function createTaskAction(input: {
@@ -67,6 +68,19 @@ export async function createTaskAction(input: {
       targetId: task.id,
       sendEmail: true
     });
+
+    const [assigneeUser] = await db.select().from(users).where(eq(users.id, input.assigneeId)).limit(1);
+    if (assigneeUser) {
+      await notifyTaskAssigned({
+        assignee: assigneeUser,
+        task: {
+          identifier: task.identifier,
+          title: task.title,
+          dueDate: task.dueDate ? new Date(task.dueDate) : null
+        },
+        assignedByName: user.name
+      });
+    }
   }
 
   revalidatePath("/os/projects");
@@ -201,6 +215,19 @@ export async function assignTaskAction(id: string, assigneeId: string | null) {
       userId: assigneeId, type: "task_assigned",
       title: `Tarea asignada: ${task.identifier}`, targetType: "task", targetId: task.id
     });
+
+    const [assigneeUser] = await db.select().from(users).where(eq(users.id, assigneeId)).limit(1);
+    if (assigneeUser) {
+      await notifyTaskAssigned({
+        assignee: assigneeUser,
+        task: {
+          identifier: task.identifier,
+          title: task.title,
+          dueDate: task.dueDate ? new Date(task.dueDate) : null
+        },
+        assignedByName: user.name
+      });
+    }
   }
   revalidatePath("/os/projects");
   return task;
