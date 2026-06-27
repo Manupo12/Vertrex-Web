@@ -153,6 +153,40 @@ export function HubView({
       <div className="flex-1 overflow-hidden flex flex-col">
         <Toolbar searchPlaceholder="Buscar notas e ideas..." onSearch={setQuery} />
 
+        {/* Mobile Navigation bar */}
+        <div className="flex md:hidden items-center justify-between gap-2 mt-4 bg-[var(--color-card)] border border-[var(--color-border)] p-2 rounded-xl">
+          <div className="flex bg-[var(--color-muted)] p-0.5 rounded-lg shrink-0">
+            <button
+              onClick={() => setView("ideas")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                view === "ideas" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Incubadora ({ideas.length})
+            </button>
+            <button
+              onClick={() => setView("notes")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                view === "notes" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Notas ({regularNotes.length})
+            </button>
+          </div>
+          <button 
+            onClick={() => {
+              const today = new Date().toISOString().split('T')[0];
+              router.push(`/os/hub/daily/${today}`);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors shrink-0"
+          >
+            <BookOpen className="h-3 w-3" />
+            Hoy
+          </button>
+        </div>
+
         <div className="flex-1 overflow-y-auto mt-4">
           {view === "ideas" && (
             ideas.length === 0 && !query ? (

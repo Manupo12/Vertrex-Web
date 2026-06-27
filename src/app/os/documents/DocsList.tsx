@@ -112,6 +112,20 @@ export function DocsList({ documents, folders = [] }: DocsListProps) {
       <div className="flex-1 overflow-hidden flex flex-col">
         <Toolbar searchPlaceholder="Buscar documentos..." onSearch={setQuery} resultCount={filtered.length} filters={
           <div className="flex flex-wrap gap-2">
+            {folders && folders.length > 0 && (
+              <div className="md:hidden">
+                <Select value={selectedFolderId || "all"} onValueChange={(val) => setSelectedFolderId(val === "all" ? null : val)}>
+                  <SelectTrigger className="w-[180px] bg-background">
+                    <SelectValue placeholder="Carpeta" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las carpetas</SelectItem>
+                    {folders.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <Select value={storageFilter} onValueChange={setStorageFilter}>
               <SelectTrigger className="w-[180px] bg-background">
                 <SelectValue placeholder="Almacenamiento" />
