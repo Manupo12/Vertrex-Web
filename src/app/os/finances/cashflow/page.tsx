@@ -21,9 +21,18 @@ export default async function CashflowPage() {
     let expenses = 0;
 
     for (const f of allFinances) {
-      if (f.type === "ingreso" && f.status === "pending" && f.dueDate) {
-        if (f.dueDate >= weekStart && f.dueDate < weekEnd) {
+      if (f.type === "ingreso") {
+        if (f.status === "pending" && f.dueDate && f.dueDate >= weekStart && f.dueDate < weekEnd) {
           income += f.amountCop;
+        }
+        if (f.recurrence === "monthly" && f.nextDueDate) {
+          const projected = new Date(f.nextDueDate);
+          while (projected < weekEnd) {
+            if (projected >= weekStart) {
+              income += f.amountCop;
+            }
+            projected.setMonth(projected.getMonth() + 1);
+          }
         }
       }
       if (f.type === "gasto") {

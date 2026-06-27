@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataTable } from "@/components/os/data/DataTable";
 import { MobileCardList } from "@/components/os/data/MobileCardList";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Repeat } from "lucide-react";
 import { formatCurrencyCop, formatShortDate } from "@/lib/format";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -18,6 +18,7 @@ type FinanceRow = {
   amountCop: number;
   status: string;
   concept: string;
+  recurrence: string;
   dueDate: Date | null;
   paidAt: Date | null;
   createdAt: Date;
@@ -38,7 +39,16 @@ export function FinancesList({ finances }: { finances: FinanceRow[] }) {
     {
       accessorKey: "concept",
       header: "Concepto",
-      cell: ({ row }) => <span className="font-medium text-foreground">{row.original.concept}</span>,
+      cell: ({ row }) => (
+        <span className="font-medium text-foreground flex items-center gap-1.5">
+          {row.original.concept}
+          {row.original.recurrence && row.original.recurrence !== "none" && (
+            <span title={`Recurrente: ${row.original.recurrence === "monthly" ? "Mensual" : "Anual"}`}>
+              <Repeat className="h-3.5 w-3.5 text-primary shrink-0" />
+            </span>
+          )}
+        </span>
+      ),
     },
     {
       accessorKey: "type",
@@ -122,7 +132,14 @@ export function FinancesList({ finances }: { finances: FinanceRow[] }) {
                   {f.type === "ingreso" ? "Ingreso" : "Gasto"}
                 </Badge>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{f.concept}</p>
+                  <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                    {f.concept}
+                    {f.recurrence && f.recurrence !== "none" && (
+                      <span title={`Recurrente: ${f.recurrence === "monthly" ? "Mensual" : "Anual"}`}>
+                        <Repeat className="h-3 w-3 text-primary shrink-0 inline" />
+                      </span>
+                    )}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {f.dueDate ? `Vence: ${formatShortDate(f.dueDate)}` : formatShortDate(f.createdAt)}
                   </p>

@@ -89,6 +89,19 @@ export default async function FinanceDetailPage({ params }: Props) {
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-muted-foreground">
+                  Recurrencia
+                </label>
+                <select
+                  name="recurrence"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="none">Ninguna</option>
+                  <option value="monthly">Mensual</option>
+                  <option value="yearly">Anual</option>
+                </select>
+              </div>
               <button
                 type="submit"
                 className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
