@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Toolbar } from "@/components/os/layout/Toolbar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Calendar as CalendarIcon, Video, LayoutGrid, List, RefreshCwIcon, ClockIcon } from "lucide-react";
@@ -24,7 +24,7 @@ const localizer = dateFnsLocalizer({
   startOfWeek,
   getDay,
   locales,
-});
+  });
 
 type AgendaEvent = { id: string; title: string; description: string | null; startsAt: Date; endsAt: Date; meetLink: string | null; recurrenceRule?: string; timezone?: string; externalProvider?: string | null };
 
@@ -34,6 +34,13 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
   const [currentView, setCurrentView] = useState<View>(Views.MONTH);
   const [date, setDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<AgendaEvent | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      setViewMode("list");
+      setCurrentView(Views.AGENDA);
+    }
+  }, []);
 
   const { start: rangeStart, end: rangeEnd } = useMemo(() => {
     if (viewMode === "list") {
@@ -76,9 +83,9 @@ export function AgendaView({ events }: { events: AgendaEvent[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <Toolbar searchPlaceholder="Buscar eventos..." onSearch={setQuery} className="flex-1" />
-        <div className="flex items-center gap-1 border border-border rounded-lg p-1 bg-muted/30">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <Toolbar searchPlaceholder="Buscar eventos..." onSearch={setQuery} className="w-full sm:flex-1" />
+        <div className="flex items-center justify-center gap-1 border border-border rounded-lg p-1 bg-muted/30 self-end sm:self-auto shrink-0">
           <Button 
             variant={viewMode === "calendar" ? "secondary" : "ghost"} 
             size="sm" 

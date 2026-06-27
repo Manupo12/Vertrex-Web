@@ -17,7 +17,7 @@ export default async function NewEventPage() {
         <form action={createAgendaEventAction} className="space-y-4">
           <div><label className="block text-sm font-medium text-muted-foreground mb-1">Titulo *</label><Input name="title" required /></div>
           <div><label className="block text-sm font-medium text-muted-foreground mb-1">Descripcion</label><Textarea name="description" rows={3} /></div>
-          <div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-muted-foreground mb-1">Inicio *</label><Input name="starts_at" type="datetime-local" required /></div><div><label className="block text-sm font-medium text-muted-foreground mb-1">Fin *</label><Input name="ends_at" type="datetime-local" required /></div></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-muted-foreground mb-1">Inicio *</label><Input name="starts_at" type="datetime-local" required /></div><div><label className="block text-sm font-medium text-muted-foreground mb-1">Fin *</label><Input name="ends_at" type="datetime-local" required /></div></div>
           <div><label className="block text-sm font-medium text-muted-foreground mb-1">Link Meet</label><Input name="meet_link" placeholder="https://meet.google.com/..." /></div>
           
           <div className="pt-4 border-t border-border">
