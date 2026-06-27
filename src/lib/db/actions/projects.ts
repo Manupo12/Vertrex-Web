@@ -98,5 +98,4 @@ export async function deleteProjectAction(id: string) {
   await requireOsUser();
   await deleteProject(id);
   revalidatePath("/os/projects");
-  redirect("/os/projects");
 }

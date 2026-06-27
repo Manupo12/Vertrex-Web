@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { updateProjectAction, deleteProjectAction } from "@/lib/db/actions/projects";
@@ -10,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
 
 export function EditProjectForm({ project }: { project: { id: string; name: string; status: string; progress: number; currentVersion: string | null } }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -27,6 +29,7 @@ export function EditProjectForm({ project }: { project: { id: string; name: stri
       await deleteProjectAction(project.id);
       toast.success("Proyecto eliminado");
       setOpen(false);
+      router.push("/os/projects");
     } catch {
       toast.error("Error al eliminar el proyecto");
     } finally {
