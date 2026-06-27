@@ -53,15 +53,16 @@ const NAV_GROUPS = [
 
 interface SidebarProps {
   collapsed?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ collapsed }: SidebarProps) {
+export function Sidebar({ collapsed, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <aside className={cn("flex h-full flex-col border-r border-border bg-card", collapsed ? "w-[60px]" : "w-[280px]")}>
       <div className={cn("flex h-16 items-center border-b border-border px-4", collapsed ? "justify-center" : "gap-2")}>
-        <Link href="/os/admin" className={cn("text-lg font-bold tracking-tight text-primary", collapsed && "text-base")}>
+        <Link href="/os/admin" onClick={onClose} className={cn("text-lg font-bold tracking-tight text-primary", collapsed && "text-base")}>
           {collapsed ? "V" : "Vertrex OS"}
         </Link>
       </div>
@@ -75,6 +76,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onClose}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                     isActive ? "bg-accent text-accent-foreground font-medium" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
@@ -100,14 +102,17 @@ export function Sidebar({ collapsed }: SidebarProps) {
       </nav>
       <div className="border-t border-border p-2 space-y-1">
         <button 
-          onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }))}
+          onClick={() => {
+            if (onClose) onClose();
+            document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+          }}
           className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors w-full", collapsed && "justify-center px-2")}
         >
           <Command className="h-4 w-4" />
           {!collapsed && <span className="flex-1 text-left">Comandos</span>}
           {!collapsed && <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">Ctrl+K</kbd>}
         </button>
-        <Link href="/login" className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors", collapsed && "justify-center px-2")}>
+        <Link href="/login" onClick={onClose} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors", collapsed && "justify-center px-2")}>
           <LogOut className="h-4 w-4" />
           {!collapsed && "Salir"}
         </Link>

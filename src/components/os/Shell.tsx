@@ -1,5 +1,4 @@
-import { Sidebar } from "@/components/os/layout/Sidebar";
-import { Topbar } from "@/components/os/layout/Topbar";
+import { ResponsiveLayout } from "@/components/os/layout/ResponsiveLayout";
 import { ToasterVertrex } from "@/components/ui/toaster";
 import { CommandMenu } from "@/components/os/CommandMenu";
 import { QuickIdeaModal } from "@/components/os/Hub/QuickIdeaModal";
@@ -21,17 +20,13 @@ export async function Shell({ children }: ShellProps) {
   const allUsers = await db.select().from(users).where(eq(users.isActive, true));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar user={session} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
-      </div>
+    <ResponsiveLayout user={session}>
+      {children}
       <CommandMenu />
       <QuickIdeaModal />
       <QuickTaskProvider projects={allProjects} users={allUsers} currentUserId={session?.userId} />
       <GlobalHotkeysWrapper />
       <ToasterVertrex />
-    </div>
+    </ResponsiveLayout>
   );
 }
