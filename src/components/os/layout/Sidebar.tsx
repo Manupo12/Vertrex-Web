@@ -21,6 +21,7 @@ const NAV_GROUPS = [
     items: [
       { href: "/os/projects/inbox", label: "Inbox", icon: Inbox },
       { href: "/os/projects/mine", label: "Mis tareas", icon: CheckSquare },
+      { href: "/os/tasks/global", label: "Tareas globales", icon: FolderKanban },
       { href: "/os/projects/roadmap", label: "Calendario guía", icon: Map },
     ],
   },

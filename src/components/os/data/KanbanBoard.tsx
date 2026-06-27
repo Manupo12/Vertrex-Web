@@ -21,7 +21,6 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical } from "lucide-react";
 
 interface KanbanItem {
   id: string;
@@ -44,6 +43,10 @@ interface KanbanBoardProps<T extends KanbanItem = KanbanItem> {
 export function KanbanBoard<T extends KanbanItem = KanbanItem>({ items, columns, renderItem, onItemMove }: KanbanBoardProps<T>) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [localItems, setLocalItems] = useState<T[]>(items);
+
+  React.useEffect(() => {
+    setLocalItems(items);
+  }, [items]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -216,15 +219,17 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0 : 1,
+    opacity: isDragging ? 0.3 : 1,
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative">
-      <div {...attributes} {...listeners} className="absolute -top-1 -left-1 z-10 cursor-grab active:cursor-grabbing opacity-60 hover:opacity-100 transition-opacity p-1.5 rounded hover:bg-[var(--color-muted)]"
-        onClick={(e) => e.stopPropagation()}>
-        <GripVertical className="h-4 w-4 text-[var(--color-muted-foreground)]" />
-      </div>
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners} 
+      className="relative cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow rounded-lg"
+    >
       {children}
     </div>
   );

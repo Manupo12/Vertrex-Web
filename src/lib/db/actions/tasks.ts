@@ -127,6 +127,10 @@ export async function changeTaskStateAction(id: string, state: string) {
   const [oldTask] = await db.select().from(tasks).where(eq(tasks.id, id));
   if (!oldTask) throw new Error("Task not found");
 
+  if (user.role !== "admin" && oldTask.assigneeId !== user.userId) {
+    throw new Error("No tienes permiso para mover esta tarea. Solo el asignado o el administrador pueden hacerlo.");
+  }
+
   const validTransitions: Record<string, string[]> = {
     backlog: ["todo", "cancelled"],
     todo: ["in_progress", "backlog", "cancelled"],
