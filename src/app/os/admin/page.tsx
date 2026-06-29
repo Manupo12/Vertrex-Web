@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { clients, projects, tickets, tasks, activity, users } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, or, sql } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +17,12 @@ export default async function AdminPage() {
     db.select().from(clients).where(eq(clients.status, "active")).then(r => r.length),
     db.select().from(projects).where(eq(projects.status, "active")).then(r => r.length),
     db.select().from(tickets).where(eq(tickets.status, "open")).then(r => r.length),
-    db.select().from(tasks).where(eq(tasks.assigneeId, session.userId)).orderBy(desc(tasks.priority), desc(tasks.createdAt)).limit(5),
+    db.select().from(tasks).where(
+      or(
+        eq(tasks.assigneeId, session.userId),
+        sql`${tasks.coAssigneeIds} @> ${JSON.stringify([session.userId])}::jsonb`
+      )
+    ).orderBy(desc(tasks.priority), desc(tasks.createdAt)).limit(5),
     db.select().from(activity).orderBy(desc(activity.createdAt)).limit(10),
     db.select().from(users)
   ]);

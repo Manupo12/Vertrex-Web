@@ -16,6 +16,7 @@ export async function POST(request: Request) {
     const title = String(formData.get("title") || "").trim();
     const type = String(formData.get("type") || "otro");
     const value = String(formData.get("value") || "").trim();
+    const projectId = formData.get("project_id") ? String(formData.get("project_id")).trim() : null;
 
     if (!title || !value) {
       return NextResponse.json({ error: "Título y valor son obligatorios" }, { status: 400 });
@@ -23,6 +24,12 @@ export async function POST(request: Request) {
 
     const encryptedValue = encrypt(value);
     const [resource] = await db.insert(resources).values({ title, type, encryptedValue }).returning();
+
+    if (projectId) {
+      const { linkEntities } = await import("@/lib/db/actions/graph");
+      await linkEntities(projectId, "project", resource.id, "resource");
+    }
+
     revalidatePath("/os/resources");
 
     return NextResponse.json({ id: resource.id, title: resource.title });

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function CreateResourceForm() {
+export function CreateResourceForm({ projectId }: { projectId?: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -36,6 +36,7 @@ export function CreateResourceForm() {
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {projectId && <input type="hidden" name="project_id" value={projectId} />}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-[var(--color-muted-foreground)] mb-1">
             Título *

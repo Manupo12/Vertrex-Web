@@ -11,10 +11,12 @@ import { RevealButton } from "./RevealButton";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ projectId?: string }>;
 }
 
-export default async function ResourceDetailPage({ params }: Props) {
+export default async function ResourceDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { projectId } = (await searchParams) || {};
 
   if (id === "new") {
     return (
@@ -31,7 +33,8 @@ export default async function ResourceDetailPage({ params }: Props) {
             <CardTitle>Crear recurso</CardTitle>
           </CardHeader>
           <CardContent>
-            <form action={async (fd) => { await createResourceAction(fd); }} className="space-y-4">
+            <form action={async (fd) => { "use server"; await createResourceAction(fd); }} className="space-y-4">
+              {projectId && <input type="hidden" name="project_id" value={projectId} />}
               <div>
                 <label className="mb-1 block text-sm font-medium text-muted-foreground">
                   Titulo *

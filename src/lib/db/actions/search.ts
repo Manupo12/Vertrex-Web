@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { ilike, or, and, eq, gt, lte, gte, inArray } from "drizzle-orm";
+import { ilike, or, and, eq, gt, lte, gte, inArray, sql } from "drizzle-orm";
 import { tasks, projects } from "@/lib/db/schema";
 import type { EntityType } from "@/lib/db/actions/graph-types";
 import { getOsSession } from "@/lib/auth/session";
@@ -52,7 +52,12 @@ export async function searchEntitiesAction(query: string): Promise<SearchResult[
   const assigneeMatch = cleanQ.match(/assignee:(\w+)/);
   if (assigneeMatch) {
     if (assigneeMatch[1] === "me" && session) {
-      conditions.push(eq(tasks.assigneeId, session.userId));
+      conditions.push(
+        or(
+          eq(tasks.assigneeId, session.userId),
+          sql`${tasks.coAssigneeIds} @> ${JSON.stringify([session.userId])}::jsonb`
+        )
+      );
     }
     cleanQ = cleanQ.replace(/assignee:\w+/g, "").trim();
   }

@@ -6,7 +6,8 @@ import { clients, projects } from "@/lib/db/schema";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export default async function NewEventPage() {
+export default async function NewEventPage({ searchParams }: { searchParams?: Promise<{ projectId?: string }> }) {
+  const { projectId } = (await searchParams) || {};
   const allClients = await db.select({ id: clients.id, name: clients.name }).from(clients);
   const allProjects = await db.select({ id: projects.id, name: projects.name }).from(projects);
 
@@ -32,7 +33,7 @@ export default async function NewEventPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-muted-foreground mb-1">Proyecto</label>
-                <select name="project_id" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                <select name="project_id" defaultValue={projectId || ""} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
                   <option value="">Ninguno</option>
                   {allProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>

@@ -35,6 +35,7 @@ export const createFinanceAction = defineAction(
     const vatAmountCop = parseInt(String(formData.get("vat_amount_cop") || "0"), 10);
     const vatRate = parseInt(String(formData.get("vat_rate") || "0"), 10);
     const invoiceNumber = String(formData.get("invoice_number") || "").trim() || null;
+    const projectId = formData.get("project_id") ? String(formData.get("project_id")).trim() : null;
 
     if (!concept || !amountCop) throw new Error("Concepto y monto son obligatorios");
     
@@ -61,7 +62,10 @@ export const createFinanceAction = defineAction(
       targetType: "finance",
       targetId: finance.id,
     });
-
+    if (projectId) {
+      const { linkEntities } = await import("@/lib/db/actions/graph");
+      await linkEntities(projectId, "project", finance.id, "finance");
+    }
     revalidatePath("/os/finances");
     redirect(`/os/finances/${finance.id}`);
   }

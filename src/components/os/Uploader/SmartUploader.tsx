@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface SmartUploaderProps {
   source?: "os" | "portal";
-  onUploaded?: () => void;
+  onUploaded?: (doc?: any) => void;
   variant?: "button" | "dropzone";
   className?: string;
 }
@@ -30,7 +30,7 @@ export function SmartUploader({ source = "os", onUploaded, variant = "button", c
       const doc = await res.json();
       toast.success(source === "portal" ? "Archivo subido correctamente" : `Subido a ${doc.storageProvider === "drive" ? "Drive" : "Neon"}`);
       if (fileRef.current) fileRef.current.value = "";
-      if (onUploaded) onUploaded();
+      if (onUploaded) onUploaded(doc);
       else router.refresh();
     } catch { 
       toast.error("Error al subir archivo"); 

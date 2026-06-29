@@ -2,8 +2,9 @@ import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
 import { CreateResourceForm } from "./CreateResourceForm";
 
-export default async function NewResourcePage() {
+export default async function NewResourcePage({ searchParams }: { searchParams?: Promise<{ projectId?: string }> }) {
   await requireOsUser();
+  const { projectId } = (await searchParams) || {};
 
   return (
     <div>
@@ -13,7 +14,7 @@ export default async function NewResourcePage() {
         breadcrumbs={[{ label: "Recursos", href: "/os/resources" }, { label: "Nuevo" }]}
       />
       <div className="mt-6 max-w-lg">
-        <CreateResourceForm />
+        <CreateResourceForm projectId={projectId} />
       </div>
     </div>
   );

@@ -15,9 +15,16 @@ export async function createResourceAction(formData: FormData) {
   const title = String(formData.get("title") || "").trim();
   const type = String(formData.get("type") || "otro");
   const value = String(formData.get("value") || "").trim();
+  const projectId = formData.get("project_id") ? String(formData.get("project_id")).trim() : null;
+
   if (!title || !value) throw new Error("Titulo y valor son obligatorios");
   const encryptedValue = encrypt(value);
   const [resource] = await db.insert(resources).values({ title, type, encryptedValue }).returning();
+
+  if (projectId) {
+    await linkEntities(projectId, "project", resource.id, "resource");
+  }
+
   revalidatePath("/os/resources");
   return { id: resource.id, title: resource.title };
 }

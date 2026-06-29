@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import { EditProjectForm } from "./EditProjectForm";
 import { TaskCreateButton } from "@/components/os/Tasks/TaskCreateButton";
 import { ReferenceLinks } from "./ReferenceLinks";
+import { ProjectDocumentCreator } from "./ProjectDocumentCreator";
 import { AlertTriangle, CheckSquareIcon, KanbanIcon, RotateCwIcon, FlagIcon } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/db";
@@ -185,6 +186,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             </TabsContent>
             <TabsContent value="links"><ReferenceLinks projectId={project.id} links={links} /></TabsContent>
             <TabsContent value="documentos" className="space-y-2">
+              <ProjectDocumentCreator projectId={project.id} />
               {clientDocs.map(d => (
                 <div key={d.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
                   <a href={d.href} className="font-medium text-foreground hover:text-primary">{d.label}</a>
@@ -194,6 +196,11 @@ export default async function ProjectDetailPage({ params }: Props) {
               {clientDocs.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin documentos conectados.</p>}
             </TabsContent>
             <TabsContent value="finanzas" className="space-y-2">
+              <div className="flex justify-end mb-4">
+                <Link href={`/os/finances/new?projectId=${project.id}`} className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+                  + Nuevo movimiento
+                </Link>
+              </div>
               {clientFinances.map(f => (
                 <div key={f.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
                   <a href={f.href} className="font-medium text-foreground hover:text-primary">{f.label}</a>
@@ -203,6 +210,11 @@ export default async function ProjectDetailPage({ params }: Props) {
               {clientFinances.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin finanzas conectadas.</p>}
             </TabsContent>
             <TabsContent value="agenda" className="space-y-2">
+              <div className="flex justify-end mb-4">
+                <Link href={`/os/agenda/new?projectId=${project.id}`} className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+                  + Nuevo evento
+                </Link>
+              </div>
               {clientEvents.map(e => (
                 <div key={e.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
                   <a href={e.href} className="font-medium text-foreground hover:text-primary">{e.label}</a>
@@ -212,6 +224,11 @@ export default async function ProjectDetailPage({ params }: Props) {
               {clientEvents.length === 0 && <p className="text-sm text-muted-foreground py-4">Sin eventos en agenda.</p>}
             </TabsContent>
             <TabsContent value="recursos" className="space-y-2">
+              <div className="flex justify-end mb-4">
+                <Link href={`/os/resources/new?projectId=${project.id}`} className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+                  + Nuevo recurso
+                </Link>
+              </div>
               {clientResources.map(r => (
                 <div key={r.id} className="rounded-lg border border-border p-3 text-sm hover:bg-accent/30 transition-colors flex items-center justify-between">
                   <a href={r.href} className="font-medium text-foreground hover:text-primary">{r.label}</a>
