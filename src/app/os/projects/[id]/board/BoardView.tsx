@@ -154,11 +154,35 @@ export function BoardView({ initialTasks, users, projectId, projects, cycles, mi
                 <h4 className="text-sm font-medium mb-3">{t.title}</h4>
                 <div className="flex items-center justify-between mt-auto">
                   <PriorityDot priority={t.priority} />
-                  {t.assigneeId && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-primary)] text-[10px] font-bold text-[var(--color-primary-foreground)]" title={users.find(u => u.id === t.assigneeId)?.name}>
-                      {users.find(u => u.id === t.assigneeId)?.name?.substring(0, 2).toUpperCase()}
-                    </div>
-                  )}
+                  {(() => {
+                    const ids = [t.assigneeId, ...(t.coAssigneeIds || [])].filter(Boolean) as string[];
+                    if (ids.length === 0) return null;
+                    return (
+                      <div className="flex -space-x-1.5 overflow-hidden">
+                        {ids.slice(0, 3).map((uid) => {
+                          const user = users.find(u => u.id === uid);
+                          if (!user) return null;
+                          return (
+                            <div 
+                              key={uid} 
+                              className="inline-block h-5 w-5 rounded-full ring-2 ring-[var(--color-card)] bg-[var(--color-primary)] text-[9px] font-bold text-[var(--color-primary-foreground)] flex items-center justify-center"
+                              title={user.name}
+                            >
+                              {user.name.substring(0, 2).toUpperCase()}
+                            </div>
+                          );
+                        })}
+                        {ids.length > 3 && (
+                          <div 
+                            className="inline-block h-5 w-5 rounded-full ring-2 ring-[var(--color-card)] bg-muted text-[8px] font-bold text-muted-foreground flex items-center justify-center"
+                            title={`${ids.length - 3} más`}
+                          >
+                            +{ids.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             );

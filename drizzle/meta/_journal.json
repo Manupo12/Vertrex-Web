@@ -36,6 +36,13 @@
       "when": 1782580223127,
       "tag": "0004_huge_grandmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782752696086,
+      "tag": "0005_volatile_lizard",
+      "breakpoints": true
     }
   ]
 }

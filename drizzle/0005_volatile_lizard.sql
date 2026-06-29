@@ -1,0 +1,1 @@
+ALTER TABLE "tasks" ADD COLUMN "co_assignee_ids" jsonb DEFAULT '[]'::jsonb;

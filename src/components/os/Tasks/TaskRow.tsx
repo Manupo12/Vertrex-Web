@@ -15,12 +15,13 @@ export interface TaskRowProps {
   onClick?: () => void;
   onStateChange?: (state: string) => void;
   onPriorityChange?: (priority: number) => void;
+  onAssigneesChange?: (userIds: string[]) => void;
   onAssigneeChange?: (userId: string | null) => void;
   className?: string;
   density?: "comfortable" | "compact";
 }
 
-export function TaskRow({ task, users, onClick, onStateChange, onPriorityChange, onAssigneeChange, className, density = "comfortable" }: TaskRowProps) {
+export function TaskRow({ task, users, onClick, onStateChange, onPriorityChange, onAssigneesChange, onAssigneeChange, className, density = "comfortable" }: TaskRowProps) {
   return (
     <div 
       className={cn(
@@ -57,8 +58,10 @@ export function TaskRow({ task, users, onClick, onStateChange, onPriorityChange,
 
         <div className="w-32 hidden sm:flex" onClick={e => e.stopPropagation()}>
           <TaskAssigneeSelect 
-            assigneeId={task.assigneeId} 
-            assigneeName={users.find(u => u.id === task.assigneeId)?.name} 
+            assigneeIds={[task.assigneeId, ...(task.coAssigneeIds || [])].filter(Boolean)}
+            onSelectChange={onAssigneesChange}
+            assigneeId={task.assigneeId}
+            assigneeName={users.find(u => u.id === task.assigneeId)?.name}
             users={users}
             onSelect={(userId) => onAssigneeChange?.(userId)} 
           />

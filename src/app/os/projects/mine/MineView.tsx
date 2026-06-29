@@ -51,11 +51,13 @@ export function MineView({ initialTasks, projects, users, currentUserId }: { ini
     }
   };
 
-  const handleAssigneeChange = async (id: string, assigneeId: string | null) => {
+  const handleAssigneesChange = async (id: string, ids: string[]) => {
     try {
-      await assignTaskAction(id, assigneeId);
-      setTasks(tasks.map(t => t.id === id ? { ...t, assigneeId } : t));
-      toast.success("Asignado actualizado");
+      const primaryId = ids[0] || null;
+      const coIds = ids.slice(1);
+      await assignTaskAction(id, primaryId, coIds);
+      setTasks(tasks.map(t => t.id === id ? { ...t, assigneeId: primaryId, coAssigneeIds: coIds } : t));
+      toast.success("Asignados actualizados");
     } catch {
       toast.error("Error al actualizar");
     }
@@ -104,7 +106,7 @@ export function MineView({ initialTasks, projects, users, currentUserId }: { ini
                   onClick={() => setSelectedTask(t)}
                   onStateChange={(state) => handleStateChange(t.id, state)}
                   onPriorityChange={(priority) => handlePriorityChange(t.id, priority)}
-                  onAssigneeChange={(userId) => handleAssigneeChange(t.id, userId)}
+                  onAssigneesChange={(userIds) => handleAssigneesChange(t.id, userIds)}
                 />
               ))}
             </div>

@@ -73,12 +73,14 @@ export function TaskDetailClient({
     }
   };
 
-  const handleAssigneeChange = async (assigneeId: string | null) => {
+  const handleAssigneesChange = async (ids: string[]) => {
     try {
-      await assignTaskAction(task.id, assigneeId);
-      setTask({ ...task, assigneeId });
+      const primaryId = ids[0] || null;
+      const coIds = ids.slice(1);
+      await assignTaskAction(task.id, primaryId, coIds);
+      setTask({ ...task, assigneeId: primaryId, coAssigneeIds: coIds });
     } catch {
-      toast.error("Error al actualizar asignado");
+      toast.error("Error al actualizar asignados");
     }
   };
 
@@ -367,10 +369,9 @@ export function TaskDetailClient({
               <span className="text-[var(--color-muted-foreground)]">Asignado</span>
               <span className="col-span-2">
                 <TaskAssigneeSelect
-                  assigneeId={task.assigneeId}
-                  assigneeName={allUsers.find((u: any) => u.id === task.assigneeId)?.name}
+                  assigneeIds={[task.assigneeId, ...(task.coAssigneeIds || [])].filter(Boolean)}
+                  onSelectChange={handleAssigneesChange}
                   users={allUsers}
-                  onSelect={handleAssigneeChange}
                 />
               </span>
             </div>

@@ -141,6 +141,17 @@ export function TaskDetailSheet({ task, open, onOpenChange, onEditFull, onDelete
               <div className="rounded-lg border border-[var(--color-border)] p-4 space-y-3 bg-[var(--color-card)]">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted-foreground)]">Propiedades</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
+                  <span className="text-[var(--color-muted-foreground)]">Asignados</span>
+                  <span className="truncate" title={(() => {
+                    const ids = [task.assigneeId, ...(task.coAssigneeIds || [])].filter(Boolean) as string[];
+                    return ids.map(uid => users.find(u => u.id === uid)?.name || "Desconocido").join(", ");
+                  })()}>
+                    {(() => {
+                      const ids = [task.assigneeId, ...(task.coAssigneeIds || [])].filter(Boolean) as string[];
+                      if (ids.length === 0) return "Nadie";
+                      return ids.map(uid => users.find(u => u.id === uid)?.name || "Desconocido").join(", ");
+                    })()}
+                  </span>
                   <span className="text-[var(--color-muted-foreground)]">Estado</span>
                   <span>{task.state}</span>
                   <span className="text-[var(--color-muted-foreground)]">Prioridad</span>

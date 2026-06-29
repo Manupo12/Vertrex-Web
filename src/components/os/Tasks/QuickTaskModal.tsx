@@ -36,7 +36,7 @@ export function QuickTaskModal({
 }) {
   const [title, setTitle] = useState("");
   const [projectId, setProjectId] = useState<string | undefined>(defaultProjectId || undefined);
-  const [assigneeId, setAssigneeId] = useState<string | null>(currentUserId || null);
+  const [assigneeIds, setAssigneeIds] = useState<string[]>(currentUserId ? [currentUserId] : []);
   const [priority, setPriority] = useState<number>(0);
   const [taskType, setTaskType] = useState<string>("other");
   const [dueDate, setDueDate] = useState<string>("");
@@ -62,7 +62,8 @@ export function QuickTaskModal({
         title,
         projectId,
         parentTaskId,
-        assigneeId: assigneeId || undefined,
+        assigneeId: assigneeIds[0] || undefined,
+        coAssigneeIds: assigneeIds.slice(1),
         priority,
         taskType,
         dueDate: dueDate || undefined,
@@ -75,7 +76,7 @@ export function QuickTaskModal({
       toast.success(`Tarea creada · ${task.identifier}`);
       setTitle("");
       setProjectId(defaultProjectId || undefined);
-      setAssigneeId(currentUserId || null);
+      setAssigneeIds(currentUserId ? [currentUserId] : []);
       setPriority(0);
       setTaskType("other");
       setDueDate("");
@@ -135,10 +136,9 @@ export function QuickTaskModal({
             </select>
 
             <TaskAssigneeSelect
-              assigneeId={assigneeId}
-              assigneeName={users.find(u => u.id === assigneeId)?.name}
+              assigneeIds={assigneeIds}
+              onSelectChange={setAssigneeIds}
               users={users}
-              onSelect={setAssigneeId}
             />
 
             <DropdownMenu>

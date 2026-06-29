@@ -147,6 +147,7 @@ export const tasks = pgTable("tasks", {
   taskType: taskTypeEnum("task_type").notNull().default("other"),
   estimatePoints: integer("estimate_points"),
   assigneeId: uuid("assignee_id").references(() => users.id),
+  coAssigneeIds: jsonb("co_assignee_ids").default(sql`'[]'::jsonb`),
   cycleId: uuid("cycle_id").references(() => cycles.id, { onDelete: "set null" }),
   milestoneId: uuid("milestone_id").references(() => milestones.id, { onDelete: "set null" }),
   orderIndex: integer("order_index").notNull().default(0),

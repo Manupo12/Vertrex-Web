@@ -16,6 +16,7 @@ export async function createTaskAction(input: {
   projectId?: string;
   parentTaskId?: string;
   assigneeId?: string;
+  coAssigneeIds?: string[];
   priority?: number;
   cycleId?: string;
   milestoneId?: string;
@@ -40,6 +41,7 @@ export async function createTaskAction(input: {
     projectId: input.projectId || null,
     identifier,
     assigneeId: input.assigneeId,
+    coAssigneeIds: input.coAssigneeIds || [],
     priority: input.priority || 0,
     cycleId: input.cycleId,
     milestoneId: input.milestoneId,
@@ -58,28 +60,32 @@ export async function createTaskAction(input: {
     payload: { title: task.title, identifier: task.identifier }
   });
 
-  if (input.assigneeId && input.assigneeId !== user.userId) {
-    await pushNotification({
-      userId: input.assigneeId,
-      type: "task_assigned",
-      title: `Nueva tarea asignada: ${task.identifier}`,
-      body: task.title,
-      targetType: "task",
-      targetId: task.id,
-      sendEmail: true
-    });
+  const allAssigneeIds = [input.assigneeId, ...(input.coAssigneeIds || [])].filter(Boolean) as string[];
 
-    const [assigneeUser] = await db.select().from(users).where(eq(users.id, input.assigneeId)).limit(1);
-    if (assigneeUser) {
-      await notifyTaskAssigned({
-        assignee: assigneeUser,
-        task: {
-          identifier: task.identifier,
-          title: task.title,
-          dueDate: task.dueDate ? new Date(task.dueDate) : null
-        },
-        assignedByName: user.name
+  for (const uid of allAssigneeIds) {
+    if (uid !== user.userId) {
+      await pushNotification({
+        userId: uid,
+        type: "task_assigned",
+        title: `Nueva tarea asignada: ${task.identifier}`,
+        body: task.title,
+        targetType: "task",
+        targetId: task.id,
+        sendEmail: true
       });
+
+      const [assigneeUser] = await db.select().from(users).where(eq(users.id, uid)).limit(1);
+      if (assigneeUser) {
+        await notifyTaskAssigned({
+          assignee: assigneeUser,
+          task: {
+            identifier: task.identifier,
+            title: task.title,
+            dueDate: task.dueDate ? new Date(task.dueDate) : null
+          },
+          assignedByName: user.name
+        });
+      }
     }
   }
 
@@ -206,27 +212,35 @@ export async function changeTaskStateAction(id: string, state: string) {
   return task;
 }
 
-export async function assignTaskAction(id: string, assigneeId: string | null) {
+export async function assignTaskAction(id: string, assigneeId: string | null, coAssigneeIds?: string[]) {
   const user = await requireOsUser();
-  const [task] = await db.update(tasks).set({ assigneeId, updatedAt: new Date() }).where(eq(tasks.id, id)).returning();
+  const [task] = await db.update(tasks).set({ 
+    assigneeId, 
+    coAssigneeIds: coAssigneeIds || [], 
+    updatedAt: new Date() 
+  }).where(eq(tasks.id, id)).returning();
   
-  if (assigneeId && assigneeId !== user.userId) {
-    await pushNotification({
-      userId: assigneeId, type: "task_assigned",
-      title: `Tarea asignada: ${task.identifier}`, targetType: "task", targetId: task.id
-    });
-
-    const [assigneeUser] = await db.select().from(users).where(eq(users.id, assigneeId)).limit(1);
-    if (assigneeUser) {
-      await notifyTaskAssigned({
-        assignee: assigneeUser,
-        task: {
-          identifier: task.identifier,
-          title: task.title,
-          dueDate: task.dueDate ? new Date(task.dueDate) : null
-        },
-        assignedByName: user.name
+  const allAssigneeIds = [assigneeId, ...(coAssigneeIds || [])].filter(Boolean) as string[];
+  
+  for (const uid of allAssigneeIds) {
+    if (uid !== user.userId) {
+      await pushNotification({
+        userId: uid, type: "task_assigned",
+        title: `Tarea asignada: ${task.identifier}`, targetType: "task", targetId: task.id
       });
+
+      const [assigneeUser] = await db.select().from(users).where(eq(users.id, uid)).limit(1);
+      if (assigneeUser) {
+        await notifyTaskAssigned({
+          assignee: assigneeUser,
+          task: {
+            identifier: task.identifier,
+            title: task.title,
+            dueDate: task.dueDate ? new Date(task.dueDate) : null
+          },
+          assignedByName: user.name
+        });
+      }
     }
   }
   revalidatePath("/os/projects");
