@@ -20,9 +20,9 @@ export default async function SettingsPage() {
   const osVersion = pkg.version || "3.0.0";
 
   const hasDrive = !!(
-    process.env.GOOGLE_OAUTH_CLIENT_ID &&
-    process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
-    process.env.GOOGLE_OAUTH_REFRESH_TOKEN
+    (process.env.GOOGLE_OAUTH_CLIENT_ID || process.env.GOOGLE_CLIENT_ID) &&
+    (process.env.GOOGLE_OAUTH_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET) &&
+    (process.env.GOOGLE_OAUTH_REFRESH_TOKEN || process.env.GOOGLE_REFRESH_TOKEN)
   );
   const hasGithub = !!process.env.GITHUB_TOKEN;
 

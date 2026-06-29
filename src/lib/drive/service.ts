@@ -2,16 +2,16 @@ import { google } from "googleapis";
 
 export function getDriveClient() {
   const auth = new google.auth.OAuth2({
-    clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+    clientId: process.env.GOOGLE_OAUTH_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET,
   });
-  auth.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN });
+  auth.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN || process.env.GOOGLE_REFRESH_TOKEN });
   return google.drive({ version: "v3", auth });
 }
 
 export async function uploadToDrive(fileName: string, fileBuffer: Buffer, mimeType: string, folderId?: string) {
   const drive = getDriveClient();
-  const folder = folderId || process.env.GOOGLE_DRIVE_FOLDER_ID;
+  const folder = folderId || process.env.GOOGLE_DRIVE_FOLDER_ID || process.env.DRIVE_FOLDER_ID;
 
   const response = await drive.files.create({
     requestBody: { name: fileName, parents: folder ? [folder] : [] },
