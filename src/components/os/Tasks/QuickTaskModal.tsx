@@ -121,10 +121,10 @@ export function QuickTaskModal({
             disabled={isSubmitting}
           />
         </div>
-        <div className="border-t border-[var(--color-border)] p-3 bg-[var(--color-muted)]/20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="border-t border-[var(--color-border)] p-3 bg-[var(--color-muted)]/20 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
-              className="text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1 max-w-[150px] truncate"
+              className="text-xs bg-[var(--color-background)] border border-[var(--color-border)] rounded-md px-2 py-1 max-w-[120px] sm:max-w-[150px] truncate"
               value={projectId || ""}
               onChange={(e) => setProjectId(e.target.value || undefined)}
             >
@@ -158,9 +158,19 @@ export function QuickTaskModal({
             </DropdownMenu>
           </div>
 
-          <div className="text-xs text-[var(--color-muted-foreground)] hidden sm:flex items-center gap-1">
-            <span className="bg-[var(--color-muted)] px-1.5 rounded font-medium border border-[var(--color-border)] shadow-sm">Enter</span>
-            <span>guardar</span>
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="text-xs text-[var(--color-muted-foreground)] hidden sm:flex items-center gap-1">
+              <span className="bg-[var(--color-muted)] px-1.5 rounded font-medium border border-[var(--color-border)] shadow-sm">Enter</span>
+              <span>guardar</span>
+            </div>
+            <button
+              type="button"
+              disabled={isSubmitting || !title.trim()}
+              onClick={() => handleSubmit()}
+              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/95 disabled:opacity-50 transition-colors"
+            >
+              {isSubmitting ? "Guardando..." : "Crear"}
+            </button>
           </div>
         </div>
 
