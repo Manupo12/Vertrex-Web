@@ -18,6 +18,7 @@
 .env.production.local
 .env.drive
 .env
+.env.vercel
 
 # 3. Archivos de Log y Debug
 # Ignora los registros de errores y depuración generados automáticamente.
