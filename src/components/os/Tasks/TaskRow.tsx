@@ -25,7 +25,7 @@ export function TaskRow({ task, users, onClick, onStateChange, onPriorityChange,
   return (
     <div 
       className={cn(
-        "group flex items-center gap-3 border-b border-[var(--color-border)] px-4 hover:bg-[var(--color-muted)]/30 transition-colors cursor-pointer",
+        "group flex items-center gap-3 border-b border-[var(--color-border)] px-4 hover:bg-[var(--color-muted)]/30 transition-colors cursor-pointer overflow-hidden",
         density === "compact" ? "h-8 text-xs" : "h-11 text-sm",
         task.parentTaskId ? "pl-6 ml-6 border-l-2 border-[var(--color-primary)]/20" : "",
         className
@@ -36,7 +36,7 @@ export function TaskRow({ task, users, onClick, onStateChange, onPriorityChange,
         <IdentifierChip identifier={task.identifier} />
       </div>
       
-      <div className="flex-1 truncate font-medium text-[var(--color-foreground)]">
+      <div className="flex-1 min-w-0 truncate font-medium text-[var(--color-foreground)]">
         {task.title}
         {task.taskType && task.taskType !== "other" && (
           <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border"

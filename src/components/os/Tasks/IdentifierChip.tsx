@@ -22,7 +22,7 @@ export function IdentifierChip({ identifier, className }: IdentifierChipProps) {
       onClick={handleCopy}
       type="button"
       className={cn(
-        "group inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium font-mono text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors",
+        "group inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium font-mono text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors whitespace-nowrap",
         className
       )}
       title="Copiar identificador"
