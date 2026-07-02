@@ -14,6 +14,19 @@ export async function createClientAction(formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
+  const status = String(formData.get("status") || "no_contactado");
+  const priority = String(formData.get("priority") || "").trim();
+  const city = String(formData.get("city") || "").trim();
+  const sector = String(formData.get("sector") || "").trim();
+  const whatsapp = String(formData.get("whatsapp") || "").trim();
+  const instagram = String(formData.get("instagram") || "").trim();
+  const webPresence = String(formData.get("webPresence") || "").trim();
+  const website = String(formData.get("website") || "").trim();
+  const address = String(formData.get("address") || "").trim();
+  const rating = String(formData.get("rating") || "").trim();
+  const reviewsCountStr = String(formData.get("reviewsCount") || "0").trim();
+  const reviewsCount = parseInt(reviewsCountStr) || 0;
+
   let slug = String(formData.get("slug") || "").trim();
   if (!name) throw new Error("El nombre es obligatorio");
   if (!slug) slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -21,7 +34,24 @@ export async function createClientAction(formData: FormData) {
   const pin = generateSixDigitPin();
   const pinHash = await hashPin(pin);
   
-  const [client] = await db.insert(clients).values({ name, slug, email: email || null, phone: phone || null, pinHash }).returning();
+  const [client] = await db.insert(clients).values({ 
+    name, 
+    slug, 
+    email: email || null, 
+    phone: phone || null, 
+    pinHash,
+    status,
+    priority: priority || null,
+    city: city || null,
+    sector: sector || null,
+    whatsapp: whatsapp || null,
+    instagram: instagram || null,
+    webPresence: webPresence || null,
+    website: website || null,
+    address: address || null,
+    rating: rating || null,
+    reviewsCount: reviewsCount || 0,
+  }).returning();
   
   if (email) {
     await db.insert(clientPortalUsers).values({
@@ -53,9 +83,38 @@ export async function updateClientAction(slug: string, formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
-  const status = String(formData.get("status") || "active");
+  const status = String(formData.get("status") || "no_contactado");
+  const priority = String(formData.get("priority") || "").trim();
+  const city = String(formData.get("city") || "").trim();
+  const sector = String(formData.get("sector") || "").trim();
+  const whatsapp = String(formData.get("whatsapp") || "").trim();
+  const instagram = String(formData.get("instagram") || "").trim();
+  const webPresence = String(formData.get("webPresence") || "").trim();
+  const website = String(formData.get("website") || "").trim();
+  const address = String(formData.get("address") || "").trim();
+  const rating = String(formData.get("rating") || "").trim();
+  const reviewsCountStr = String(formData.get("reviewsCount") || "0").trim();
+  const reviewsCount = parseInt(reviewsCountStr) || 0;
+
   if (!name) throw new Error("El nombre es obligatorio");
-  await db.update(clients).set({ name, email: email || null, phone: phone || null, status }).where(eq(clients.slug, slug));
+
+  await db.update(clients).set({ 
+    name, 
+    email: email || null, 
+    phone: phone || null, 
+    status,
+    priority: priority || null,
+    city: city || null,
+    sector: sector || null,
+    whatsapp: whatsapp || null,
+    instagram: instagram || null,
+    webPresence: webPresence || null,
+    website: website || null,
+    address: address || null,
+    rating: rating || null,
+    reviewsCount: reviewsCount || 0,
+  }).where(eq(clients.slug, slug));
+
   revalidatePath(`/os/crm/${slug}`);
   revalidatePath("/os/crm");
 }
