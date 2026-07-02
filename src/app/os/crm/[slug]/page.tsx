@@ -78,11 +78,22 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
             </TabsList>
             <TabsContent value="resumen" className="space-y-4">
               <Card>
-                <CardHeader><CardTitle className="text-sm">Informacion</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span>{client.email || "No registrado"}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Telefono</span><span>{client.phone || "No registrado"}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Creado</span><span>{formatShortDate(client.createdAt)}</span></div>
+                <CardHeader><CardTitle className="text-sm">Información del Prospecto / Cliente</CardTitle></CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                  <div className="space-y-2">
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Prioridad</span><span className="font-semibold">{client.priority || "-"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Rubro / Sector</span><span>{client.sector || "-"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Ciudad</span><span>{client.city || "-"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Dirección</span><span className="text-right max-w-[200px] truncate" title={client.address || ""}>{client.address || "-"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Calificación</span><span>⭐ {client.rating || "-"} ({client.reviewsCount || 0} reseñas)</span></div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Email</span><span>{client.email || "No registrado"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Teléfono</span><span>{client.phone || "No registrado"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">WhatsApp</span><span>{client.whatsapp ? <a href={client.whatsapp} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-semibold">Abrir Chat</a> : "-"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Instagram</span><span>{client.instagram ? <a href={client.instagram} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-semibold">Ver Perfil</a> : "-"}</span></div>
+                    <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Sitio Web / Red</span><span>{client.website ? <a href={client.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[150px] inline-block align-bottom font-semibold">{client.webPresence || "Ver enlace"}</a> : "-"}</span></div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

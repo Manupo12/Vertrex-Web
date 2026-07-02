@@ -1,15 +1,24 @@
 import { db } from "@/lib/db";
 import { clients } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { CrmList } from "./CrmList";
-
 import { NewClientDialog } from "./NewClientDialog";
 
 interface Props { searchParams: Promise<{ q?: string; status?: string }> }
 
 export default async function CrmPage({ searchParams }: Props) {
   const { q = "", status = "" } = await searchParams;
+
+  const statsRows = await db
+    .select({
+      status: clients.status,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(clients)
+    .groupBy(clients.status);
+
+  const stats = statsRows.reduce((acc, row) => ({ ...acc, [row.status]: row.count }), {} as Record<string, number>);
 
   let allClients;
   if (status) {
@@ -29,12 +38,12 @@ export default async function CrmPage({ searchParams }: Props) {
   return (
     <div>
       <PageHeader
-        title="Clientes"
-        description="Gestiona clientes y accesos al portal"
+        title="Clientes & CRM"
+        description="Gestiona prospectos, ventas y accesos al portal de clientes"
         breadcrumbs={[{ label: "CRM" }]}
         primaryAction={<NewClientDialog />}
       />
-      <CrmList clients={filtered} />
+      <CrmList clients={filtered} stats={stats} />
     </div>
   );
 }

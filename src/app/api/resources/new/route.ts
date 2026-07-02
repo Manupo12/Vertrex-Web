@@ -15,8 +15,19 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const title = String(formData.get("title") || "").trim();
     const type = String(formData.get("type") || "otro");
-    const value = String(formData.get("value") || "").trim();
     const projectId = formData.get("project_id") ? String(formData.get("project_id")).trim() : null;
+
+    let value = "";
+    if (type === "credential") {
+      const email = String(formData.get("email") || "").trim();
+      const password = String(formData.get("password") || "").trim();
+      if (!email || !password) {
+        return NextResponse.json({ error: "Correo y contraseña son obligatorios" }, { status: 400 });
+      }
+      value = JSON.stringify({ email, password });
+    } else {
+      value = String(formData.get("value") || "").trim();
+    }
 
     if (!title || !value) {
       return NextResponse.json({ error: "Título y valor son obligatorios" }, { status: 400 });

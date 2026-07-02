@@ -18,13 +18,43 @@ import { bulkDeleteClientsAction } from "@/lib/db/actions/crm";
 import { bulkTagEntitiesAction } from "@/lib/db/actions/tags";
 import { listSavedViewsAction, createSavedViewAction, updateSavedViewAction, deleteSavedViewAction } from "@/lib/db/actions/saved-views";
 
-type ClientRow = { id: string; slug: string; name: string; email: string | null; phone: string | null; status: string; createdAt: Date };
+type ClientRow = {
+  id: string;
+  slug: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  status: string;
+  priority: string | null;
+  city: string | null;
+  sector: string | null;
+  whatsapp: string | null;
+  instagram: string | null;
+  webPresence: string | null;
+  website: string | null;
+  address: string | null;
+  rating: string | null;
+  reviewsCount: number | null;
+  createdAt: Date;
+};
 
 interface CrmListProps {
   clients: ClientRow[];
+  stats: Record<string, number>;
 }
 
-export function CrmList({ clients }: CrmListProps) {
+const CRM_STAGES = [
+  { value: "no_contactado", label: "No contactado" },
+  { value: "contactado", label: "Contactado" },
+  { value: "interesado", label: "Interesado" },
+  { value: "no_respondio", label: "No respondió" },
+  { value: "reunion_completada", label: "1ª Reunión" },
+  { value: "contrato_firmado", label: "Contrato firmado" },
+  { value: "contrato_finalizado", label: "Contrato finalizado" },
+  { value: "continuidad", label: "Continuidad" }
+];
+
+export function CrmList({ clients, stats = {} }: CrmListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
@@ -54,26 +84,83 @@ export function CrmList({ clients }: CrmListProps) {
   const columns: ColumnDef<ClientRow>[] = [
     {
       accessorKey: "name",
-      header: "Cliente",
+      header: "Prospecto / Cliente",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-xs font-medium text-[var(--color-primary)]">{row.original.name.charAt(0).toUpperCase()}</div>
-          <div>
-            <p className="font-medium text-[var(--color-foreground)]">{row.original.name}</p>
-            <p className="text-xs text-[var(--color-muted-foreground)] font-mono">{row.original.slug}</p>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-xs font-medium text-[var(--color-primary)] shrink-0">
+            {row.original.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="font-medium text-[var(--color-foreground)] truncate">{row.original.name}</p>
+            <p className="text-xs text-[var(--color-muted-foreground)]">
+              {row.original.sector || "Cliente"} {row.original.city ? `• ${row.original.city}` : ""}
+            </p>
           </div>
         </div>
       ),
     },
     {
-      accessorKey: "email",
-      header: "Email",
-      cell: ({ row }) => <span className="text-[var(--color-muted-foreground)]">{row.original.email || "-"}</span>,
+      accessorKey: "priority",
+      header: "Prioridad",
+      cell: ({ row }) => {
+        const val = row.original.priority;
+        if (!val) return <span className="text-[var(--color-muted-foreground)]">-</span>;
+        const isHigh = val.includes("Alta") || val.includes("🔥");
+        const isMedium = val.includes("Media");
+        return (
+          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+            isHigh ? "bg-red-500/10 border-red-500/20 text-red-400" :
+            isMedium ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
+            "bg-slate-500/10 border-slate-500/20 text-slate-400"
+          }`}>
+            {val}
+          </span>
+        );
+      }
     },
     {
       accessorKey: "phone",
-      header: "Telefono",
-      cell: ({ row }) => <span className="text-[var(--color-muted-foreground)]">{row.original.phone || "-"}</span>,
+      header: "Contacto",
+      cell: ({ row }) => {
+        const { phone, whatsapp, instagram } = row.original;
+        return (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-[var(--color-muted-foreground)]">{phone || "-"}</span>
+            <div className="flex items-center gap-1">
+              {whatsapp && (
+                <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="p-1 text-green-500 hover:bg-green-500/10 rounded transition-colors" title="Abrir WhatsApp">
+                  <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.022-.08-.117-.146-.217-.196-.085-.04-1.013-.5-1.186-.563-.173-.063-.3-.094-.427.094-.128.19-.497.625-.61.753-.113.128-.227.144-.427.044-.2-.1-.84-.31-1.602-.99-.59-.525-.99-1.173-1.106-1.372-.116-.2-.013-.308.087-.408.09-.09.2-.233.3-.35.1-.117.135-.197.2-.33.065-.13.034-.247-.015-.347-.05-.1-.427-1.03-.585-1.41-.153-.372-.32-.322-.427-.327-.11-.005-.23-.006-.35-.006-.12 0-.317.045-.483.225-.166.18-.633.618-.633 1.507 0 .89.65 1.747.74 1.87.09.125 1.282 1.957 3.11 2.748.435.19.774.303 1.04.387.436.138.832.12 1.15.072.35-.055 1.013-.414 1.155-.815.14-.4.14-.75.097-.816-.044-.066-.17-.107-.29-.168zM12.004 2c-5.524 0-10.002 4.478-10.002 10.002 0 1.815.485 3.52 1.328 5.01L2 22l5.166-1.355c1.436.78 3.06 1.19 4.838 1.19 5.524 0 10.002-4.477 10.002-10.002C22.006 6.478 17.528 2 12.004 2z"/>
+                  </svg>
+                </a>
+              )}
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noopener noreferrer" className="p-1 text-pink-500 hover:bg-pink-500/10 rounded transition-colors" title="Abrir Instagram">
+                  <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: "rating",
+      header: "Calificación",
+      cell: ({ row }) => {
+        const rating = row.original.rating;
+        const reviews = row.original.reviewsCount;
+        if (!rating) return <span className="text-[var(--color-muted-foreground)]">-</span>;
+        return (
+          <span className="text-xs text-[var(--color-muted-foreground)] flex items-center gap-1 font-mono">
+            ⭐ <span className="text-foreground font-semibold">{rating}</span> ({reviews ? reviews.toLocaleString() : 0})
+          </span>
+        );
+      }
     },
     {
       accessorKey: "status",
@@ -163,21 +250,45 @@ export function CrmList({ clients }: CrmListProps) {
           toast.success("Vista eliminada");
         }}
       />
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mt-4 mb-6">
+        {CRM_STAGES.map(stage => {
+          const count = stats[stage.value] || 0;
+          const isActive = statusFilter === stage.value;
+          return (
+            <div 
+              key={stage.value}
+              onClick={() => setStatusFilter(isActive ? "all" : stage.value)}
+              className={`p-3 rounded-xl border transition-all cursor-pointer select-none text-center flex flex-col justify-between h-20 ${
+                isActive 
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 shadow-sm shadow-[var(--color-primary)]/10" 
+                  : "border-[var(--color-border)] bg-[var(--color-card)] hover:bg-[var(--color-muted)]/30"
+              }`}
+            >
+              <p className="text-[10px] text-[var(--color-muted-foreground)] font-semibold uppercase tracking-wider truncate">{stage.label}</p>
+              <p className="text-xl font-bold mt-1 text-[var(--color-foreground)]">{count.toLocaleString()}</p>
+            </div>
+          );
+        })}
+      </div>
       
       <Toolbar
-        searchPlaceholder="Buscar clientes..."
+        searchPlaceholder="Buscar prospectos..."
         onSearch={setQuery}
         resultCount={filtered.length}
         filters={
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px] bg-background">
+            <SelectTrigger className="w-[200px] bg-background">
               <SelectValue placeholder="Todos los estados" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="active">Activos</SelectItem>
-              <SelectItem value="inactive">Inactivos</SelectItem>
-              <SelectItem value="paused">Pausados</SelectItem>
+              <SelectItem value="all">Todos los estados</SelectItem>
+              <SelectItem value="active">Activo (Portal)</SelectItem>
+              <SelectItem value="inactive">Inactivo (Portal)</SelectItem>
+              <SelectItem value="paused">Pausado (Portal)</SelectItem>
+              {CRM_STAGES.map(stage => (
+                <SelectItem key={stage.value} value={stage.value}>{stage.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         }

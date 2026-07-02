@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export function CreateResourceForm({ projectId }: { projectId?: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [type, setType] = useState("api_key");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -47,7 +48,7 @@ export function CreateResourceForm({ projectId }: { projectId?: string }) {
             type="text"
             required
             className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)]"
-            placeholder="Ej. API Key de OpenAI"
+            placeholder="Ej. API Key de OpenAI o Cuenta de AWS"
           />
         </div>
         <div>
@@ -57,29 +58,60 @@ export function CreateResourceForm({ projectId }: { projectId?: string }) {
           <select
             id="type"
             name="type"
-            defaultValue="api_key"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
             className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)]"
           >
             <option value="api_key">API Key</option>
             <option value="env">.env</option>
-            <option value="password">Contraseña</option>
             <option value="credential">Credencial</option>
             <option value="otro">Otro</option>
           </select>
         </div>
-        <div>
-          <label htmlFor="value" className="block text-sm font-medium text-[var(--color-muted-foreground)] mb-1">
-            Valor (será cifrado) *
-          </label>
-          <textarea
-            id="value"
-            name="value"
-            required
-            rows={4}
-            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)] font-mono"
-            placeholder="sk-... o el valor confidencial"
-          />
-        </div>
+        {type === "credential" ? (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-[var(--color-muted-foreground)] mb-1">
+                Correo / Usuario *
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="text"
+                required
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)]"
+                placeholder="correo@ejemplo.com o usuario"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-[var(--color-muted-foreground)] mb-1">
+                Contraseña *
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)]"
+                placeholder="Contraseña de la cuenta"
+              />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <label htmlFor="value" className="block text-sm font-medium text-[var(--color-muted-foreground)] mb-1">
+              Valor (será cifrado) *
+            </label>
+            <textarea
+              id="value"
+              name="value"
+              required
+              rows={4}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)] font-mono"
+              placeholder="sk-... o el valor confidencial"
+            />
+          </div>
+        )}
         <button
           type="submit"
           disabled={submitting}

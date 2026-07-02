@@ -14,8 +14,17 @@ export async function createResourceAction(formData: FormData) {
   await requireModuleAccess(user.userId, "resources", "write");
   const title = String(formData.get("title") || "").trim();
   const type = String(formData.get("type") || "otro");
-  const value = String(formData.get("value") || "").trim();
   const projectId = formData.get("project_id") ? String(formData.get("project_id")).trim() : null;
+
+  let value = "";
+  if (type === "credential") {
+    const email = String(formData.get("email") || "").trim();
+    const password = String(formData.get("password") || "").trim();
+    if (!email || !password) throw new Error("Correo y contraseña son obligatorios");
+    value = JSON.stringify({ email, password });
+  } else {
+    value = String(formData.get("value") || "").trim();
+  }
 
   if (!title || !value) throw new Error("Titulo y valor son obligatorios");
   const encryptedValue = encrypt(value);

@@ -72,10 +72,20 @@ export const clients = pgTable("clients", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
-  pinHash: text("pin_hash").notNull(),
+  pinHash: text("pin_hash"),
   email: text("email"),
   phone: text("phone"),
-  status: text("status").notNull().default("active"),
+  status: text("status").notNull().default("no_contactado"),
+  priority: text("priority"), // Alta, Media, Baja
+  city: text("city"),
+  sector: text("sector"),
+  whatsapp: text("whatsapp"),
+  instagram: text("instagram"),
+  webPresence: text("web_presence"),
+  website: text("website"),
+  address: text("address"),
+  rating: text("rating"),
+  reviewsCount: integer("reviews_count"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 

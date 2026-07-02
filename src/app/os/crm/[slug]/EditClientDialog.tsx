@@ -35,9 +35,17 @@ export function EditClientDialog({ client }: { client: { slug: string; name: str
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-1">Estado</label>
             <select name="status" defaultValue={client.status} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
-              <option value="active">Activo</option>
-              <option value="inactive">Inactivo</option>
-              <option value="paused">Pausado</option>
+              <option value="active">Activo (Portal)</option>
+              <option value="inactive">Inactivo (Portal)</option>
+              <option value="paused">Pausado (Portal)</option>
+              <option value="no_contactado">No contactado</option>
+              <option value="contactado">Contactado</option>
+              <option value="interesado">Interesado</option>
+              <option value="no_respondio">No respondió</option>
+              <option value="reunion_completada">1ª Reunión</option>
+              <option value="contrato_firmado">Contrato firmado</option>
+              <option value="contrato_finalizado">Contrato finalizado</option>
+              <option value="continuidad">Continuidad</option>
             </select>
           </div>
           <AsyncSubmitButton className="w-full">Guardar cambios</AsyncSubmitButton>

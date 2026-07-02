@@ -85,6 +85,7 @@ export async function verifyPortalAccess(slug: string, pin: string, email?: stri
   }
 
   // Fallback a PIN maestro del cliente si no hay email (o por retrocompatibilidad)
+  if (!client.pinHash) throw new Error("Acceso al portal no configurado para este cliente");
   const valid = await bcrypt.compare(pin, client.pinHash);
   if (!valid) throw new Error("PIN invalido");
   

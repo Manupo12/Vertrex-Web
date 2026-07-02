@@ -8,6 +8,14 @@ const clientStatusMap: Record<string, BadgeVariant> = {
   active: "success",
   inactive: "neutral",
   paused: "warning",
+  no_contactado: "neutral",
+  contactado: "info",
+  interesado: "purple",
+  no_respondio: "danger",
+  reunion_completada: "warning",
+  contrato_firmado: "success",
+  contrato_finalizado: "neutral",
+  continuidad: "success",
 };
 
 const projectStatusMap: Record<string, BadgeVariant> = {
@@ -53,6 +61,14 @@ const labelMap: Record<string, Record<string, string>> = {
     active: "Activo",
     inactive: "Inactivo",
     paused: "Pausado",
+    no_contactado: "No contactado",
+    contactado: "Contactado",
+    interesado: "Interesado",
+    no_respondio: "No respondió",
+    reunion_completada: "1ª Reunión",
+    contrato_firmado: "Contrato firmado",
+    contrato_finalizado: "Contrato finalizado",
+    continuidad: "Continuidad",
   },
   project: {
     active: "Activo",
