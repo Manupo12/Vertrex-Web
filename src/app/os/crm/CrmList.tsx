@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataTable } from "@/components/os/data/DataTable";
 import { MobileCardList } from "@/components/os/data/MobileCardList";
-import { Users, Copy, TagsIcon, TrashIcon } from "lucide-react";
+import { Users, Copy, TagsIcon, TrashIcon, Shuffle } from "lucide-react";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatShortDate } from "@/lib/format";
@@ -133,6 +133,17 @@ export function CrmList({ clients, stats = {} }: CrmListProps) {
 
   const withWeb = filtered.filter(c => c.website && c.website !== "SIN WEB").length;
   const webPct = filtered.length > 0 ? Math.round((withWeb / filtered.length) * 100) : 0;
+
+  const handleRandomSelect = () => {
+    if (filtered.length === 0) {
+      toast.error("No hay prospectos en la lista filtrada para elegir al azar");
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * filtered.length);
+    const randomClient = filtered[randomIndex];
+    toast.success(`Prospecto seleccionado al azar: ${randomClient.name}`);
+    router.push(`/os/crm/${randomClient.slug}`);
+  };
 
   const columns: ColumnDef<ClientRow>[] = [
     {
@@ -451,6 +462,18 @@ export function CrmList({ clients, stats = {} }: CrmListProps) {
                 <SelectItem value="none">Sin calificación</SelectItem>
               </SelectContent>
             </Select>
+
+            <Button
+              variant="outline"
+              type="button"
+              onClick={handleRandomSelect}
+              className="bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
+              disabled={filtered.length === 0}
+              title="Elegir y abrir un prospecto al azar de la lista actual"
+            >
+              <Shuffle className="h-3.5 w-3.5 text-[var(--color-primary)]" />
+              Al azar
+            </Button>
           </div>
         }
       />
