@@ -28,7 +28,10 @@ export function NewClientDialog() {
               await createClientAction(fd); 
               setOpen(false); 
               toast.success("Cliente creado con éxito"); 
-            } catch (e: unknown) {
+            } catch (e: any) {
+              if (e.message === "NEXT_REDIRECT" || e.digest?.startsWith("NEXT_REDIRECT")) {
+                throw e;
+              }
               toast.error(e instanceof Error ? e.message : "Error al crear cliente");
             }
           }} 

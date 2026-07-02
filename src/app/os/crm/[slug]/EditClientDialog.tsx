@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
+import { useRouter } from "next/navigation";
 
 interface ClientData {
   id: string;
@@ -29,6 +30,7 @@ interface ClientData {
 
 export function EditClientDialog({ client }: { client: ClientData }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -48,6 +50,7 @@ export function EditClientDialog({ client }: { client: ClientData }) {
               await updateClientAction(client.slug, fd); 
               setOpen(false); 
               toast.success("Información del cliente actualizada"); 
+              router.refresh();
             } catch (e: any) {
               toast.error("Error al actualizar: " + e.message);
             }
