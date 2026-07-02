@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataTable } from "@/components/os/data/DataTable";
 import { MobileCardList } from "@/components/os/data/MobileCardList";
-import { Users, Copy, TagsIcon, TrashIcon, Shuffle } from "lucide-react";
+import { Users, Copy, TagsIcon, TrashIcon, Shuffle, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatShortDate } from "@/lib/format";
@@ -76,6 +76,7 @@ export function CrmList({ clients, stats = {} }: CrmListProps) {
   };
 
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sectorFilter, setSectorFilter] = useState("all");
@@ -416,85 +417,213 @@ export function CrmList({ clients, stats = {} }: CrmListProps) {
         onSearch={setQuery}
         resultCount={filtered.length}
         filters={
-          <div className="flex flex-wrap items-center gap-2">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[155px] bg-background">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="active">Activo (Portal)</SelectItem>
-                <SelectItem value="inactive">Inactivo (Portal)</SelectItem>
-                <SelectItem value="paused">Pausado (Portal)</SelectItem>
-                {CRM_STAGES.map(stage => (
-                  <SelectItem key={stage.value} value={stage.value}>{stage.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-2">
+            {/* Desktop Filters */}
+            <div className="hidden sm:flex flex-wrap items-center gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[155px] bg-background">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los estados</SelectItem>
+                  <SelectItem value="active">Activo (Portal)</SelectItem>
+                  <SelectItem value="inactive">Inactivo (Portal)</SelectItem>
+                  <SelectItem value="paused">Pausado (Portal)</SelectItem>
+                  {CRM_STAGES.map(stage => (
+                    <SelectItem key={stage.value} value={stage.value}>{stage.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="w-[145px] bg-background">
-                <SelectValue placeholder="Prioridad" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Prioridad (Cualquiera)</SelectItem>
-                <SelectItem value="alta">Alta</SelectItem>
-                <SelectItem value="media">Media</SelectItem>
-                <SelectItem value="baja">Baja</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <SelectTrigger className="w-[145px] bg-background">
+                  <SelectValue placeholder="Prioridad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Prioridad (Cualquiera)</SelectItem>
+                  <SelectItem value="alta">Alta</SelectItem>
+                  <SelectItem value="media">Media</SelectItem>
+                  <SelectItem value="baja">Baja</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <Select value={sectorFilter} onValueChange={setSectorFilter}>
-              <SelectTrigger className="w-[160px] bg-background">
-                <SelectValue placeholder="Rubro/Sector" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Rubro (Todos)</SelectItem>
-                {sectors.slice(0, 100).map(sec => (
-                  <SelectItem key={sec} value={sec}>{sec}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select value={sectorFilter} onValueChange={setSectorFilter}>
+                <SelectTrigger className="w-[160px] bg-background">
+                  <SelectValue placeholder="Rubro/Sector" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Rubro (Todos)</SelectItem>
+                  {sectors.slice(0, 100).map(sec => (
+                    <SelectItem key={sec} value={sec}>{sec}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select value={cityFilter} onValueChange={setCityFilter}>
-              <SelectTrigger className="w-[140px] bg-background">
-                <SelectValue placeholder="Ciudad" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Ciudad (Todas)</SelectItem>
-                {cities.map(cit => (
-                  <SelectItem key={cit} value={cit}>{cit}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select value={cityFilter} onValueChange={setCityFilter}>
+                <SelectTrigger className="w-[140px] bg-background">
+                  <SelectValue placeholder="Ciudad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Ciudad (Todas)</SelectItem>
+                  {cities.map(cit => (
+                    <SelectItem key={cit} value={cit}>{cit}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select value={ratingFilter} onValueChange={setRatingFilter}>
-              <SelectTrigger className="w-[145px] bg-background">
-                <SelectValue placeholder="Calificación" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Calificación (Cualquiera)</SelectItem>
-                <SelectItem value="4.5">Excelente (4.5+ ⭐)</SelectItem>
-                <SelectItem value="4.0">Buena (4.0+ ⭐)</SelectItem>
-                <SelectItem value="low">Baja (&lt; 4.0 ⭐)</SelectItem>
-                <SelectItem value="none">Sin calificación</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={ratingFilter} onValueChange={setRatingFilter}>
+                <SelectTrigger className="w-[145px] bg-background">
+                  <SelectValue placeholder="Calificación" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Calificación (Cualquiera)</SelectItem>
+                  <SelectItem value="4.5">Excelente (4.5+ ⭐)</SelectItem>
+                  <SelectItem value="4.0">Buena (4.0+ ⭐)</SelectItem>
+                  <SelectItem value="low">Baja (&lt; 4.0 ⭐)</SelectItem>
+                  <SelectItem value="none">Sin calificación</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant="outline"
+                type="button"
+                onClick={handleRandomSelect}
+                className="bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
+                disabled={filtered.length === 0}
+                title="Elegir y abrir un prospecto al azar de la lista actual"
+              >
+                <Shuffle className="h-3.5 w-3.5 text-[var(--color-primary)]" />
+                Al azar
+              </Button>
+            </div>
+
+            {/* Mobile Filters Toggle Button */}
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="sm:hidden bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
+              title="Mostrar u ocultar filtros de búsqueda"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Filtros
+            </Button>
+          </div>
+        }
+      />
+
+      {showMobileFilters && (
+        <div className="sm:hidden p-4 rounded-xl border border-border bg-card/40 space-y-3 mb-4 mt-1">
+          <div className="flex items-center justify-between pb-1 border-b border-border/40">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filtros de Búsqueda</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setStatusFilter("all");
+                setPriorityFilter("all");
+                setSectorFilter("all");
+                setCityFilter("all");
+                setRatingFilter("all");
+              }}
+            >
+              Limpiar
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-2.5">
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Estado</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos los estados</SelectItem>
+                  <SelectItem value="active">Activo (Portal)</SelectItem>
+                  <SelectItem value="inactive">Inactivo (Portal)</SelectItem>
+                  <SelectItem value="paused">Pausado (Portal)</SelectItem>
+                  {CRM_STAGES.map(stage => (
+                    <SelectItem key={stage.value} value={stage.value}>{stage.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Prioridad</label>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Prioridad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Prioridad (Cualquiera)</SelectItem>
+                  <SelectItem value="alta">Alta</SelectItem>
+                  <SelectItem value="media">Media</SelectItem>
+                  <SelectItem value="baja">Baja</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Rubro/Sector</label>
+              <Select value={sectorFilter} onValueChange={setSectorFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Rubro" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {sectors.slice(0, 100).map(sec => (
+                    <SelectItem key={sec} value={sec}>{sec}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ciudad</label>
+              <Select value={cityFilter} onValueChange={setCityFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Ciudad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  {cities.map(cit => (
+                    <SelectItem key={cit} value={cit}>{cit}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Calificación</label>
+              <Select value={ratingFilter} onValueChange={setRatingFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Calificación" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Cualquiera</SelectItem>
+                  <SelectItem value="4.5">Excelente (4.5+ ⭐)</SelectItem>
+                  <SelectItem value="4.0">Buena (4.0+ ⭐)</SelectItem>
+                  <SelectItem value="low">Baja (&lt; 4.0 ⭐)</SelectItem>
+                  <SelectItem value="none">Sin calificación</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <Button
               variant="outline"
               type="button"
               onClick={handleRandomSelect}
-              className="bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
+              className="w-full bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 h-9 mt-2"
               disabled={filtered.length === 0}
-              title="Elegir y abrir un prospecto al azar de la lista actual"
             >
               <Shuffle className="h-3.5 w-3.5 text-[var(--color-primary)]" />
-              Al azar
+              Elegir uno al azar
             </Button>
           </div>
-        }
-      />
+        </div>
+      )}
       
       <div className="hidden sm:block mt-4">
         <DataTable 
@@ -511,16 +640,83 @@ export function CrmList({ clients, stats = {} }: CrmListProps) {
         <MobileCardList 
           data={filtered}
           renderCard={(c) => (
-            <div onClick={() => router.push(`/os/crm/${c.slug}`)} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/30 cursor-pointer">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-sm font-medium text-[var(--color-primary)]">{c.name.charAt(0).toUpperCase()}</div>
-                  <div>
-                    <p className="font-medium text-foreground">{c.name}</p>
-                    <p className="text-xs text-muted-foreground font-mono">{c.slug}</p>
+            <div 
+              onClick={() => router.push(`/os/crm/${c.slug}`)} 
+              className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:bg-accent/30 cursor-pointer shadow-sm relative overflow-hidden"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-xs font-semibold text-[var(--color-primary)] shrink-0 mt-0.5">
+                    {c.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground leading-tight truncate">{c.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {c.sector || "Cliente"} {c.city ? `• ${c.city}` : ""}
+                    </p>
                   </div>
                 </div>
-                <StatusBadge category="client" status={c.status} />
+                <div className="shrink-0">
+                  <StatusBadge category="client" status={c.status} className="text-[10px] px-2 py-0.5" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs border-t border-border/40 pt-2.5">
+                <div className="flex items-center gap-2">
+                  {c.priority ? (
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                      c.priority.includes("Alta") || c.priority.includes("🔥") ? "bg-red-500/10 border-red-500/20 text-red-400" :
+                      c.priority.includes("Media") ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
+                      "bg-slate-500/10 border-slate-500/20 text-slate-400"
+                    }`}>
+                      {c.priority}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground/60">-</span>
+                  )}
+
+                  {c.rating && (
+                    <span className="font-mono text-muted-foreground">
+                      ⭐ <span className="text-foreground font-semibold">{c.rating}</span> ({c.reviewsCount || 0})
+                    </span>
+                  )}
+                </div>
+
+                {c.contactors && c.contactors.length > 0 && (
+                  <div className="flex -space-x-1 overflow-hidden">
+                    {c.contactors.map(member => (
+                      <div 
+                        key={member.id} 
+                        title={`Contactado por ${member.name}`}
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-[9px] font-bold ring-2 ring-card uppercase"
+                      >
+                        {member.name.charAt(0)}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between border-t border-border/40 pt-2.5" onClick={(e) => e.stopPropagation()}>
+                <span className="text-xs font-mono text-muted-foreground">{c.phone || "Sin teléfono"}</span>
+                <div className="flex items-center gap-1.5">
+                  {c.whatsapp && (
+                    <a href={c.whatsapp} target="_blank" rel="noopener noreferrer" className="p-2 text-green-500 hover:bg-green-500/10 rounded-lg transition-colors border border-green-500/10 bg-green-500/5 flex items-center justify-center" title="WhatsApp">
+                      <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.022-.08-.117-.146-.217-.196-.085-.04-1.013-.5-1.186-.563-.173-.063-.3-.094-.427.094-.128.19-.497.625-.61.753-.113.128-.227.144-.427.044-.2-.1-.84-.31-1.602-.99-.59-.525-.99-1.173-1.106-1.372-.116-.2-.013-.308.087-.408.09-.09.2-.233.3-.35.1-.117.135-.197.2-.33.065-.13.034-.247-.015-.347-.05-.1-.427-1.03-.585-1.41-.153-.372-.32-.322-.427-.327-.11-.005-.23-.006-.35-.006-.12 0-.317.045-.483.225-.166.18-.633.618-.633 1.507 0 .89.65 1.747.74 1.87.09.125 1.282 1.957 3.11 2.748.435.19.774.303 1.04.387.436.138.832.12 1.15.072.35-.055 1.013-.414 1.155-.815.14-.4.14-.75.097-.816-.044-.066-.17-.107-.29-.168zM12.004 2c-5.524 0-10.002 4.478-10.002 10.002 0 1.815.485 3.52 1.328 5.01L2 22l5.166-1.355c1.436.78 3.06 1.19 4.838 1.19 5.524 0 10.002-4.477 10.002-10.002C22.006 6.478 17.528 2 12.004 2z"/>
+                      </svg>
+                    </a>
+                  )}
+                  {c.instagram && (
+                    <a href={c.instagram} target="_blank" rel="noopener noreferrer" className="p-2 text-pink-500 hover:bg-pink-500/10 rounded-lg transition-colors border border-pink-500/10 bg-pink-500/5 flex items-center justify-center" title="Instagram">
+                      <svg className="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                      </svg>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           )}
