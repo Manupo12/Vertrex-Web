@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
-import { getClientBySlug, generateClientPinAction, createClientAction } from "@/lib/db/actions/crm";
+import { getClientBySlug, generateClientPinAction, createClientAction, getClientContactors, listTeamMembersAction } from "@/lib/db/actions/crm";
 import { getEntityConnections, getResolvedEntityConnections } from "@/lib/db/actions/graph";
 import { db } from "@/lib/db";
 import { projects, documents, tickets, finances } from "@/lib/db/schema";
@@ -13,6 +13,7 @@ import { formatShortDate, formatCurrencyCop } from "@/lib/format";
 import { notFound } from "next/navigation";
 import { PinManager } from "./PinManager";
 import { EditClientDialog } from "./EditClientDialog";
+import { EditContactorsDialog } from "./EditContactorsDialog";
 import { EntityGraph } from "@/components/os/Graph/EntityGraph";
 import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
 
@@ -28,6 +29,9 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
 
   const client = await getClientBySlug(slug);
   if (!client) notFound();
+
+  const currentContactors = await getClientContactors(client.id);
+  const teamMembers = await listTeamMembersAction();
 
   const connections = await getEntityConnections(client.id);
   const resolvedConnections = await getResolvedEntityConnections(client.id);
@@ -94,6 +98,34 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
                     <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Instagram</span><span>{client.instagram ? <a href={client.instagram} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-semibold">Ver Perfil</a> : "-"}</span></div>
                     <div className="flex justify-between border-b border-border/40 pb-1.5"><span className="text-muted-foreground">Sitio Web / Red</span><span>{client.website ? <a href={client.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[150px] inline-block align-bottom font-semibold">{client.webPresence || "Ver enlace"}</a> : "-"}</span></div>
                   </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold">Contacto & Seguimiento</CardTitle>
+                  <EditContactorsDialog 
+                    clientId={client.id} 
+                    currentContactors={currentContactors} 
+                    teamMembers={teamMembers} 
+                  />
+                </CardHeader>
+                <CardContent className="pt-2">
+                  {currentContactors.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-2">Nadie del equipo está contactando a este prospecto aún.</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {currentContactors.map(c => (
+                        <div key={c.id} className="flex items-center gap-2 bg-accent/35 border border-border rounded-lg px-3 py-1.5 text-sm shadow-sm">
+                          <div className="h-5 w-5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-semibold flex items-center justify-center">
+                            {c.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-foreground">{c.name}</span>
+                          <span className="text-xs text-muted-foreground font-mono">({c.email})</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

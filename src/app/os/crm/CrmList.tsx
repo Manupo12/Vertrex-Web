@@ -36,6 +36,7 @@ type ClientRow = {
   address: string | null;
   rating: string | null;
   reviewsCount: number | null;
+  contactors: { id: string; name: string }[];
   createdAt: Date;
 };
 
@@ -223,6 +224,23 @@ export function CrmList({ clients, stats = {} }: CrmListProps) {
           <span className="text-xs text-[var(--color-muted-foreground)] flex items-center gap-1 font-mono">
             ⭐ <span className="text-foreground font-semibold">{rating}</span> ({reviews ? reviews.toLocaleString() : 0})
           </span>
+        );
+      }
+    },
+    {
+      accessorKey: "contactors",
+      header: "Contactado por",
+      cell: ({ row }) => {
+        const contactors = row.original.contactors || [];
+        if (contactors.length === 0) return <span className="text-xs text-[var(--color-muted-foreground)]">-</span>;
+        return (
+          <div className="flex flex-wrap gap-1">
+            {contactors.map(member => (
+              <span key={member.id} className="inline-flex items-center px-1.5 py-0.5 rounded bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-[10px] font-semibold border border-[var(--color-primary)]/20 uppercase tracking-wide">
+                {member.name.split(" ")[0]}
+              </span>
+            ))}
+          </div>
         );
       }
     },

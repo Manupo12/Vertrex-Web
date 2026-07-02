@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { clients, clientPortalUsers } from "@/lib/db/schema";
+import { clients, clientPortalUsers, clientContactors, users } from "@/lib/db/schema";
 import { hashPin, generateSixDigitPin } from "@/lib/security/password";
 import { getEntityConnections } from "@/lib/db/actions/graph";
 import { requireOsUser } from "@/lib/auth/session";
@@ -76,4 +76,40 @@ export async function getClientGraphSummary(slug: string) {
   if (!client) return null;
   const connections = await getEntityConnections(client.id);
   return { client, connections };
+}
+
+export async function updateClientContactorsAction(clientId: string, userIds: string[]) {
+  await requireOsUser();
+  await db.delete(clientContactors).where(eq(clientContactors.clientId, clientId));
+  if (userIds.length > 0) {
+    await db.insert(clientContactors).values(
+      userIds.map(userId => ({ clientId, userId }))
+    );
+  }
+  revalidatePath("/os/crm");
+}
+
+export async function getClientContactors(clientId: string) {
+  await requireOsUser();
+  return db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+    })
+    .from(clientContactors)
+    .innerJoin(users, eq(clientContactors.userId, users.id))
+    .where(eq(clientContactors.clientId, clientId));
+}
+
+export async function listTeamMembersAction() {
+  await requireOsUser();
+  return db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+    })
+    .from(users)
+    .where(eq(users.isActive, true));
 }

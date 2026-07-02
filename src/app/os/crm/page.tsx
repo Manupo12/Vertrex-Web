@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { clients } from "@/lib/db/schema";
+import { clients, clientContactors, users } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { CrmList } from "./CrmList";
@@ -27,13 +27,34 @@ export default async function CrmPage({ searchParams }: Props) {
     allClients = await db.select().from(clients).orderBy(clients.createdAt);
   }
 
+  // Fetch all contactors in one query
+  const contactorsList = await db
+    .select({
+      clientId: clientContactors.clientId,
+      userId: users.id,
+      userName: users.name,
+    })
+    .from(clientContactors)
+    .innerJoin(users, eq(clientContactors.userId, users.id));
+
+  const contactorsMap = contactorsList.reduce((acc, row) => {
+    if (!acc[row.clientId]) acc[row.clientId] = [];
+    acc[row.clientId].push({ id: row.userId, name: row.userName });
+    return acc;
+  }, {} as Record<string, { id: string; name: string }[]>);
+
+  const clientsWithContactors = allClients.map(c => ({
+    ...c,
+    contactors: contactorsMap[c.id] || [],
+  }));
+
   const filtered = q
-    ? allClients.filter(c =>
+    ? clientsWithContactors.filter(c =>
         c.name.toLowerCase().includes(q.toLowerCase()) ||
         c.slug.toLowerCase().includes(q.toLowerCase()) ||
         (c.email || "").toLowerCase().includes(q.toLowerCase())
       )
-    : allClients;
+    : clientsWithContactors;
 
   return (
     <div>

@@ -89,6 +89,13 @@ export const clients = pgTable("clients", {
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
+export const clientContactors = pgTable("client_contactors", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientId: uuid("client_id").notNull().references(() => clients.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  assignedAt: timestamp("assigned_at").notNull().default(sql`now()`),
+});
+
 export const clientPortalUsers = pgTable("client_portal_users", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   clientId: uuid("client_id").notNull().references(() => clients.id, { onDelete: "cascade" }),
