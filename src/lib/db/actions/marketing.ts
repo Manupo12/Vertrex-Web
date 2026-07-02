@@ -79,6 +79,23 @@ export async function updateSocialAccountStatsAction(id: string, formData: FormD
   revalidatePath(`/os/marketing/${id}`);
 }
 
+export async function updateSocialAccountCredentialsAction(id: string, formData: FormData) {
+  await requireOsUser();
+  const handle = String(formData.get("handle") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const password = String(formData.get("password") || "").trim();
+  
+  if (!handle) throw new Error("El handle es obligatorio");
+  
+  const updateData: any = { handle, email: email || null };
+  if (password) {
+    updateData.passwordEncrypted = encrypt(password);
+  }
+  
+  await db.update(socialAccounts).set(updateData).where(eq(socialAccounts.id, id));
+  revalidatePath(`/os/marketing/${id}`);
+}
+
 export async function createHashtagAction(label: string, tags: string[], accountId: string) {
   await requireOsUser();
   const [ht] = await db.insert(marketingHashtags).values({ label, tags, accountId }).returning();

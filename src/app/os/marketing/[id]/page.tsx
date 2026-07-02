@@ -11,6 +11,7 @@ import { SocialRevealButton } from "./SocialRevealButton";
 import { ContentForm } from "./ContentForm";
 import { ContentStatusSelect } from "./ContentStatusSelect";
 import { StatsUpdateDialog } from "./StatsUpdateDialog";
+import { EditCredentialsDialog } from "./EditCredentialsDialog";
 import { Users, BarChart3 } from "lucide-react";
 
 export default async function MarketingDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -98,11 +99,14 @@ export default async function MarketingDetailPage({ params }: { params: Promise<
 
           <TabsContent value="credenciales" className="mt-4">
             <Card>
-              <CardHeader><CardTitle className="text-sm">Seguridad</CardTitle></CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-sm">Seguridad</CardTitle>
+                <EditCredentialsDialog account={account} />
+              </CardHeader>
               <CardContent>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-accent/20 border border-border">
                   <div>
-                    <p className="text-sm font-medium">Contrasena de la cuenta</p>
+                    <p className="text-sm font-medium">Contraseña de la cuenta</p>
                     <p className="text-xs text-muted-foreground">Guardada en formato cifrado.</p>
                   </div>
                   <SocialRevealButton accountId={account.id} />
