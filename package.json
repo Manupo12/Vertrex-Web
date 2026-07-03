@@ -2,7 +2,9 @@
   "name": "mi-empresa-web",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["cli"],
+  "workspaces": [
+    "cli"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -53,6 +55,7 @@
     "jose": "^6.2.2",
     "lucide-react": "^1.8.0",
     "next": "^15.5.12",
+    "open-graph-scraper": "^6.12.0",
     "openai": "^6.35.0",
     "otpauth": "^9.5.1",
     "pdf-lib": "^1.17.1",

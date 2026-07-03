@@ -1,4 +1,3 @@
-import * as cheerio from "cheerio";
 
 const LANGUAGE_COLORS: Record<string, string> = {
   TypeScript: "#3178c6",
@@ -64,68 +63,104 @@ export async function fetchGitHubReadme(owner: string, repo: string) {
   return Buffer.from(String(data.content || ""), "base64").toString("utf8");
 }
 
+function classifyType(host: string): string {
+  if (host.includes("tiktok")) return "tiktok";
+  if (host.includes("reddit")) return "reddit";
+  if (host.includes("medium") || host.includes("dev.to")) return "article";
+  if (host.includes("youtube.com") || host.includes("youtu.be")) return "video";
+  if (host.includes("github.com")) return "github";
+  if (host.includes("twitter.com") || host.includes("x.com")) return "twitter";
+  if (host.includes("linkedin.com")) return "linkedin";
+  return "otro";
+}
+
+// Layer 1: open-graph-scraper with Googlebot UA (fast, works ~60% of sites)
+async function fetchOgsLayer(url: string): Promise<{ title: string | null; description: string | null; imageUrl: string | null }> {
+  // Dynamic import to avoid issues with the ESM package
+  const ogs = (await import("open-graph-scraper")).default;
+  const { result, error } = await ogs({
+    url,
+    fetchOptions: {
+      signal: AbortSignal.timeout(8000),
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+      },
+    },
+  } as Parameters<typeof ogs>[0]);
+
+  if (error || !result.ogTitle) throw new Error("OGS layer: no meaningful data");
+
+  return {
+    title: result.ogTitle || null,
+    description: result.ogDescription || result.twitterDescription || null,
+    imageUrl: result.ogImage?.[0]?.url || result.twitterImage?.[0]?.url || null,
+  };
+}
+
+// Layer 2: Microlink.io API (handles Cloudflare-protected sites, 50 req/day free, no key needed)
+async function fetchMicrolinkLayer(url: string): Promise<{ title: string | null; description: string | null; imageUrl: string | null }> {
+  const res = await fetch(
+    `https://api.microlink.io?url=${encodeURIComponent(url)}&meta=true`,
+    {
+      cache: "no-store",
+      signal: AbortSignal.timeout(12000),
+    }
+  );
+
+  if (!res.ok) throw new Error(`Microlink HTTP ${res.status}`);
+  const body = await res.json();
+
+  if (body.status === "fail") throw new Error("Microlink fail: " + body.message);
+
+  return {
+    title: body.data?.title || null,
+    description: body.data?.description || null,
+    imageUrl: body.data?.image?.url || body.data?.logo?.url || null,
+  };
+}
+
 export async function fetchOpenGraph(url: string) {
   const host = new URL(url).hostname;
   const cleanHost = host.replace("www.", "");
+  const type = classifyType(host);
 
+  let title: string | null = null;
+  let description: string | null = null;
+  let imageUrl: string | null = null;
+
+  // ── Layer 1: open-graph-scraper (fast, low cost, good for most sites) ──
   try {
-    const res = await fetch(url, { 
-      cache: "no-store",
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Cache-Control": "no-cache",
-        "Pragma": "no-cache"
-      }
-    });
+    const layer1 = await fetchOgsLayer(url);
+    title = layer1.title;
+    description = layer1.description;
+    imageUrl = layer1.imageUrl;
+    console.log("[OG] Layer 1 (OGS) succeeded for", url);
+  } catch (e1) {
+    console.log("[OG] Layer 1 failed, trying Microlink:", url);
 
-    if (!res.ok) throw new Error("Status " + res.status);
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    
-    let title = $('meta[property="og:title"]').attr("content") || $("title").text() || "";
-    title = title.trim();
-    if (!title) {
-      const lastPart = url.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || cleanHost;
-      title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${cleanHost}`;
+    // ── Layer 2: Microlink.io (bypasses Cloudflare / JS challenges) ──
+    try {
+      const layer2 = await fetchMicrolinkLayer(url);
+      title = layer2.title;
+      description = layer2.description;
+      imageUrl = layer2.imageUrl;
+      console.log("[OG] Layer 2 (Microlink) succeeded for", url);
+    } catch (e2) {
+      console.log("[OG] Layer 2 failed, using domain fallback:", url);
     }
-
-    const description = $('meta[property="og:description"]').attr("content") || $('meta[name="description"]').attr("content") || null;
-    
-    let imageUrl = $('meta[property="og:image"]').attr("content") || null;
-    if (!imageUrl) {
-      const favicon = $('link[rel="shortcut icon"]').attr("href") || $('link[rel="icon"]').attr("href") || $('link[rel="apple-touch-icon"]').attr("href");
-      if (favicon) {
-        try {
-          imageUrl = new URL(favicon, url).href;
-        } catch {}
-      }
-    }
-
-    if (!imageUrl) {
-      imageUrl = `https://www.google.com/s2/favicons?domain=${cleanHost}&sz=128`;
-    }
-
-    let type = "otro";
-    if (host.includes("tiktok")) type = "tiktok";
-    else if (host.includes("reddit")) type = "reddit";
-    else if (host.includes("medium") || host.includes("dev.to")) type = "article";
-    else if (host.includes("youtube.com") || host.includes("youtu.be")) type = "video";
-    else if (host.includes("github.com")) type = "github";
-
-    return { url, title, description, imageUrl, type };
-  } catch (err) {
-    // Fallback: guess title and use google favicon service
-    const lastPart = url.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || cleanHost;
-    const title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${cleanHost}`;
-    const imageUrl = `https://www.google.com/s2/favicons?domain=${cleanHost}&sz=128`;
-    return { 
-      url, 
-      title, 
-      description: "Enlace guardado de forma rápida", 
-      imageUrl, 
-      type: "otro" 
-    };
   }
+
+  // ── Layer 3: domain-derived fallback (always succeeds) ──
+  if (!title) {
+    const lastPart = url.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || cleanHost;
+    title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${cleanHost}`;
+  }
+  if (!imageUrl) {
+    imageUrl = `https://www.google.com/s2/favicons?domain=${cleanHost}&sz=128`;
+  }
+
+  return { url, title, description, imageUrl, type };
 }
+
