@@ -8,7 +8,13 @@ import { fetchGitHubRepo, fetchOpenGraph, fetchGitHubReadme, parseGitHubUrl } fr
 
 import { requireOsUser } from "@/lib/auth/session";
 
-export async function saveExternalReferenceAction(url: string, savedReason?: string, collectionId?: string | null) {
+export async function saveExternalReferenceAction(
+  url: string, 
+  savedReason?: string, 
+  collectionId?: string | null,
+  customTitle?: string,
+  customDescription?: string
+) {
   await requireOsUser();
   const trimmedUrl = url.trim();
   if (!trimmedUrl) throw new Error("URL es obligatoria");
@@ -24,7 +30,7 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
       url: ghData.url,
       owner: ghData.owner,
       repoName: ghData.repoName,
-      description: ghData.description,
+      description: customDescription || ghData.description,
       language: ghData.language,
       languageColor: ghData.languageColor,
       stars: ghData.stars,
@@ -40,37 +46,37 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
   
   const existing = await db.select().from(links).where(eq(links.url, trimmedUrl)).limit(1);
   if (existing.length > 0) throw new Error("Este link ya esta guardado");
+
+  let title = customTitle?.trim() || null;
+  let description = customDescription?.trim() || null;
+  let imageUrl = null;
+  let type = "otro";
+
   try {
     const ogData = await fetchOpenGraph(trimmedUrl);
-    const [link] = await db.insert(links).values({
-      url: ogData.url,
-      title: ogData.title,
-      description: ogData.description,
-      imageUrl: ogData.imageUrl,
-      type: ogData.type,
-      savedReason: savedReason?.trim() || null,
-      collectionId: collectionId || null,
-    }).returning();
-    revalidatePath("/os/links");
-    return { type: "link" as const, data: link };
+    if (!title) title = ogData.title;
+    if (!description) description = ogData.description;
+    imageUrl = ogData.imageUrl;
+    type = ogData.type;
   } catch {
     const host = new URL(trimmedUrl).hostname.replace("www.", "");
     const lastPart = trimmedUrl.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || host;
-    const title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${host}`;
-    const imageUrl = `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
-
-    const [link] = await db.insert(links).values({ 
-      url: trimmedUrl,
-      title,
-      description: "Enlace guardado de forma rápida",
-      imageUrl,
-      type: "otro",
-      savedReason: savedReason?.trim() || null,
-      collectionId: collectionId || null,
-    }).returning();
-    revalidatePath("/os/links");
-    return { type: "link" as const, data: link };
+    if (!title) title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${host}`;
+    if (!description) description = "Enlace guardado de forma rápida";
+    imageUrl = `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
   }
+
+  const [link] = await db.insert(links).values({
+    url: trimmedUrl,
+    title: title || trimmedUrl,
+    description: description,
+    imageUrl: imageUrl,
+    type: type,
+    savedReason: savedReason?.trim() || null,
+    collectionId: collectionId || null,
+  }).returning();
+  revalidatePath("/os/links");
+  return { type: "link" as const, data: link };
 }
 
 export async function updateRepositoryStatusAction(id: string, status: string) {

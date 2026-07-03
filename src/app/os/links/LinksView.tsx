@@ -30,6 +30,8 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
   const [collectionFilter, setCollectionFilter] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [collectionId, setCollectionId] = useState("none");
+  const [customTitle, setCustomTitle] = useState("");
+  const [customDescription, setCustomDescription] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [savedReason, setSavedReason] = useState("");
@@ -64,10 +66,13 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
       const result = await saveExternalReferenceAction(
         url, 
         savedReason, 
-        collectionId === "none" ? null : collectionId
+        collectionId === "none" ? null : collectionId,
+        customTitle.trim() || undefined,
+        customDescription.trim() || undefined
       );
       toast.success(result.type === "repository" ? "Repositorio guardado" : "Link guardado");
       setAddOpen(false); setUrl(""); setSavedReason(""); setCollectionId("none");
+      setCustomTitle(""); setCustomDescription("");
       router.refresh();
     } catch (e) { toast.error(e instanceof Error ? e.message : "Error"); }
     setSaving(false);
@@ -380,7 +385,16 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
         </div>
       )}
 
-      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+      <Dialog open={addOpen} onOpenChange={(isOpen) => {
+        setAddOpen(isOpen);
+        if (!isOpen) {
+          setUrl("");
+          setSavedReason("");
+          setCollectionId("none");
+          setCustomTitle("");
+          setCustomDescription("");
+        }
+      }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Guardar enlace</DialogTitle>
@@ -390,6 +404,20 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
               <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">URL *</label>
               <Input value={url} onChange={e => handleUrlChange(e.target.value)} placeholder="https://..." />
             </div>
+
+            {!isGitHub && (
+              <>
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">Título (Opcional, autodetectado si vacío)</label>
+                  <Input value={customTitle} onChange={(e) => setCustomTitle(e.target.value)} placeholder="Título personalizado..." />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">Descripción (Opcional, autodetectada si vacío)</label>
+                  <Textarea value={customDescription} onChange={(e) => setCustomDescription(e.target.value)} rows={2} placeholder="Descripción personalizada..." />
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -426,7 +454,7 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
               <Textarea 
                 value={savedReason} 
                 onChange={e => setSavedReason(e.target.value)} 
-                rows={3} 
+                rows={2.5} 
                 placeholder={isGitHub ? "Ej. Para el refactor del módulo de facturación..." : "Ej. Excelente artículo sobre micro-frontends..."} 
               />
             </div>
