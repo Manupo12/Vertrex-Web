@@ -3,6 +3,7 @@ import { linkCollections } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { requireOsUser } from "@/lib/auth/session";
+import { NewCollectionDialog } from "./NewCollectionDialog";
 
 export default async function LinkCollectionsPage() {
   await requireOsUser();
@@ -14,11 +15,7 @@ export default async function LinkCollectionsPage() {
         title="Colecciones" 
         description="Agrupa links y repositorios por tema." 
         breadcrumbs={[{ label: "Links", href: "/os/links" }, { label: "Colecciones" }]}
-        primaryAction={
-          <button className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-            + Nueva colección
-          </button>
-        }
+        primaryAction={<NewCollectionDialog />}
       />
       
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

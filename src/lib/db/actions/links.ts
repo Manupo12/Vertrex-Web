@@ -8,7 +8,7 @@ import { fetchGitHubRepo, fetchOpenGraph, fetchGitHubReadme, parseGitHubUrl } fr
 
 import { requireOsUser } from "@/lib/auth/session";
 
-export async function saveExternalReferenceAction(url: string, savedReason?: string) {
+export async function saveExternalReferenceAction(url: string, savedReason?: string, collectionId?: string | null) {
   await requireOsUser();
   const trimmedUrl = url.trim();
   if (!trimmedUrl) throw new Error("URL es obligatoria");
@@ -32,6 +32,7 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
       topics: ghData.topics,
       pushedAt: ghData.pushedAt,
       savedReason: savedReason.trim(),
+      collectionId: collectionId || null,
     }).returning();
     revalidatePath("/os/links");
     return { type: "repository" as const, data: repo };
@@ -48,6 +49,7 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
       imageUrl: ogData.imageUrl,
       type: ogData.type,
       savedReason: savedReason?.trim() || null,
+      collectionId: collectionId || null,
     }).returning();
     revalidatePath("/os/links");
     return { type: "link" as const, data: link };
@@ -64,6 +66,7 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
       imageUrl,
       type: "otro",
       savedReason: savedReason?.trim() || null,
+      collectionId: collectionId || null,
     }).returning();
     revalidatePath("/os/links");
     return { type: "link" as const, data: link };
@@ -124,9 +127,9 @@ export async function createCollectionAction(name: string, description?: string)
   return collection;
 }
 
-export async function quickSaveAction(url: string, savedReason?: string) {
+export async function quickSaveAction(url: string, savedReason?: string, collectionId?: string | null) {
   await requireOsUser();
-  return saveExternalReferenceAction(url, savedReason);
+  return saveExternalReferenceAction(url, savedReason, collectionId);
 }
 
 export async function updateExternalReferenceAction(id: string, type: "repo" | "link", data: { title?: string; description?: string; savedReason?: string; collectionId?: string | null }) {

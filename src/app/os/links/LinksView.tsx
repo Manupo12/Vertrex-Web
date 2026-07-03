@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { GitFork, Star, Link2, Pin } from "lucide-react";
+import { GitFork, Star, Link2, Pin, SlidersHorizontal } from "lucide-react";
 import { formatShortDate } from "@/lib/format";
 import { saveExternalReferenceAction } from "@/lib/db/actions/links";
 import { toast } from "sonner";
@@ -28,6 +28,8 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [collectionFilter, setCollectionFilter] = useState("");
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [collectionId, setCollectionId] = useState("none");
   const [addOpen, setAddOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [savedReason, setSavedReason] = useState("");
@@ -59,9 +61,13 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
     if (!url.trim()) return;
     setSaving(true);
     try {
-      const result = await saveExternalReferenceAction(url, isGitHub ? savedReason : undefined);
+      const result = await saveExternalReferenceAction(
+        url, 
+        savedReason, 
+        collectionId === "none" ? null : collectionId
+      );
       toast.success(result.type === "repository" ? "Repositorio guardado" : "Link guardado");
-      setAddOpen(false); setUrl(""); setSavedReason("");
+      setAddOpen(false); setUrl(""); setSavedReason(""); setCollectionId("none");
       router.refresh();
     } catch (e) { toast.error(e instanceof Error ? e.message : "Error"); }
     setSaving(false);
@@ -109,65 +115,175 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
     <div>
       <div className="flex items-center gap-2 mb-4"><Button variant="outline" size="sm" onClick={() => setAddOpen(true)}>+ Guardar link</Button></div>
       <Toolbar searchPlaceholder="Buscar en repos y links..." onSearch={setQuery} resultCount={filteredRepos.length + filteredLinks.length} filters={
-        <div className="flex flex-wrap gap-2">
-          {collections && collections.length > 0 && (
-            <Select value={collectionFilter} onValueChange={setCollectionFilter}>
+        <div className="flex items-center gap-2">
+          {/* Desktop Filters */}
+          <div className="hidden sm:flex flex-wrap items-center gap-2">
+            {collections && collections.length > 0 && (
+              <Select value={collectionFilter} onValueChange={setCollectionFilter}>
+                <SelectTrigger className="w-[140px] bg-background">
+                  <SelectValue placeholder="Colección" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  {collections.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+
+            <Select value={languageFilter} onValueChange={setLanguageFilter}>
               <SelectTrigger className="w-[140px] bg-background">
-                <SelectValue placeholder="Colección" />
+                <SelectValue placeholder="Lenguaje" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                {collections.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                <SelectItem value="all">Todos</SelectItem>
+                {uniqueLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
               </SelectContent>
             </Select>
-          )}
 
-          <Select value={languageFilter} onValueChange={setLanguageFilter}>
-            <SelectTrigger className="w-[140px] bg-background">
-              <SelectValue placeholder="Lenguaje" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {uniqueLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
-            </SelectContent>
-          </Select>
+            <Select value={topicFilter} onValueChange={setTopicFilter}>
+              <SelectTrigger className="w-[140px] bg-background">
+                <SelectValue placeholder="Topic" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+              </SelectContent>
+            </Select>
 
-          <Select value={topicFilter} onValueChange={setTopicFilter}>
-            <SelectTrigger className="w-[140px] bg-background">
-              <SelectValue placeholder="Topic" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-            </SelectContent>
-          </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[140px] bg-background">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="pendiente">Pendiente</SelectItem>
+                <SelectItem value="probando">Probando</SelectItem>
+                <SelectItem value="en_uso">En uso</SelectItem>
+                <SelectItem value="descartado">Descartado</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px] bg-background">
-              <SelectValue placeholder="Estado" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="pendiente">Pendiente</SelectItem>
-              <SelectItem value="probando">Probando</SelectItem>
-              <SelectItem value="en_uso">En uso</SelectItem>
-              <SelectItem value="descartado">Descartado</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-[140px] bg-background">
+                <SelectValue placeholder="Prioridad" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Cualquiera</SelectItem>
+                <SelectItem value="3">3+ estrellas</SelectItem>
+                <SelectItem value="4">4+ estrellas</SelectItem>
+                <SelectItem value="5">5 estrellas</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-            <SelectTrigger className="w-[140px] bg-background">
-              <SelectValue placeholder="Prioridad" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Cualquiera</SelectItem>
-              <SelectItem value="3">3+ estrellas</SelectItem>
-              <SelectItem value="4">4+ estrellas</SelectItem>
-              <SelectItem value="5">5 estrellas</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Mobile Filters Toggle Button */}
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => setShowMobileFilters(!showMobileFilters)}
+            className="sm:hidden bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
+            title="Mostrar u ocultar filtros de búsqueda"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            Filtros
+          </Button>
         </div>
       } />
+
+      {showMobileFilters && (
+        <div className="sm:hidden p-4 rounded-xl border border-border bg-card/40 space-y-3 mb-4 mt-1">
+          <div className="flex items-center justify-between pb-1 border-b border-border/40">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filtros de Búsqueda</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setCollectionFilter("all");
+                setLanguageFilter("all");
+                setTopicFilter("all");
+                setStatusFilter("all");
+                setPriorityFilter("all");
+              }}
+            >
+              Limpiar
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-2.5">
+            {collections && collections.length > 0 && (
+              <div className="space-y-1">
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Colección</label>
+                <Select value={collectionFilter} onValueChange={setCollectionFilter}>
+                  <SelectTrigger className="w-full bg-background">
+                    <SelectValue placeholder="Colección" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {collections.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lenguaje</label>
+              <Select value={languageFilter} onValueChange={setLanguageFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Lenguaje" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {uniqueLanguages.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Topic</label>
+              <Select value={topicFilter} onValueChange={setTopicFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Estado</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="pendiente">Pendiente</SelectItem>
+                  <SelectItem value="probando">Probando</SelectItem>
+                  <SelectItem value="en_uso">En uso</SelectItem>
+                  <SelectItem value="descartado">Descartado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Prioridad</label>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Prioridad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Cualquiera</SelectItem>
+                  <SelectItem value="3">3+ estrellas</SelectItem>
+                  <SelectItem value="4">4+ estrellas</SelectItem>
+                  <SelectItem value="5">5 estrellas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      )}
 
       {filteredRepos.length > 0 && (
         <div className="mb-6"><h2 className="text-sm font-medium mb-3">Repositorios GitHub ({filteredRepos.length})</h2>
@@ -314,6 +430,22 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
                 placeholder={isGitHub ? "Ej. Para el refactor del módulo de facturación..." : "Ej. Excelente artículo sobre micro-frontends..."} 
               />
             </div>
+
+            {collections && collections.length > 0 && (
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">Colección / Categoría (Opcional)</label>
+                <select 
+                  value={collectionId} 
+                  onChange={(e) => setCollectionId(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="none">Ninguna colección</option>
+                  {collections.map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <Button 
               onClick={handleSave} 
