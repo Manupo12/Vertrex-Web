@@ -189,31 +189,70 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
       {filteredLinks.length > 0 && (
         <div className="mb-6"><h2 className="text-sm font-medium mb-3">Links ({filteredLinks.length})</h2>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredLinks.map(l => (
-              <div key={l.id} onClick={() => router.push(`/os/links/${l.id}?type=link`)} className="flex flex-col cursor-pointer rounded-xl border border-border bg-card p-3 hover:bg-accent/30 transition-colors h-full">
-                {l.imageUrl && (
-                  <div className="relative mb-2 h-32 w-full shrink-0">
-                    <Image src={l.imageUrl} alt="" fill className="rounded-lg object-cover" unoptimized />
-                  </div>
-                )}
-                <p className="font-medium text-sm line-clamp-1">{l.title || l.url}</p>
-                {l.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 mb-2">{l.description}</p>}
-                
-                <div className="mt-auto flex items-center justify-between pt-2">
-                  <Badge variant="neutral" className="text-[10px]">{l.type}</Badge>
-                  {l.readingStatus && (
-                    <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
-                      l.readingStatus === 'done' ? 'bg-green-500/10 text-green-500' :
-                      l.readingStatus === 'reading' ? 'bg-blue-500/10 text-blue-500' :
-                      l.readingStatus === 'to_read' ? 'bg-orange-500/10 text-orange-500' :
-                      'bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
-                    }`}>
-                      {l.readingStatus.replace('_', ' ')}
-                    </span>
+            {filteredLinks.map(l => {
+              const isFavicon = l.imageUrl && (l.imageUrl.includes("favicons") || l.imageUrl.includes("favicon") || l.imageUrl.endsWith(".ico"));
+              let hostname = "";
+              try {
+                hostname = new URL(l.url).hostname.replace("www.", "");
+              } catch {
+                hostname = l.url;
+              }
+
+              return (
+                <div key={l.id} onClick={() => router.push(`/os/links/${l.id}?type=link`)} className="group flex flex-col cursor-pointer rounded-xl border border-border bg-card p-3.5 hover:bg-accent/30 transition-colors h-full hover:border-primary/30 shadow-sm">
+                  {!isFavicon && l.imageUrl && (
+                    <div className="relative mb-3 h-28 w-full shrink-0 overflow-hidden rounded-lg border border-border/40 bg-muted">
+                      <Image src={l.imageUrl} alt="" fill className="object-cover transition-transform duration-300 group-hover:scale-105" unoptimized />
+                    </div>
                   )}
+
+                  {isFavicon ? (
+                    <div className="flex gap-2.5 items-start mb-2.5">
+                      <div className="h-9 w-9 shrink-0 relative bg-muted/60 rounded-lg border border-border/60 p-1.5 flex items-center justify-center">
+                        <Image src={l.imageUrl!} alt="" width={20} height={20} className="rounded object-contain" unoptimized />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm line-clamp-2 leading-tight group-hover:text-primary transition-colors" title={l.title || l.url}>
+                          {l.title || l.url}
+                        </p>
+                        <span className="text-[10px] text-muted-foreground font-mono truncate block mt-0.5">
+                          {hostname}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="min-w-0 mb-2">
+                      <p className="font-semibold text-sm line-clamp-1 leading-tight group-hover:text-primary transition-colors" title={l.title || l.url}>
+                        {l.title || l.url}
+                      </p>
+                      <span className="text-[10px] text-muted-foreground font-mono truncate block mt-0.5">
+                        {hostname}
+                      </span>
+                    </div>
+                  )}
+
+                  {l.description && (
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 mb-3 leading-normal">
+                      {l.description}
+                    </p>
+                  )}
+                  
+                  <div className="mt-auto flex items-center justify-between pt-2 border-t border-border/40">
+                    <Badge variant="neutral" className="text-[10px] capitalize">{l.type}</Badge>
+                    {l.readingStatus && (
+                      <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
+                        l.readingStatus === 'done' ? 'bg-green-500/10 text-green-500' :
+                        l.readingStatus === 'reading' ? 'bg-blue-500/10 text-blue-500' :
+                        l.readingStatus === 'to_read' ? 'bg-orange-500/10 text-orange-500' :
+                        'bg-[var(--color-muted)] text-[var(--color-muted-foreground)]'
+                      }`}>
+                        {l.readingStatus.replace('_', ' ')}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

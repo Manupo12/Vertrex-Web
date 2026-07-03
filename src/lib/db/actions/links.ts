@@ -51,7 +51,18 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
     revalidatePath("/os/links");
     return { type: "link" as const, data: link };
   } catch {
-    const [link] = await db.insert(links).values({ url: trimmedUrl }).returning();
+    const host = new URL(trimmedUrl).hostname.replace("www.", "");
+    const lastPart = trimmedUrl.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || host;
+    const title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${host}`;
+    const imageUrl = `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
+
+    const [link] = await db.insert(links).values({ 
+      url: trimmedUrl,
+      title,
+      description: "Enlace guardado de forma rápida",
+      imageUrl,
+      type: "otro"
+    }).returning();
     revalidatePath("/os/links");
     return { type: "link" as const, data: link };
   }

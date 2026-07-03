@@ -65,18 +65,67 @@ export async function fetchGitHubReadme(owner: string, repo: string) {
 }
 
 export async function fetchOpenGraph(url: string) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error("No se pudo leer la URL");
-  const html = await res.text();
-  const $ = cheerio.load(html);
-  const title = $('meta[property="og:title"]').attr("content") || $("title").text() || url;
-  const description = $('meta[property="og:description"]').attr("content") || $('meta[name="description"]').attr("content") || null;
-  const imageUrl = $('meta[property="og:image"]').attr("content") || null;
-  let type = "otro";
   const host = new URL(url).hostname;
-  if (host.includes("tiktok")) type = "tiktok";
-  else if (host.includes("reddit")) type = "reddit";
-  else if (host.includes("medium") || host.includes("dev.to")) type = "article";
+  const cleanHost = host.replace("www.", "");
 
-  return { url, title, description, imageUrl, type };
+  try {
+    const res = await fetch(url, { 
+      cache: "no-store",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache"
+      }
+    });
+
+    if (!res.ok) throw new Error("Status " + res.status);
+    const html = await res.text();
+    const $ = cheerio.load(html);
+    
+    let title = $('meta[property="og:title"]').attr("content") || $("title").text() || "";
+    title = title.trim();
+    if (!title) {
+      const lastPart = url.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || cleanHost;
+      title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${cleanHost}`;
+    }
+
+    const description = $('meta[property="og:description"]').attr("content") || $('meta[name="description"]').attr("content") || null;
+    
+    let imageUrl = $('meta[property="og:image"]').attr("content") || null;
+    if (!imageUrl) {
+      const favicon = $('link[rel="shortcut icon"]').attr("href") || $('link[rel="icon"]').attr("href") || $('link[rel="apple-touch-icon"]').attr("href");
+      if (favicon) {
+        try {
+          imageUrl = new URL(favicon, url).href;
+        } catch {}
+      }
+    }
+
+    if (!imageUrl) {
+      imageUrl = `https://www.google.com/s2/favicons?domain=${cleanHost}&sz=128`;
+    }
+
+    let type = "otro";
+    if (host.includes("tiktok")) type = "tiktok";
+    else if (host.includes("reddit")) type = "reddit";
+    else if (host.includes("medium") || host.includes("dev.to")) type = "article";
+    else if (host.includes("youtube.com") || host.includes("youtu.be")) type = "video";
+    else if (host.includes("github.com")) type = "github";
+
+    return { url, title, description, imageUrl, type };
+  } catch (err) {
+    // Fallback: guess title and use google favicon service
+    const lastPart = url.split("/").filter(Boolean).pop()?.replace(/[-_]/g, " ") || cleanHost;
+    const title = `${lastPart.charAt(0).toUpperCase() + lastPart.slice(1)} | ${cleanHost}`;
+    const imageUrl = `https://www.google.com/s2/favicons?domain=${cleanHost}&sz=128`;
+    return { 
+      url, 
+      title, 
+      description: "Enlace guardado de forma rápida", 
+      imageUrl, 
+      type: "otro" 
+    };
+  }
 }
