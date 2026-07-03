@@ -150,3 +150,13 @@ export async function updateExternalReferenceAction(id: string, type: "repo" | "
   revalidatePath("/os/links");
   revalidatePath(`/os/links/${id}`);
 }
+
+export async function deleteExternalReferenceAction(id: string, type: "repo" | "link") {
+  await requireOsUser();
+  if (type === "repo") {
+    await db.delete(repositories).where(eq(repositories.id, id));
+  } else {
+    await db.delete(links).where(eq(links.id, id));
+  }
+  revalidatePath("/os/links");
+}

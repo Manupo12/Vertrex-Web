@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { updateExternalReferenceAction } from "@/lib/db/actions/links";
+import { updateExternalReferenceAction, deleteExternalReferenceAction } from "@/lib/db/actions/links";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,7 @@ export function EditLinkDialog({ id, type, initialData, collections }: EditLinkD
   const [savedReason, setSavedReason] = useState(initialData.savedReason || "");
   const [collectionId, setCollectionId] = useState(initialData.collectionId || "none");
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   const handleSave = async () => {
@@ -51,6 +52,24 @@ export function EditLinkDialog({ id, type, initialData, collections }: EditLinkD
       toast.error("Error al guardar: " + e.message);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`¿Estás seguro de que deseas eliminar este ${type === "repo" ? "repositorio" : "enlace"}?`)) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      await deleteExternalReferenceAction(id, type);
+      toast.success(type === "repo" ? "Repositorio eliminado" : "Enlace eliminado");
+      setOpen(false);
+      router.push("/os/links");
+      router.refresh();
+    } catch (e: any) {
+      toast.error("Error al eliminar: " + e.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -110,13 +129,24 @@ export function EditLinkDialog({ id, type, initialData, collections }: EditLinkD
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 mt-2">
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={submitting}>
-            Cancelar
+        <div className="flex justify-between items-center mt-4 border-t border-border/40 pt-4">
+          <Button 
+            variant="danger" 
+            type="button" 
+            onClick={handleDelete} 
+            disabled={submitting || deleting}
+            className="h-9 px-3 text-xs"
+          >
+            {deleting ? "Eliminando..." : "Eliminar"}
           </Button>
-          <Button onClick={handleSave} disabled={submitting}>
-            {submitting ? "Guardando..." : "Guardar cambios"}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => setOpen(false)} disabled={submitting || deleting} className="h-9 px-3 text-xs">
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={submitting || deleting} className="h-9 px-3 text-xs">
+              {submitting ? "Guardando..." : "Guardar cambios"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
