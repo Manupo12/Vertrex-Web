@@ -14,6 +14,7 @@ interface Props {
     priority?: string;
     sector?: string;
     city?: string;
+    country?: string;
     rating?: string;
     webPresence?: string;
     page?: string;
@@ -27,6 +28,7 @@ export default async function CrmPage({ searchParams }: Props) {
     priority = "",
     sector = "",
     city = "",
+    country = "",
     rating = "",
     webPresence = "",
     page = "1",
@@ -55,6 +57,10 @@ export default async function CrmPage({ searchParams }: Props) {
 
   if (city && city !== "all") {
     conditions.push(eq(clients.city, city));
+  }
+
+  if (country && country !== "all") {
+    conditions.push(eq(clients.country, country));
   }
 
   if (webPresence && webPresence !== "all") {
@@ -102,6 +108,7 @@ export default async function CrmPage({ searchParams }: Props) {
     webPresenceStats,
     distinctSectors,
     distinctCities,
+    distinctCountries,
     contactorsList,
   ] = await Promise.all([
     // Total count for pagination
@@ -139,6 +146,11 @@ export default async function CrmPage({ searchParams }: Props) {
       .where(sql`${clients.city} IS NOT NULL`)
       .orderBy(clients.city),
 
+    // Distinct countries
+    db.selectDistinct({ country: clients.country }).from(clients)
+      .where(sql`${clients.country} IS NOT NULL`)
+      .orderBy(clients.country),
+
     // Contactors
     db.select({
       clientId: clientContactors.clientId,
@@ -173,6 +185,7 @@ export default async function CrmPage({ searchParams }: Props) {
 
   const sectors = distinctSectors.map((r) => r.sector).filter(Boolean) as string[];
   const cities = distinctCities.map((r) => r.city).filter(Boolean) as string[];
+  const countries = distinctCountries.map((r) => r.country).filter(Boolean) as string[];
 
   return (
     <div>
@@ -191,6 +204,7 @@ export default async function CrmPage({ searchParams }: Props) {
         currentPage={pageNum}
         sectors={sectors}
         cities={cities}
+        countries={countries}
       />
     </div>
   );

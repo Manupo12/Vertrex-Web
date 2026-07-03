@@ -30,6 +30,7 @@ type ClientRow = {
   status: string;
   priority: string | null;
   city: string | null;
+  country: string | null;
   sector: string | null;
   whatsapp: string | null;
   instagram: string | null;
@@ -51,6 +52,7 @@ interface CrmListProps {
   currentPage: number;
   sectors: string[];
   cities: string[];
+  countries: string[];
 }
 
 const CRM_STAGES = [
@@ -83,6 +85,7 @@ export function CrmList({
   currentPage,
   sectors,
   cities,
+  countries,
 }: CrmListProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -102,6 +105,7 @@ export function CrmList({
   const priorityFilter = searchParams.get("priority") || "all";
   const sectorFilter = searchParams.get("sector") || "all";
   const cityFilter = searchParams.get("city") || "all";
+  const countryFilter = searchParams.get("country") || "all";
   const ratingFilter = searchParams.get("rating") || "all";
   const webPresenceFilter = searchParams.get("webPresence") || "all";
 
@@ -186,7 +190,7 @@ export function CrmList({
           <div className="min-w-0">
             <p className="font-medium text-[var(--color-foreground)] truncate">{row.original.name}</p>
             <p className="text-xs text-[var(--color-muted-foreground)]">
-              {row.original.sector || "Cliente"} {row.original.city ? `• ${row.original.city}` : ""}
+              {row.original.sector || "Cliente"} {row.original.city ? `• ${row.original.city}${row.original.country ? `, ${row.original.country}` : ""}` : row.original.country ? `• ${row.original.country}` : ""}
             </p>
           </div>
         </div>
@@ -371,6 +375,14 @@ export function CrmList({
         <SelectContent>
           <SelectItem value="all">Rubro (Todos)</SelectItem>
           {sectors.map((sec) => <SelectItem key={sec} value={sec}>{sec}</SelectItem>)}
+        </SelectContent>
+      </Select>
+
+      <Select value={countryFilter} onValueChange={(v) => setFilter("country", v)}>
+        <SelectTrigger className="w-[145px] bg-background"><SelectValue placeholder="País" /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">País (Todos)</SelectItem>
+          {countries.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
         </SelectContent>
       </Select>
 
@@ -605,6 +617,16 @@ export function CrmList({
               </Select>
             </div>
             <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">País</label>
+              <Select value={countryFilter} onValueChange={(v) => setFilter("country", v)}>
+                <SelectTrigger className="w-full bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {countries.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
               <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ciudad</label>
               <Select value={cityFilter} onValueChange={(v) => setFilter("city", v)}>
                 <SelectTrigger className="w-full bg-background"><SelectValue /></SelectTrigger>
@@ -674,7 +696,7 @@ export function CrmList({
                       <div className="min-w-0">
                         <p className="font-semibold text-foreground leading-tight truncate">{c.name}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          {c.sector || "Cliente"}{c.city ? ` • ${c.city}` : ""}
+                          {c.sector || "Cliente"}{c.city ? ` • ${c.city}${c.country ? `, ${c.country}` : ""}` : c.country ? ` • ${c.country}` : ""}
                         </p>
                       </div>
                     </div>

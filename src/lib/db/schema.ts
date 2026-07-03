@@ -78,6 +78,7 @@ export const clients = pgTable("clients", {
   status: text("status").notNull().default("no_contactado"),
   priority: text("priority"), // Alta, Media, Baja
   city: text("city"),
+  country: text("country"),
   sector: text("sector"),
   whatsapp: text("whatsapp"),
   instagram: text("instagram"),
