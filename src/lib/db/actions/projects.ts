@@ -16,16 +16,23 @@ export async function createProjectAction(formData: FormData) {
   redirect(`/os/projects/${project.id}`);
 }
 
-export async function updateProjectAction(id: string, data: { name?: string; status?: string; progress?: number; currentVersion?: string }) {
+export async function updateProjectAction(id: string, data: { name?: string; status?: string; progress?: number; currentVersion?: string; githubRepoUrl?: string | null }) {
   await requireOsUser();
   const update: Record<string, unknown> = {};
   if (data.name !== undefined) update.name = data.name;
   if (data.status !== undefined) update.status = data.status;
   if (data.progress !== undefined) update.progress = data.progress;
   if (data.currentVersion !== undefined) update.currentVersion = data.currentVersion;
+  if (data.githubRepoUrl !== undefined) update.githubRepoUrl = data.githubRepoUrl;
   await db.update(projects).set(update).where(eq(projects.id, id));
   revalidatePath(`/os/projects/${id}`);
   revalidatePath("/os/projects");
+}
+
+export async function updateProjectGitHubRepoAction(projectId: string, repoUrl: string | null) {
+  await requireOsUser();
+  await db.update(projects).set({ githubRepoUrl: repoUrl }).where(eq(projects.id, projectId));
+  revalidatePath(`/os/projects/${projectId}`);
 }
 
 export async function addProjectReferenceLinkAction(projectId: string, label: string, url: string) {

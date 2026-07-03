@@ -10,7 +10,7 @@ import { Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
 
-export function EditProjectForm({ project }: { project: { id: string; name: string; status: string; progress: number; currentVersion: string | null } }) {
+export function EditProjectForm({ project }: { project: { id: string; name: string; status: string; progress: number; currentVersion: string | null; githubRepoUrl?: string | null } }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -73,12 +73,20 @@ export function EditProjectForm({ project }: { project: { id: string; name: stri
           </div>
         ) : (
           <form action={async (fd) => {
-            await updateProjectAction(project.id, { name: String(fd.get("name")), status: String(fd.get("status")), progress: parseInt(String(fd.get("progress"))), currentVersion: String(fd.get("current_version")) });
+            const urlVal = String(fd.get("github_repo_url") || "").trim();
+            await updateProjectAction(project.id, { 
+              name: String(fd.get("name")), 
+              status: String(fd.get("status")), 
+              progress: parseInt(String(fd.get("progress"))), 
+              currentVersion: String(fd.get("current_version")),
+              githubRepoUrl: urlVal || null
+            });
             setOpen(false); toast.success("Proyecto actualizado");
           }} className="space-y-4">
             <div><label className="block text-sm font-medium text-muted-foreground mb-1">Nombre</label><Input name="name" defaultValue={project.name} required /></div>
-            <div><label className="block text-sm font-medium text-muted-foreground mb-1">Versi\u00f3n</label><Input name="current_version" defaultValue={project.currentVersion || ""} /></div>
+            <div><label className="block text-sm font-medium text-muted-foreground mb-1">Versión</label><Input name="current_version" defaultValue={project.currentVersion || ""} /></div>
             <div><label className="block text-sm font-medium text-muted-foreground mb-1">Progreso (%)</label><Input name="progress" type="number" min="0" max="100" defaultValue={project.progress} /></div>
+            <div><label className="block text-sm font-medium text-muted-foreground mb-1">Repositorio GitHub (URL)</label><Input name="github_repo_url" placeholder="https://github.com/usuario/repo" defaultValue={project.githubRepoUrl || ""} /></div>
             <div><label className="block text-sm font-medium text-muted-foreground mb-1">Estado</label>
               <select name="status" defaultValue={project.status} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
                 <option value="active">Activo</option>

@@ -117,6 +117,7 @@ export const projects = pgTable("projects", {
   progressMode: text("progress_mode").notNull().default("auto"),
   currentVersion: text("current_version").default("v1.0"),
   referenceLinks: jsonb("reference_links").notNull().default(sql`'[]'::jsonb`),
+  githubRepoUrl: text("github_repo_url"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 

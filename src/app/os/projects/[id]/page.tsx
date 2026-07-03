@@ -20,6 +20,9 @@ import { db } from "@/lib/db";
 import { tasks, finances, entityLinks, users } from "@/lib/db/schema";
 import { eq, or, and } from "drizzle-orm";
 import { formatCurrencyCop } from "@/lib/format";
+import { fetchGitHubRepo } from "@/lib/links/service";
+import { ProjectGitHubCard } from "./ProjectGitHubCard";
+
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -72,6 +75,15 @@ export default async function ProjectDetailPage({ params }: Props) {
       const projectGasto = pFinances.filter(f => financeIds.includes(f.id) && f.type === 'gasto' && f.status === 'paid');
       budgetConsumed = projectGasto.reduce((acc, f) => acc + f.amountCop, 0);
       budgetPercentage = (budgetConsumed / project.budgetCop) * 100;
+    }
+  }
+
+  let githubRepoData = null;
+  if (project.githubRepoUrl) {
+    try {
+      githubRepoData = await fetchGitHubRepo(project.githubRepoUrl);
+    } catch (err) {
+      console.error("Failed to fetch GitHub repo stats:", err);
     }
   }
 
@@ -177,6 +189,12 @@ export default async function ProjectDetailPage({ params }: Props) {
                   </div>
                 </CardContent>
               </Card>
+
+              <ProjectGitHubCard 
+                projectId={project.id} 
+                repoUrl={project.githubRepoUrl} 
+                repoData={githubRepoData} 
+              />
 
               <Card><CardHeader><CardTitle className="text-sm">Detalles</CardTitle></CardHeader><CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-muted-foreground">Versión</span><span className="font-mono">{project.currentVersion}</span></div>
