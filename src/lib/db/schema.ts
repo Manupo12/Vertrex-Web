@@ -395,6 +395,7 @@ export const links = pgTable("links", {
   type: text("type").notNull().default("otro"),
   collectionId: uuid("collection_id").references(() => linkCollections.id, { onDelete: "set null" }),
   readingStatus: text("reading_status").notNull().default("triage"),
+  savedReason: text("saved_reason"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 

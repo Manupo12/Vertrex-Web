@@ -47,6 +47,7 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
       description: ogData.description,
       imageUrl: ogData.imageUrl,
       type: ogData.type,
+      savedReason: savedReason?.trim() || null,
     }).returning();
     revalidatePath("/os/links");
     return { type: "link" as const, data: link };
@@ -61,7 +62,8 @@ export async function saveExternalReferenceAction(url: string, savedReason?: str
       title,
       description: "Enlace guardado de forma rápida",
       imageUrl,
-      type: "otro"
+      type: "otro",
+      savedReason: savedReason?.trim() || null,
     }).returning();
     revalidatePath("/os/links");
     return { type: "link" as const, data: link };
@@ -125,4 +127,23 @@ export async function createCollectionAction(name: string, description?: string)
 export async function quickSaveAction(url: string, savedReason?: string) {
   await requireOsUser();
   return saveExternalReferenceAction(url, savedReason);
+}
+
+export async function updateExternalReferenceAction(id: string, type: "repo" | "link", data: { title?: string; description?: string; savedReason?: string; collectionId?: string | null }) {
+  await requireOsUser();
+  if (type === "repo") {
+    await db.update(repositories).set({
+      savedReason: data.savedReason || "",
+      collectionId: data.collectionId || null,
+    }).where(eq(repositories.id, id));
+  } else {
+    await db.update(links).set({
+      title: data.title || null,
+      description: data.description || null,
+      savedReason: data.savedReason || null,
+      collectionId: data.collectionId || null,
+    }).where(eq(links.id, id));
+  }
+  revalidatePath("/os/links");
+  revalidatePath(`/os/links/${id}`);
 }

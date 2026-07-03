@@ -18,7 +18,7 @@ import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Repo = { id: string; url: string; repoName: string; owner: string; description: string | null; language: string | null; languageColor: string | null; stars: number; forks: number; topics: string[]; pushedAt: Date | null; savedReason: string; implementationStatus: string; priority: number; collectionId?: string | null };
-type LinkItem = { id: string; url: string; title: string | null; description: string | null; imageUrl: string | null; type: string; collectionId?: string | null; readingStatus?: string };
+type LinkItem = { id: string; url: string; title: string | null; description: string | null; imageUrl: string | null; type: string; collectionId?: string | null; readingStatus?: string; savedReason?: string | null };
 
 export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; links: LinkItem[]; collections?: any[] }) {
   const router = useRouter();
@@ -236,6 +236,13 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
                       {l.description}
                     </p>
                   )}
+
+                  {l.savedReason && (
+                    <div className="rounded-md bg-accent/30 px-2 py-1.5 text-xs text-foreground flex items-start gap-1.5 mb-3">
+                      <Pin className="h-3 w-3 shrink-0 mt-0.5 text-primary" />
+                      <span className="line-clamp-2">{l.savedReason}</span>
+                    </div>
+                  )}
                   
                   <div className="mt-auto flex items-center justify-between pt-2 border-t border-border/40">
                     <Badge variant="neutral" className="text-[10px] capitalize">{l.type}</Badge>
@@ -258,31 +265,65 @@ export function LinksView({ repos, links, collections = [] }: { repos: Repo[]; l
       )}
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent><DialogHeader><DialogTitle>Guardar link</DialogTitle></DialogHeader>
-          <div className="space-y-4"><div><label className="block text-sm font-medium text-muted-foreground mb-1">URL *</label><Input value={url} onChange={e => handleUrlChange(e.target.value)} /></div>
-          {isGitHub && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">Que problema te resuelve este repo? *</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {["Estudiar c\u00f3digo", "Implementar en proyecto actual", "Inspiraci\u00f3n", "Referencia de arquitectura"].map(tag => (
-                    <Button 
-                      key={tag} 
-                      variant="outline" 
-                      size="sm" 
-                      type="button"
-                      onClick={() => setSavedReason(tag)}
-                      className="text-[10px] h-7 px-2"
-                    >
-                      {tag}
-                    </Button>
-                  ))}
-                </div>
-                <Textarea value={savedReason} onChange={e => setSavedReason(e.target.value)} rows={3} placeholder="O elige un bot\u00f3n arriba..." />
-              </div>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Guardar enlace</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wider">URL *</label>
+              <Input value={url} onChange={e => handleUrlChange(e.target.value)} placeholder="https://..." />
             </div>
-          )}
-          <Button onClick={handleSave} disabled={saving || !url.trim() || (isGitHub && !savedReason.trim())} className="w-full">{saving ? "Guardando..." : "Guardar"}</Button></div></DialogContent>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {isGitHub ? "¿Qué problema te resuelve este repo? *" : "¿Por qué guardas este link? (Opcional)"}
+              </label>
+              <div className="flex flex-wrap gap-1.5 mb-1.5">
+                {isGitHub 
+                  ? ["Estudiar código", "Implementar en proyecto", "Inspiración", "Arquitectura"].map(tag => (
+                      <Button 
+                        key={tag} 
+                        variant="outline" 
+                        size="sm" 
+                        type="button"
+                        onClick={() => setSavedReason(tag)}
+                        className={`text-[10px] h-7 px-2.5 ${savedReason === tag ? "border-primary bg-primary/10 text-primary" : ""}`}
+                      >
+                        {tag}
+                      </Button>
+                    ))
+                  : ["Referencia rápida", "Herramienta útil", "Documentación", "Inspiración", "Para leer después"].map(tag => (
+                      <Button 
+                        key={tag} 
+                        variant="outline" 
+                        size="sm" 
+                        type="button"
+                        onClick={() => setSavedReason(tag)}
+                        className={`text-[10px] h-7 px-2.5 ${savedReason === tag ? "border-primary bg-primary/10 text-primary" : ""}`}
+                      >
+                        {tag}
+                      </Button>
+                    ))
+                }
+              </div>
+              <Textarea 
+                value={savedReason} 
+                onChange={e => setSavedReason(e.target.value)} 
+                rows={3} 
+                placeholder={isGitHub ? "Ej. Para el refactor del módulo de facturación..." : "Ej. Excelente artículo sobre micro-frontends..."} 
+              />
+            </div>
+
+            <Button 
+              onClick={handleSave} 
+              disabled={saving || !url.trim() || (isGitHub && !savedReason.trim())} 
+              className="w-full mt-2"
+            >
+              {saving ? "Guardando..." : "Guardar"}
+            </Button>
+          </div>
+        </DialogContent>
       </Dialog>
     </div>
   );

@@ -10,6 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from "react-markdown";
 import { formatShortDate } from "@/lib/format";
 import { EntityGraph } from "@/components/os/Graph/EntityGraph";
+import { db } from "@/lib/db";
+import { linkCollections } from "@/lib/db/schema";
+import { EditLinkDialog } from "./EditLinkDialog";
 
 export default async function LinkDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +24,10 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
     notFound();
   }
 
-  const resolvedConnections = await getResolvedEntityConnections(id);
+  const [resolvedConnections, collections] = await Promise.all([
+    getResolvedEntityConnections(id),
+    db.select().from(linkCollections).orderBy(linkCollections.name),
+  ]);
 
   if (repo) {
     let readme = repo.readmeContent;
@@ -41,7 +47,17 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
           description={repo.description || "Repositorio de GitHub"}
           breadcrumbs={[{ label: "Links", href: "/os/links" }, { label: repo.repoName }]}
           badge={<Badge variant="neutral">{repo.language || "Desconocido"}</Badge>}
-          secondaryActions={<EntityConnectSheet sourceId={repo.id} sourceType="repository" />}
+          secondaryActions={
+            <div className="flex gap-2">
+              <EntityConnectSheet sourceId={repo.id} sourceType="repository" />
+              <EditLinkDialog 
+                id={repo.id} 
+                type="repo" 
+                initialData={{ savedReason: repo.savedReason, collectionId: repo.collectionId }} 
+                collections={collections} 
+              />
+            </div>
+          }
         />
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1">
@@ -94,7 +110,17 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
           description={link.description || "Link externo"}
           breadcrumbs={[{ label: "Links", href: "/os/links" }, { label: "Detalle" }]}
           badge={<Badge variant="neutral">{link.type}</Badge>}
-          secondaryActions={<EntityConnectSheet sourceId={link.id} sourceType="link" />}
+          secondaryActions={
+            <div className="flex gap-2">
+              <EntityConnectSheet sourceId={link.id} sourceType="link" />
+              <EditLinkDialog 
+                id={link.id} 
+                type="link" 
+                initialData={{ title: link.title, description: link.description, savedReason: link.savedReason, collectionId: link.collectionId }} 
+                collections={collections} 
+              />
+            </div>
+          }
         />
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex-1">
@@ -103,7 +129,16 @@ export default async function LinkDetailPage({ params }: { params: Promise<{ id:
                 <TabsTrigger value="resumen">Resumen</TabsTrigger>
                 <TabsTrigger value="conexiones">Conexiones</TabsTrigger>
               </TabsList>
-              <TabsContent value="resumen">
+              <TabsContent value="resumen" className="space-y-4">
+                {link.savedReason && (
+                  <Card className="bg-yellow-500/10 border-yellow-500/20">
+                    <CardContent className="p-4">
+                      <p className="font-bold text-yellow-600 mb-1">Por qué lo guardaste?</p>
+                      <p className="text-yellow-700 dark:text-yellow-500">{link.savedReason}</p>
+                    </CardContent>
+                  </Card>
+                )}
+                
                 <Card>
                   <CardContent className="p-6">
                     <a href={link.url} target="_blank" rel="noreferrer" className="text-primary hover:underline break-all">{link.url}</a>
