@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario | Vertrex</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        /* MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO */
+        @media print {
+            @page { margin: 0mm !important; size: A4 portrait; }
+            html, body { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            
+            body::before {
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
+            table, tbody, tr, td, main { overflow: visible !important; }
+            main { display: block !important; min-height: auto !important; }
+            .fixed-header { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; }
+            .fixed-footer { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; min-height: var(--footer-height) !important; }
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .print-spacer-header, .print-spacer-footer { display: none; }
+        .bg-tech-grid-screen {
+            background-color: #ffffff; background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+        .header-shape-right { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
+
+        /* Estilos específicos para PDF/Editorial */
+        .manual-text {
+            color: #1f2937; /* gray-800 */
+            line-height: 1.6;
+            font-size: 14.5px;
+            text-align: justify;
+        }
+        .chapter-title {
+            border-bottom: 2px solid #0A0A0A;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all z-50 flex items-center gap-3 text-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        EXPORTAR MANUAL A PDF
+    </button>
+
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <!-- HEADER ANCLADO -->
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">DOC:</span> <span class="font-bold">MANUAL DE USUARIO</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-MAN-BDP-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">VERSIÓN:</span> <span>1.0</span></p>
+            </div>
+        </header>
+
+        <!-- TABLA MAESTRA -->
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <thead><tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr></thead>
+            
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <!-- Título Principal del Documento -->
+                            <div class="mb-10 text-center break-inside-avoid">
+                                <h1 class="text-3xl font-extrabold text-vBlack tracking-tight uppercase">Manual de Operación</h1>
+                                <p class="text-gray-600 font-mono text-sm uppercase tracking-widest mt-2">Plataforma BUDAPHONE - Ecommerce & Admin</p>
+                            </div>
+
+                            <!-- Intro -->
+                            <div class="mb-8 manual-text break-inside-avoid">
+                                <p>Bienvenido al manual oficial de su plataforma web. Este documento técnico ha sido elaborado para capacitar a su equipo en la gestión autónoma de los diferentes módulos del sistema, asegurando el correcto flujo de operaciones de inventario, ventas y servicio técnico.</p>
+                            </div>
+
+                            <!-- SECCIÓN: VIDEO TUTORIAL (Adaptado para PDF) -->
+                            <div class="mb-12 bg-gray-50 border border-gray-300 border-l-4 border-l-vBlack p-6 rounded-sm break-inside-avoid" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                <h3 class="text-vBlack font-bold uppercase tracking-widest text-sm mb-2 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Recurso Audiovisual de Capacitación
+                                </h3>
+                                <p class="text-gray-700 text-[14px] mb-4">Para facilitar el aprendizaje, nuestro equipo de ingeniería ha grabado un video tutorial paso a paso recorriendo cada función del panel administrativo en tiempo real. Le recomendamos encarecidamente revisar este material audiovisual.</p>
+                                
+                                <div class="bg-white border border-gray-200 p-3 flex items-center gap-4">
+                                    <span class="font-bold text-xs uppercase tracking-widest text-gray-500 w-24">Enlace Web:</span>
+                                    <a href="https://vertrex.io/tutoriales/budaphone" target="_blank" class="font-mono text-[13px] text-blue-600 hover:text-blue-800 hover:underline break-all">
+                                        https://vertrex.io/tutoriales/budaphone
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- CAPÍTULO 1 -->
+                            <div class="mb-10 break-inside-avoid">
+                                <h2 class="text-xl font-bold text-vBlack chapter-title">1. Acceso al Sistema</h2>
+                                <div class="grid grid-cols-2 gap-6 bg-white border border-gray-200 p-6">
+                                    <div>
+                                        <p class="font-bold text-xs uppercase tracking-widest text-gray-500 mb-2">Portal de Administración</p>
+                                        <p class="font-mono text-sm text-vBlack bg-gray-100 p-2">[URL_ADMINISTRATIVA]</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-xs uppercase tracking-widest text-gray-500 mb-2">Credenciales de Ingreso</p>
+                                        <p class="text-[14px] text-gray-700 leading-relaxed">
+                                            Utilice el usuario administrador y la contraseña maestra entregados en el Acta de Cierre. <em>No comparta estas credenciales.</em>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CAPÍTULO 2 -->
+                            <div class="mb-10 break-inside-avoid">
+                                <h2 class="text-xl font-bold text-vBlack chapter-title">2. Gestión de Inventario y Catálogo</h2>
+                                <ol class="list-decimal list-outside pl-6 space-y-4 manual-text">
+                                    <li class="pl-2">
+                                        <strong class="text-vBlack">Creación de Productos:</strong> Diríjase a la sección <span class="font-mono text-xs bg-gray-100 px-1">Productos > Añadir Nuevo</span>. Es obligatorio diligenciar los campos de Nombre, Precio (COP), Categoría y cargar al menos una fotografía descriptiva.
+                                    </li>
+                                    <li class="pl-2">
+                                        <strong class="text-vBlack">Gestión de Categorías:</strong> Antes de crear productos, asegúrese de tener configuradas las categorías correctas en <span class="font-mono text-xs bg-gray-100 px-1">Ajustes > Categorías</span> para que los clientes puedan filtrar los equipos en la tienda.
+                                    </li>
+                                    <li class="pl-2">
+                                        <strong class="text-vBlack">Control de Existencias (Stock):</strong> El sistema descuenta automáticamente una unidad del inventario cada vez que la pasarela de pagos (Wompi) confirma una transacción exitosa.
+                                    </li>
+                                </ol>
+                            </div>
+
+                            <!-- CAPÍTULO 3 -->
+                            <div class="mb-12 break-inside-avoid">
+                                <h2 class="text-xl font-bold text-vBlack chapter-title">3. Módulo de Reparaciones (Servicio Técnico)</h2>
+                                <div class="bg-gray-50 p-6 border-l-4 border-gray-400">
+                                    <ul class="space-y-4 manual-text">
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1.5 w-1.5 h-1.5 bg-vBlack rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span><strong>Ingreso de Equipos:</strong> Al recibir un dispositivo, cree un ticket nuevo asociando los datos de contacto del cliente y el diagnóstico preliminar.</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1.5 w-1.5 h-1.5 bg-vBlack rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span><strong>Transición de Estados:</strong> Para mantener al cliente informado, debe cambiar el estado del ticket: <span class="italic">"Recibido" &rarr; "En Reparación" &rarr; "Listo para Entregar".</span></span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1.5 w-1.5 h-1.5 bg-vBlack rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span><strong>Consulta Externa:</strong> Su cliente no necesita llamar; puede ingresar el ID del Ticket en la sección web de soporte para ver en qué estado se encuentra su dispositivo.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- CAPÍTULO 4: SOPORTE -->
+                            <div class="mt-auto break-inside-avoid">
+                                <div class="border border-gray-300 p-8 text-center bg-white shadow-sm">
+                                    <h4 class="font-bold text-vBlack uppercase tracking-widest text-[15px] mb-2">Asistencia Técnica Autorizada</h4>
+                                    <p class="text-[14.5px] text-gray-700 mb-6">Si requiere ayuda operativa, nuestro departamento de ingeniería está a su disposición durante el periodo de mantenimiento acordado.</p>
+                                    
+                                    <!-- Directorio de contacto estilo PDF -->
+                                    <table class="mx-auto text-left text-[14px]">
+                                        <tbody>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 pr-8 font-bold text-gray-500 uppercase text-xs tracking-widest">Canal Directo (WhatsApp):</td>
+                                                <td class="py-3 font-mono text-vBlack">+57 320 207 0445</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-3 pr-8 font-bold text-gray-500 uppercase text-xs tracking-widest">Soporte Corporativo (Email):</td>
+                                                <td class="py-3 font-mono text-vBlack text-blue-600">vertrexsc@gmail.com</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <!-- Espaciador fantasma para el Footer -->
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <!-- FOOTER ANCLADO -->
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium font-mono text-[10px] uppercase tracking-wider">
+                    <p>Documentación Confidencial de Usuario</p>
+                    <p>Propiedad de Vertrex Software Labs © 2026</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Avance | Vertrex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        /* MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO */
+        @media print {
+            @page { margin: 0mm !important; size: A4 portrait; }
+            html, body { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            
+            body::before {
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
+            table, tbody, tr, td, main { overflow: visible !important; }
+            main { display: block !important; min-height: auto !important; }
+            .fixed-header { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; }
+            .fixed-footer { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; min-height: var(--footer-height) !important; }
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .print-spacer-header, .print-spacer-footer { display: none; }
+        .bg-tech-grid-screen {
+            background-color: #ffffff; background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+        .header-shape-right { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all z-50 flex items-center gap-3 text-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        EXPORTAR REPORTE PDF
+    </button>
+
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">FECHA:</span> <span>[DD/MM/YYYY]</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-REP-EMR-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">SPRINT:</span> <span class="font-bold text-vBlack bg-vGreen px-1">02 / Activo</span></p>
+            </div>
+        </header>
+
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <thead><tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr></thead>
+            
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <div class="flex justify-between items-end border-b border-gray-200 pb-6 mb-8 break-inside-avoid">
+                                <div>
+                                    <h1 class="text-3xl font-extrabold text-vBlack tracking-tight uppercase">Reporte de Avance</h1>
+                                    <p class="text-gray-500 mt-2 font-mono text-sm uppercase tracking-widest">Resumen Ejecutivo Semanal</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">PROYECTO</p>
+                                    <p class="font-bold text-vBlack text-lg">CENTRO EDUCATIVO EMERSON</p>
+                                    <p class="text-sm text-gray-600">Sitio institucional & Panel administrativo</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-10 break-inside-avoid bg-white border border-gray-200 p-6 rounded shadow-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-lg text-vBlack">Progreso General del Proyecto</h3>
+                                        <p class="text-[13px] text-gray-600 mt-1">El desarrollo avanza según el cronograma establecido.</p>
+                                    </div>
+                                    <div class="text-4xl font-extrabold text-vGreen tracking-tighter" style="text-shadow: 1px 1px 0px #0A0A0A;">
+                                        70%
+                                    </div>
+                                </div>
+                                
+                                <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden border border-gray-200" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                    <div class="bg-vBlack h-3 rounded-full relative" style="width: 70%; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                        <div class="absolute right-0 top-0 bottom-0 w-2 bg-vGreen"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between text-xs font-mono text-gray-400">
+                                    <span>Kickoff</span>
+                                    <span>Fase actual (Desarrollo)</span>
+                                    <span>Entrega Final</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-8 mb-10 break-inside-avoid">
+                                
+                                <div>
+                                    <h4 class="font-bold text-vBlack uppercase tracking-wide flex items-center gap-2 mb-4 border-b border-gray-200 pb-2">
+                                        <svg class="w-5 h-5 text-vGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Completado esta semana
+                                    </h4>
+                                    <ul class="space-y-3 text-[14px] text-gray-800">
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1 w-1.5 h-1.5 bg-vGreen rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span>Estructura base del sitio institucional y configuración administrativa.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1 w-1.5 h-1.5 bg-vGreen rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span>Diseño y maquetación de la página principal institucional.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1 w-1.5 h-1.5 bg-vGreen rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span>Autenticación del panel administrativo y recuperación de acceso.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1 w-1.5 h-1.5 bg-vGreen rounded-full flex-shrink-0" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+                                            <span>Implementación de módulos de noticias, eventos y circulares.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-bold text-vBlack uppercase tracking-wide flex items-center gap-2 mb-4 border-b border-gray-200 pb-2">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Próximos Pasos (Sprint 3)
+                                    </h4>
+                                    <ul class="space-y-3 text-[14px] text-gray-600">
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1.5 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                            <span>Pruebas finales del formulario de matrícula y del módulo PQRS.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1.5 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                            <span>Configuración editable de contenido institucional desde el panel.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <div class="mt-1.5 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                            <span>Revisión, ajustes visuales y publicación del portal.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mb-10 bg-vBlack text-white p-6 rounded break-inside-avoid relative overflow-hidden" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                <div class="absolute top-0 right-0 w-1 bg-vGreen h-full"></div>
+                                <h4 class="font-bold text-vGreen uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Requerimientos de tu lado
+                                </h4>
+                                <p class="text-[13px] text-gray-300 mb-3">Para evitar bloqueos en el próximo sprint, necesitamos nos apoyes con lo siguiente desde el portal:</p>
+                                <ul class="space-y-2 text-[13.5px] text-gray-100 font-medium">
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 border border-vGreen rounded-sm"></div> Validación del contenido institucional cargado para publicación.</li>
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 border border-vGreen rounded-sm"></div> Entrega de fotografías, circulares en PDF y datos institucionales finales.</li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-auto pt-6 break-inside-avoid">
+                                <p class="text-[14.5px] text-gray-900 mb-6 italic">Puedes ver los detalles en vivo, interactuar con los avances y subir los requerimientos directamente en tu portal de cliente.</p>
+                                <div class="w-80 relative">
+                                    <div class="relative h-16 mb-2 overflow-visible">
+                                        <img src="vaul/firma.png" alt="Firma Vertrex" class="absolute left-0 bottom-0 w-[12rem] max-w-none translate-y-[36%] object-contain mix-blend-multiply">
+                                    </div>
+                                    <div class="border-b border-gray-600 h-2 mb-2 relative"></div>
+                                    <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">Equipo Vertrex</h3>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium">
+                    <a href="mailto:vertrexsc@gmail.com" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7"></path><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>
+                        vertrexsc@gmail.com
+                    </a>
+                    <a href="https://wa.me/573202070445" target="_blank" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 16c-1.5 1.5-3 1.5-6-.5s-2-4.5-.5-6c.2-.2.4-.3.6-.3s.4 0 .6 0c.2 0 .4 0 .5.2s.3.8.4 1c.1.2.2.4 0 .6s-.2.3-.4.5c-.2.2-.4.4-.2.8.2.4.6.8 1 1.2.4.4.8.8 1.2 1 .4.2.6.4.8.2.2-.2.4-.4.5-.4s.4-.2.6 0c.2.2.8.3 1 .4.2.1.4.2.4.4s0 .4-.2.6z"></path></svg>
+                        +57 320 207 0445
+                    </a>
+                    <a href="https://instagram.com/vertrexsc" target="_blank" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+                        @vertrexsc
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

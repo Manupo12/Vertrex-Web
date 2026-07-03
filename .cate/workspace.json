@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "name": "Vertrex-Website",
+  "color": "",
+  "dockState": {
+    "zones": {
+      "left": {
+        "position": "left",
+        "visible": false,
+        "size": 260,
+        "layout": null
+      },
+      "right": {
+        "position": "right",
+        "visible": false,
+        "size": 260,
+        "layout": null
+      },
+      "bottom": {
+        "position": "bottom",
+        "visible": false,
+        "size": 240,
+        "layout": null
+      },
+      "center": {
+        "position": "center",
+        "visible": true,
+        "size": 0,
+        "layout": {
+          "type": "tabs",
+          "id": "0d2b3318-021c-4bdb-be71-67c604536b4f",
+          "panelIds": [
+            "087660c6-589e-4e86-93b9-6b47bc90f9af"
+          ],
+          "activeIndex": 0
+        }
+      }
+    },
+    "locations": {
+      "087660c6-589e-4e86-93b9-6b47bc90f9af": {
+        "type": "dock",
+        "zone": "center",
+        "stackId": "0d2b3318-021c-4bdb-be71-67c604536b4f"
+      }
+    }
+  },
+  "panels": {
+    "4afc0a07-e0e9-44c9-8b2f-efc4fe17bfa6": {
+      "type": "terminal",
+      "title": "manu@manu-desktop: /mnt/datos/Proyectos/Web/Vertrex-Website"
+    },
+    "0873f073-73b4-459d-bf0f-991fbcc93daa": {
+      "type": "terminal",
+      "title": "Antigravity"
+    },
+    "087660c6-589e-4e86-93b9-6b47bc90f9af": {
+      "type": "canvas",
+      "title": "Canvas"
+    }
+  },
+  "canvases": {
+    "087660c6-589e-4e86-93b9-6b47bc90f9af": {
+      "id": "087660c6-589e-4e86-93b9-6b47bc90f9af",
+      "canvasNodes": {
+        "0e7df7f7-4225-4426-b3b3-8f8dbdadb7c3": {
+          "id": "0e7df7f7-4225-4426-b3b3-8f8dbdadb7c3",
+          "panelId": "4afc0a07-e0e9-44c9-8b2f-efc4fe17bfa6",
+          "origin": {
+            "x": 173,
+            "y": 232
+          },
+          "size": {
+            "width": 640,
+            "height": 400
+          },
+          "zOrder": 90,
+          "creationIndex": 0,
+          "animationState": "idle",
+          "dockLayout": {
+            "type": "tabs",
+            "id": "de5516a3-f030-4132-ae57-46bf396f3616",
+            "panelIds": [
+              "4afc0a07-e0e9-44c9-8b2f-efc4fe17bfa6"
+            ],
+            "activeIndex": 0
+          }
+        },
+        "217b6dff-0137-4b0f-ba82-63d40dcd7366": {
+          "id": "217b6dff-0137-4b0f-ba82-63d40dcd7366",
+          "panelId": "0873f073-73b4-459d-bf0f-991fbcc93daa",
+          "origin": {
+            "x": 180,
+            "y": 680
+          },
+          "size": {
+            "width": 640,
+            "height": 400
+          },
+          "zOrder": 92,
+          "creationIndex": 1,
+          "animationState": "idle",
+          "dockLayout": {
+            "type": "tabs",
+            "id": "c531396b-0657-4286-9dbd-869466f212dd",
+            "panelIds": [
+              "0873f073-73b4-459d-bf0f-991fbcc93daa"
+            ],
+            "activeIndex": 0
+          }
+        }
+      },
+      "zoomLevel": 1.427553911212158,
+      "viewportOffset": {
+        "x": -183.776955606079,
+        "y": -930.2474418666991
+      }
+    }
+  }
+}

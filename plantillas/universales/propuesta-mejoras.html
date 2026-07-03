@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta de Evolución | Vertrex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        /* MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO */
+        @media print {
+            @page { margin: 0mm !important; size: A4 portrait; }
+            html, body { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            
+            body::before {
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
+            table, tbody, tr, td, main { overflow: visible !important; }
+            main { display: block !important; min-height: auto !important; }
+            .fixed-header { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; }
+            .fixed-footer { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; min-height: var(--footer-height) !important; }
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .print-spacer-header, .print-spacer-footer { display: none; }
+        .bg-tech-grid-screen {
+            background-color: #ffffff; background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+        .header-shape-right { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
+
+        .upsell-card {
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all z-50 flex items-center gap-3 text-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        EXPORTAR PROPUESTA DE MEJORAS
+    </button>
+
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">DOC:</span> <span class="font-bold">UPSELL / EVOLUCIÓN</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-UP-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">ESTADO:</span> <span class="font-bold">ESTRATEGIA</span></p>
+            </div>
+        </header>
+
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <thead><tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr></thead>
+            
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <div class="mb-10 break-inside-avoid">
+                                <h1 class="text-3xl font-extrabold text-vBlack tracking-tight uppercase leading-tight">Propuesta de Evolución y Escalabilidad Tecnológica</h1>
+                                <p class="text-gray-500 font-mono text-sm uppercase tracking-widest mt-2">Para: BUDAPHONE</p>
+                                <div class="w-20 h-1.5 bg-vGreen mt-4"></div>
+                            </div>
+
+                            <div class="mb-12 text-[15px] leading-relaxed text-gray-800 text-justify break-inside-avoid">
+                                <p>Tras la exitosa implementación de la fase inicial de su plataforma web, hemos identificado oportunidades estratégicas para potenciar el alcance de <strong>BudaPhone</strong>. El software actual es una base sólida; las siguientes propuestas buscan transformar esa herramienta en un motor de ventas y fidelización automatizado.</p>
+                            </div>
+
+                            <div class="mb-8 break-inside-avoid">
+                                <div class="upsell-card bg-white p-6 rounded-sm border-l-4 border-l-vBlack">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-extrabold text-vBlack uppercase tracking-tight">01. Posicionamiento y Tráfico (SEO Premium)</h3>
+                                        <span class="text-xs font-bold bg-vGreen text-vBlack px-2 py-1 uppercase tracking-widest">Nivel: Tracción</span>
+                                    </div>
+                                    <p class="text-[14px] text-gray-600 mb-4">Optimización profunda para aparecer en los primeros resultados de Google cuando alguien busque "reparación de celulares en Yaguará" o "compra de móviles".</p>
+                                    <ul class="space-y-2 text-[13px] text-gray-800 font-medium grid grid-cols-2">
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vGreen rounded-full"></div> Auditoría de palabras clave.</li>
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vGreen rounded-full"></div> Optimización de velocidad de carga.</li>
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vGreen rounded-full"></div> Registro en Google My Business.</li>
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vGreen rounded-full"></div> Blog de noticias autogestionable.</li>
+                                    </ul>
+                                    <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                        <p class="text-[11px] text-gray-400 uppercase font-bold tracking-widest italic">Impacto: +40% de visitas orgánicas estimadas</p>
+                                        <p class="text-vBlack font-mono font-bold text-sm">Consultar Inversión &rarr;</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-8 break-inside-avoid">
+                                <div class="upsell-card bg-white p-6 rounded-sm border-l-4 border-l-vGreen">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-extrabold text-vBlack uppercase tracking-tight">02. Aplicación Móvil (Instalable)</h3>
+                                        <span class="text-xs font-bold bg-vBlack text-vGreen px-2 py-1 uppercase tracking-widest">Nivel: Fidelización</span>
+                                    </div>
+                                    <p class="text-[14px] text-gray-600 mb-4">Convertimos su web en una PWA (Progressive Web App). Sus clientes podrán instalar "BudaPhone" en su pantalla de inicio sin usar App Store, permitiendo una navegación mucho más rápida.</p>
+                                    <ul class="space-y-2 text-[13px] text-gray-800 font-medium grid grid-cols-2">
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vBlack rounded-full"></div> Acceso directo desde el escritorio.</li>
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vBlack rounded-full"></div> Navegación offline (sin internet).</li>
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vBlack rounded-full"></div> Notificaciones Push promocionales.</li>
+                                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-vBlack rounded-full"></div> Mayor tasa de recompra.</li>
+                                    </ul>
+                                    <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
+                                        <p class="text-[11px] text-gray-400 uppercase font-bold tracking-widest italic">Impacto: Presencia 24/7 en el bolsillo del cliente</p>
+                                        <p class="text-vBlack font-mono font-bold text-sm">Consultar Inversión &rarr;</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-12 break-inside-avoid">
+                                <div class="upsell-card bg-vBlack p-6 rounded-sm text-white relative overflow-hidden" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                    <div class="absolute right-0 top-0 w-2 h-full bg-vGreen"></div>
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-extrabold uppercase tracking-tight">03. Plan de Soporte & Mantenimiento Pro</h3>
+                                        <span class="text-[10px] font-bold border border-vGreen text-vGreen px-2 py-1 uppercase tracking-widest">Recomendado</span>
+                                    </div>
+                                    <p class="text-[14px] text-gray-400 mb-4">Garantice que su negocio nunca se detenga. Un seguro técnico mensual para actualizaciones de seguridad, respaldos y soporte prioritario.</p>
+                                    <div class="grid grid-cols-2 gap-4 text-[12px] text-gray-200">
+                                        <p>• Respaldos semanales de base de datos.</p>
+                                        <p>• Actualización de parches de seguridad.</p>
+                                        <p>• 4 horas de soporte técnico mensual.</p>
+                                        <p>• Ajustes estéticos menores incluidos.</p>
+                                    </div>
+                                    <div class="mt-6 pt-4 border-t border-gray-800 flex justify-between items-center">
+                                        <p class="text-[11px] text-gray-500 uppercase font-bold tracking-widest italic">Tranquilidad total para su negocio</p>
+                                        <p class="text-vGreen font-mono font-bold text-sm">Mensualidad Fija &rarr;</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-10 text-center break-inside-avoid bg-gray-50 p-8 border border-dashed border-gray-300">
+                                <h4 class="font-extrabold text-vBlack uppercase tracking-widest text-sm mb-3">¿Desea dar el siguiente paso?</h4>
+                                <p class="text-[14px] text-gray-600 mb-6">Podemos agendar una breve sesión de consultoría para profundizar en cualquiera de estas mejoras y ajustar el presupuesto a su medida.</p>
+                                <div class="inline-block bg-vBlack text-vGreen font-bold px-6 py-3 uppercase text-xs tracking-[0.2em]">Contactar a Ingeniería Vertrex</div>
+                            </div>
+
+                            <div class="mt-auto pt-4 break-inside-avoid w-full pb-4">
+                                <div class="w-80 relative">
+                                    <div class="relative h-16 mb-2 overflow-visible">
+                                        <img src="vaul/firma.png" alt="Firma Vertrex" class="absolute left-0 bottom-0 w-[12rem] max-w-none translate-y-[36%] object-contain mix-blend-multiply">
+                                    </div>
+                                    <div class="border-b border-gray-600 h-2 mb-3 relative"></div>
+                                    <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">Manuel Arturo Villanueva P.</h3>
+                                    <p class="text-[10px] font-semibold text-gray-500 mt-1 tracking-widest uppercase italic">Estratega Tecnológico | Vertrex</p>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium font-mono text-[10px] uppercase tracking-wider text-right">
+                    <p>Documento de Estrategia Digital</p>
+                    <p>Válido por 30 días naturales</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Índice — Documentos</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:900px;margin:2rem auto;padding:1rem}
+    h1{margin-bottom:0.25rem}
+    ul{line-height:1.8}
+    a{color:#0b6ef6;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .note{color:#555;font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <h1>Documentos (índice)</h1>
+  <p class="note">Haz clic en un enlace para abrir el HTML en el navegador. Si el servidor no está arrancado, ejecuta <code>python3 -m http.server 8000</code> en esta carpeta.</p>
+  <div style="margin:1rem 0;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+    <label for="filterBusiness" style="font-size:0.95rem">Negocio:</label>
+    <select id="filterBusiness" style="padding:0.3rem 0.5rem">
+      <option value="all">Todos</option>
+    </select>
+    <label for="filterType" style="font-size:0.95rem">Tipo:</label>
+    <select id="filterType" style="padding:0.3rem 0.5rem">
+      <option value="all">Todos</option>
+    </select>
+    <button id="clearFilters" style="padding:0.3rem 0.6rem">Borrar filtros</button>
+  </div>
+  <ul id="docList">
+    <li><a href="budaphone-accesos-finales.html">budaphone-accesos-finales.html</a></li>
+    <li><a href="index.html">index.html</a></li>
+    <li><a href="emerson-sow.html">emerson-sow.html</a></li>
+    <li><a href="emerson-manual-usuario.html">emerson-manual-usuario.html</a></li>
+    <li><a href="budaphone-avances.html">budaphone-avances.html</a></li>
+    <li><a href="emerson-oficio.html">emerson-oficio.html</a></li>
+    <li><a href="budaphone-manual-usuario.html">budaphone-manual-usuario.html</a></li>
+    <li><a href="budaphone-mantenimiento.html">budaphone-mantenimiento.html</a></li>
+    <li><a href="emerson-avances.html">emerson-avances.html</a></li>
+    <li><a href="budaphone-contrato.html">budaphone-contrato.html</a></li>
+    <li><a href="budaphone-bienvenida.html">budaphone-bienvenida.html</a></li>
+    <li><a href="emerson-contrato.html">emerson-contrato.html</a></li>
+    <li><a href="budaphone-propuesta-mejoras.html">budaphone-propuesta-mejoras.html</a></li>
+    <li><a href="budaphone-entrega.html">budaphone-entrega.html</a></li>
+    <li><a href="budaphone-cuenta-de-cobro.html">budaphone-cuenta-de-cobro.html</a></li>
+    <li><a href="emerson-accesos-finales.html">emerson-accesos-finales.html</a></li>
+    <li><a href="emerson-propuesta-mejoras.html">emerson-propuesta-mejoras.html</a></li>
+    <li><a href="emerson-bienvenida.html">emerson-bienvenida.html</a></li>
+    <li><a href="emerson-entrega.html">emerson-entrega.html</a></li>
+    <li><a href="budaphone-oficio.html">budaphone-oficio.html</a></li>
+    <li><a href="emerson-cuenta-de-cobro.html">emerson-cuenta-de-cobro.html</a></li>
+    <li><a href="emerson-mantenimiento.html">emerson-mantenimiento.html</a></li>
+    <li><a href="budaphone-sow.html">budaphone-sow.html</a></li>
+    <li><a href="universales/avances.html">universales/avances.html</a></li>
+    <li><a href="universales/bienvenida.html">universales/bienvenida.html</a></li>
+    <li><a href="universales/cuenta-de-cobro.html">universales/cuenta-de-cobro.html</a></li>
+    <li><a href="universales/sow.html">universales/sow.html</a></li>
+    <li><a href="universales/accesos-finales.html">universales/accesos-finales.html</a></li>
+    <li><a href="universales/propuesta-mejoras.html">universales/propuesta-mejoras.html</a></li>
+    <li><a href="universales/oficio.html">universales/oficio.html</a></li>
+    <li><a href="universales/contrato.html">universales/contrato.html</a></li>
+    <li><a href="universales/manual-usuario.html">universales/manual-usuario.html</a></li>
+    <li><a href="universales/mantenimiento.html">universales/mantenimiento.html</a></li>
+    <li><a href="universales/entrega.html">universales/entrega.html</a></li>
+  </ul>
+  <p class="note">Servidor: <a href="http://localhost:8000">http://localhost:8000</a></p>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const list = document.getElementById('docList');
+      const links = Array.from(list.querySelectorAll('a'));
+      const businesses = new Set();
+      const types = new Set();
+      function parseHref(href){
+        let p = href.split('?')[0].split('#')[0];
+        let parts = p.split('/');
+        let filename = parts.pop();
+        let business, type;
+        if(parts.length){
+          business = parts[0];
+          type = filename.replace('.html','');
+        } else {
+          let dashPos = filename.indexOf('-');
+          if(dashPos === -1){
+            business = filename.replace('.html','');
+            type = '';
+          } else {
+            business = filename.substring(0,dashPos);
+            type = filename.substring(dashPos+1, filename.length - 5);
+          }
+        }
+        business = (business||'').toLowerCase();
+        type = (type||'').toLowerCase();
+        return {business,type};
+      }
+      links.forEach(a=>{
+        const {business,type} = parseHref(a.getAttribute('href'));
+        const li = a.closest('li');
+        li.dataset.business = business;
+        li.dataset.type = type;
+        if(business) businesses.add(business);
+        if(type) types.add(type);
+      });
+      const bsel = document.getElementById('filterBusiness');
+      const tsel = document.getElementById('filterType');
+      Array.from(businesses).sort().forEach(b=>{
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b.charAt(0).toUpperCase()+b.slice(1);
+        bsel.appendChild(opt);
+      });
+      Array.from(types).sort().forEach(t=>{
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t ? t.replace(/-/g,' ').split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1)}).join(' ') : '(sin tipo)';
+        tsel.appendChild(opt);
+      });
+      function applyFilters(){
+        const b = bsel.value;
+        const t = tsel.value;
+        links.forEach(a=>{
+          const li = a.closest('li');
+          const matchB = (b === 'all' || li.dataset.business === b);
+          const matchT = (t === 'all' || li.dataset.type === t || (t==='' && !li.dataset.type));
+          li.style.display = (matchB && matchT) ? '' : 'none';
+        });
+      }
+      bsel.addEventListener('change', applyFilters);
+      tsel.addEventListener('change', applyFilters);
+      document.getElementById('clearFilters').addEventListener('click', function(){
+        bsel.value = 'all';
+        tsel.value = 'all';
+        applyFilters();
+      });
+    });
+  </script>
+</body>
+</html>

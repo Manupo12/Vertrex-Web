@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta de Entrega | Vertrex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        /* MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO */
+        @media print {
+            @page { margin: 0mm !important; size: A4 portrait; }
+            html, body { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            
+            body::before {
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
+            table, tbody, tr, td, main { overflow: visible !important; }
+            main { display: block !important; min-height: auto !important; }
+            .fixed-header { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; }
+            .fixed-footer { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; min-height: var(--footer-height) !important; }
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .print-spacer-header, .print-spacer-footer { display: none; }
+        .bg-tech-grid-screen {
+            background-color: #ffffff; background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+        .header-shape-right { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all z-50 flex items-center gap-3 text-sm text-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        FINALIZAR Y EXPORTAR ACTA
+    </button>
+
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">FECHA:</span> <span>[DD/MM/YYYY]</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-ACT-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CIUDAD:</span> <span class="font-bold uppercase">Neiva, Huila</span></p>
+            </div>
+        </header>
+
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <thead><tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr></thead>
+            
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <div class="mb-10 text-center border-b-2 border-vBlack pb-4 break-inside-avoid">
+                                <h1 class="text-2xl font-extrabold text-vBlack tracking-tight uppercase">Acta de Entrega Final y Cierre de Proyecto</h1>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-10 mb-10 text-sm break-inside-avoid">
+                                <div class="border-l-4 border-vBlack pl-4">
+                                    <p class="text-gray-500 font-bold mb-1 uppercase tracking-widest text-[10px]">CONTRATISTA:</p>
+                                    <p class="font-bold text-vBlack text-base">Manuel Arturo Villanueva Polania</p>
+                                    <p class="text-gray-700">C.C. 1077720099</p>
+                                    <p class="text-gray-700">Representante de Vertrex</p>
+                                </div>
+                                <div class="border-l-4 border-vGreen pl-4">
+                                    <p class="text-gray-500 font-bold mb-1 uppercase tracking-widest text-[10px]">CONTRATANTE / CLIENTE:</p>
+                                    <p class="font-bold text-vBlack text-base uppercase">BUDAPHONE</p>
+                                    <p class="text-gray-700">NIT: 1082215711-1</p>
+                                    <p class="text-gray-700">Proyecto: Plataforma Web Ecommerce</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-8 text-justify text-[15px] leading-relaxed text-gray-900 break-inside-avoid">
+                                <p>En la ciudad de <strong>Neiva, Huila</strong>, se procede a formalizar la entrega final y cierre del proyecto de desarrollo de software contratado. Por medio de este documento, el Contratista hace entrega oficial de los módulos funcionales y el Contratante manifiesta su recepción a entera satisfacción.</p>
+                            </div>
+
+                            <div class="mb-10 break-inside-avoid">
+                                <h3 class="font-bold text-vBlack uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-vGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                                    Relación de Entregables Técnicos
+                                </h3>
+                                <table class="w-full text-sm border-collapse">
+                                    <thead class="bg-vBlack text-white uppercase text-[10px] tracking-wider">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left border border-vBlack">Módulo / Componente</th>
+                                            <th class="px-4 py-3 text-center border border-vBlack w-24">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-gray-800">
+                                        <tr>
+                                            <td class="px-4 py-3 border border-gray-300 font-medium">Plataforma Web Principal (Frontend/UI)</td>
+                                            <td class="px-4 py-3 border border-gray-300 text-center font-bold text-vGreen">ENTREGADO</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 border border-gray-300 font-medium">Panel Administrativo y Gestión de Contenidos</td>
+                                            <td class="px-4 py-3 border border-gray-300 text-center font-bold text-vGreen">ENTREGADO</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 border border-gray-300 font-medium">Base de Datos Configurada y Optimizada</td>
+                                            <td class="px-4 py-3 border border-gray-300 text-center font-bold text-vGreen">ENTREGADO</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 border border-gray-300 font-medium">Integración con Pasarela de Pagos / Servicios Externos</td>
+                                            <td class="px-4 py-3 border border-gray-300 text-center font-bold text-vGreen">ENTREGADO</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3 border border-gray-300 font-medium">Manual de Uso / Capacitación de Administrador</td>
+                                            <td class="px-4 py-3 border border-gray-300 text-center font-bold text-vGreen">ENTREGADO</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mb-10 bg-gray-50 border border-gray-200 p-6 rounded break-inside-avoid">
+                                <h3 class="font-bold text-vBlack uppercase text-xs tracking-widest mb-3">Accesos y Seguridad</h3>
+                                <p class="text-[14px] text-gray-700 leading-relaxed italic">
+                                    Se confirma que las credenciales de acceso al Panel Administrativo, Hosting y servicios de terceros han sido suministradas al Contratante de forma privada y segura. A partir de este momento, la custodia y reserva de dichas claves es responsabilidad exclusiva del Contratante.
+                                </p>
+                            </div>
+
+                            <div class="mb-10 break-inside-avoid">
+                                <h3 class="font-bold text-vBlack uppercase text-xs tracking-widest mb-4 border-b border-gray-200 pb-2">Garantía y Soporte Técnico</h3>
+                                <div class="grid grid-cols-2 gap-6 text-[14px]">
+                                    <div class="bg-vGreen/5 border-l-4 border-vGreen p-4" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                        <p class="font-bold text-vBlack mb-1">Periodo de Garantía:</p>
+                                        <p>Se otorga <strong>1 mes de soporte técnico gratuito</strong> a partir de la firma de este documento, limitado a corrección de errores (bugs) y ajustes menores sobre lo ya desarrollado.</p>
+                                    </div>
+                                    <div class="bg-vBlack text-white p-4" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                        <p class="font-bold text-vGreen mb-1">Mantenimiento Post-Garantía:</p>
+                                        <p class="text-gray-300 text-xs leading-relaxed">Cualquier requerimiento adicional o nueva funcionalidad posterior a este periodo se regirá bajo un nuevo acuerdo de mantenimiento o cotización independiente.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-14 p-6 border-2 border-vBlack rounded text-center break-inside-avoid">
+                                <p class="text-[15px] font-bold text-vBlack uppercase tracking-tight">Declaración de Satisfacción</p>
+                                <p class="text-[14px] text-gray-800 mt-2">
+                                    El Contratante declara que ha revisado exhaustivamente el sistema entregado, encontrándolo acorde al alcance definido contractualmente, y procede a autorizar el cierre administrativo del proyecto y la liberación del pago final correspondiente.
+                                </p>
+                            </div>
+
+                            <div class="mt-auto pt-4 break-inside-avoid w-full pb-4">
+                                <div class="flex justify-between gap-12 w-full">
+                                    <div class="w-1/2 relative">
+                                        <div class="relative h-16 mb-2 overflow-visible">
+                                            <img src="vaul/firma.png" alt="Firma Manuel Arturo Villanueva Polania" class="absolute left-0 bottom-0 w-[12rem] max-w-none translate-y-[36%] object-contain mix-blend-multiply">
+                                        </div>
+                                        <div class="border-b border-gray-600 h-2 mb-3 relative"></div>
+                                        <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">Manuel Arturo Villanueva Polania</h3>
+                                        <p class="text-xs font-semibold text-gray-500 mt-1 uppercase">El Contratista (Vertrex)</p>
+                                    </div>
+
+                                    <div class="w-1/2 pt-16">
+                                        <div class="border-b border-gray-600 h-2 mb-3 relative"></div>
+                                        <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">[Nombre Representante]</h3>
+                                        <p class="text-xs font-semibold text-gray-500 mt-1 uppercase">El Contratante</p>
+                                        <p class="text-xs text-gray-800 mt-1">C.C. ___________________</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium">
+                    <a href="mailto:vertrexsc@gmail.com" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7"></path>
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        </svg>
+                        vertrexsc@gmail.com
+                    </a>
+                    <a href="https://wa.me/573202070445" target="_blank" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            <path d="M16.5 16c-1.5 1.5-3 1.5-6-.5s-2-4.5-.5-6c.2-.2.4-.3.6-.3s.4 0 .6 0c.2 0 .4 0 .5.2s.3.8.4 1c.1.2.2.4 0 .6s-.2.3-.4.5c-.2.2-.4.4-.2.8.2.4.6.8 1 1.2.4.4.8.8 1.2 1 .4.2.6.4.8.2.2-.2.4-.4.5-.4s.4-.2.6 0c.2.2.8.3 1 .4.2.1.4.2.4.4s0 .4-.2.6z"></path>
+                        </svg>
+                        +57 320 207 0445
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

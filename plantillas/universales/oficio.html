@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oficio de Presentación | Vertrex</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter (UI) y JetBrains Mono (Tech/Code) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            /* Forzar colores de impresión en WebKit */
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* Contenedor del Documento (Vista Pantalla) */
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===============================================================
+           LA MAGIA: MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO
+           =============================================================== 
+        */
+        @media print {
+            @page {
+                margin: 0mm !important; 
+                size: A4 portrait;
+            }
+            html, body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                display: block !important;
+            }
+            
+            /* 1. FONDO GLOBAL: Cubre todas las hojas de principio a fin */
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image:
+                  linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { 
+                box-shadow: none !important; 
+                width: 100% !important;
+                margin: 0 !important; 
+                padding: 0 !important;
+                background: transparent !important;
+                display: block !important;
+            }
+
+            table, tbody, tr, td, main {
+                overflow: visible !important;
+            }
+
+            main {
+                display: block !important;
+                min-height: auto !important;
+            }
+
+            /* 2. HEADER Y FOOTER ANCLADOS: Se repiten pintándose por encima de la hoja */
+            .fixed-header {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                z-index: 50 !important;
+            }
+
+            .fixed-footer {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                z-index: 50 !important;
+                min-height: var(--footer-height) !important;
+            }
+
+            /* 3. ESPACIADORES FANTASMA: Empujan el texto para que no quede detrás del header/footer */
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            
+            /* Evita que los bloques se corten por la mitad */
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { 
+                page-break-inside: avoid !important;
+                break-inside: avoid !important; 
+            }
+        }
+
+        /* Ocultar espaciadores fantasma en pantalla normal */
+        .print-spacer-header, .print-spacer-footer { display: none; }
+
+        /* Cuadrícula para pantalla */
+        .bg-tech-grid-screen {
+            background-color: #ffffff;
+            background-size: 20px 20px;
+            background-image:
+              linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+
+        .header-shape-right {
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <!-- Botón UI -->
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none z-50 flex items-center gap-3 text-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        EXPORTAR A PDF / IMPRIMIR
+    </button>
+
+    <!-- Document Wrapper -->
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <!-- ==========================================
+             HEADER ANCLADO
+        =========================================== -->
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <!-- Izquierda: Logo -->
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <!-- Derecha: Polígonos y Metadatos -->
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">FECHA:</span> <span>[FECHA]</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-OFC-PLT-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CIUDAD:</span> <span class="font-bold">Neiva, Huila</span></p>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             TABLA MAESTRA DEL CONTENIDO
+        =========================================== -->
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <!-- Espaciador fantasma para el Header -->
+            <thead>
+                <tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr>
+            </thead>
+            
+            <!-- Contenido Principal -->
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <!-- Bloque de Destinatario (BUDAPHONE) -->
+                            <div class="mb-10 text-base break-inside-avoid">
+                                <p class="font-semibold text-gray-800 mb-1">Señores:</p>
+                                <h2 class="font-bold text-2xl text-vBlack uppercase tracking-tight">[NOMBRE DEL CLIENTE / EMPRESA]</h2>
+                                
+                                <div class="mt-3 text-gray-800 space-y-1">
+                                    <p><span class="font-semibold text-gray-600 w-24 inline-block">NIT / C.C.:</span> [IDENTIFICACIÓN]</p>
+                                    <p><span class="font-semibold text-gray-600 w-24 inline-block">Dirección:</span> [DIRECCIÓN DEL CLIENTE]</p>
+                                    <p><span class="font-semibold text-gray-600 w-24 inline-block">Teléfono:</span> [TELÉFONO DEL CLIENTE]</p>
+                                    <p><span class="font-semibold text-gray-600 w-24 inline-block">Correo:</span> [CORREO DEL CLIENTE]</p>
+                                </div>
+                            </div>
+
+                            <!-- Título / Asunto -->
+                            <div class="mb-8 border-l-4 border-vBlack pl-5 py-2 bg-gray-50 break-inside-avoid">
+                                <p class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-1">Asunto:</p>
+                                <h1 class="text-xl font-bold text-vBlack tracking-tight">Presentación y formalización de servicio de desarrollo de software.</h1>
+                            </div>
+
+                            <!-- Cuerpo del texto -->
+                            <div class="space-y-5 text-gray-900 leading-relaxed text-[15px] text-justify">
+                                <p>Cordial saludo,</p>
+                                
+                                <p>
+                                    Por medio del presente documento, nosotros, en calidad de desarrolladores independientes bajo la marca comercial <strong class="font-bold">Vertrex</strong>, nos permitimos presentar formalmente la propuesta de desarrollo e implementación de una solución tecnológica integral para su organización.
+                                </p>
+                                
+                                <p>
+                                    El proyecto consiste en el diseño, desarrollo e implementación de una plataforma web completa que permitirá optimizar y digitalizar los procesos comerciales y operativos de <strong class="font-bold">[NOMBRE DEL CLIENTE / EMPRESA]</strong>, incluyendo la siguiente arquitectura tecnológica:
+                                </p>
+
+                                <!-- Grid de Características -->
+                                <div class="break-inside-avoid print-border bg-white border border-gray-300 p-6 rounded shadow-sm border-t-4 border-t-vBlack my-8" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                    <p class="font-bold text-base text-vBlack mb-4 uppercase tracking-wider border-b border-gray-200 pb-2">Alcance del Proyecto</p>
+                                    <ul class="grid grid-cols-2 gap-x-8 gap-y-4 text-[15px] text-gray-800 font-medium">
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Diseño y desarrollo de plataforma web a la medida.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Panel administrativo para gestión interna.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Módulos funcionales definidos según el alcance acordado.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Gestión de contenido, usuarios o inventario según necesidad.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Integraciones con servicios externos si fueron contratadas.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Automatización de procesos operativos básicos.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Generación de documentos o reportes digitales.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Capacitación inicial para uso del sistema.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Soporte de puesta en marcha dentro del alcance.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Arquitectura escalable para crecimiento futuro.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Entrega técnica documentada del proyecto.</span></li>
+                                        <li class="flex items-start gap-3"><span class="text-vBlack font-bold mt-0.5">•</span><span>Canales de comunicación y acompañamiento técnico.</span></li>
+                                    </ul>
+                                </div>
+
+                                <p class="break-inside-avoid">Asimismo, nuestro equipo de desarrollo se compromete formalmente a:</p>
+                                
+                                <ul class="space-y-3 mb-6 text-[15px] font-medium border-l-2 border-gray-400 pl-5 text-gray-800 break-inside-avoid">
+                                    <li class="flex items-center gap-3"><div class="w-1.5 h-1.5 bg-vBlack rounded-full"></div> Entregar una solución funcional basada en el estado actual del sistema.</li>
+                                    <li class="flex items-center gap-3"><div class="w-1.5 h-1.5 bg-vBlack rounded-full"></div> Realizar los ajustes necesarios para su correcta implementación.</li>
+                                    <li class="flex items-center gap-3"><div class="w-1.5 h-1.5 bg-vBlack rounded-full"></div> Brindar acompañamiento técnico y capacitación durante la puesta en marcha.</li>
+                                    <li class="flex items-center gap-3"><div class="w-1.5 h-1.5 bg-vBlack rounded-full"></div> Garantizar el correcto funcionamiento técnico dentro del alcance acordado.</li>
+                                </ul>
+
+                                <p class="break-inside-avoid">
+                                    El desarrollo se ejecutará bajo las condiciones pactadas contractualmente, las cuales incluyen tiempos de entrega, costos de inversión, alcance estricto y soporte técnico. Quedamos atentos a cualquier inquietud y agradecemos de antemano la confianza depositada en nuestro equipo de trabajo.
+                                </p>
+                            </div>
+
+                            <!-- Firma Block -->
+                            <div class="mt-12 pt-8 break-inside-avoid pb-4">
+                                <p class="block w-full text-base text-gray-900 mb-12 font-medium">Atentamente,</p>
+                                <div class="w-[30rem] max-w-full">
+                                    <div class="relative h-16 mb-3 overflow-visible">
+                                        <img src="vaul/firma.png" alt="Firma Manuel Arturo Villanueva Polania" class="absolute left-[25%] bottom-0 w-[10rem] max-w-none -translate-x-1/2 translate-y-[44%] scale-[1.32] object-contain">
+                                    </div>
+                                    <div class="w-[15rem] border-b border-gray-600 mb-10"></div>
+                                    <h3 class="font-bold text-vBlack tracking-tight text-xl uppercase whitespace-nowrap">Manuel Arturo Villanueva Polania</h3>
+                                    <p class="text-sm font-semibold text-gray-700 mt-1 mb-2">Representante de Vertrex</p>
+                                    <div class="text-sm text-gray-800 space-y-1">
+                                        <p><span class="font-semibold text-gray-600">C.C:</span> 1077720099</p>
+                                        <p><span class="font-semibold text-gray-600">Teléfono:</span> 3209586388</p>
+                                        <p><span class="font-semibold text-gray-600">Correo:</span> vertrexsc@gmail.com</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <!-- Espaciador fantasma para el Footer -->
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <!-- ==========================================
+             FOOTER ANCLADO
+        =========================================== -->
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <!-- Info Legal/Contacto -->
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                
+                <!-- Enlaces y Contacto -->
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium">
+                    <a href="mailto:vertrexsc@gmail.com" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7"></path>
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        </svg>
+                        vertrexsc@gmail.com
+                    </a>
+                    <a href="https://wa.me/573202070445" target="_blank" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            <path d="M16.5 16c-1.5 1.5-3 1.5-6-.5s-2-4.5-.5-6c.2-.2.4-.3.6-.3s.4 0 .6 0c.2 0 .4 0 .5.2s.3.8.4 1c.1.2.2.4 0 .6s-.2.3-.4.5c-.2.2-.4.4-.2.8.2.4.6.8 1 1.2.4.4.8.8 1.2 1 .4.2.6.4.8.2.2-.2.4-.4.5-.4s.4-.2.6 0c.2.2.8.3 1 .4.2.1.4.2.4.4s0 .4-.2.6z"></path>
+                        </svg>
+                        +57 320 207 0445
+                    </a>
+                    <a href="https://instagram.com/vertrexsc" target="_blank" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                        </svg>
+                        @vertrexsc
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

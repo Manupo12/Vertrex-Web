@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesos Finales | Vertrex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        /* MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO */
+        @media print {
+            @page { margin: 0mm !important; size: A4 portrait; }
+            html, body { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            
+            body::before {
+                content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
+            table, tbody, tr, td, main { overflow: visible !important; }
+            main { display: block !important; min-height: auto !important; }
+            .fixed-header { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; }
+            .fixed-footer { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; z-index: 50 !important; min-height: var(--footer-height) !important; }
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .print-spacer-header, .print-spacer-footer { display: none; }
+        .bg-tech-grid-screen {
+            background-color: #ffffff; background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+        .header-shape-right { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all z-50 flex items-center gap-3 text-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z"></path></svg>
+        EXPORTAR CREDENCIALES
+    </button>
+
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">DOC:</span> <span class="font-bold">CREDENCIALES</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-ACC-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">NIVEL:</span> <span class="text-vBlack bg-vGreen px-1 font-bold">CONFIDENCIAL</span></p>
+            </div>
+        </header>
+
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <thead><tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr></thead>
+            
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <div class="mb-8 border-b-2 border-vBlack pb-4 break-inside-avoid text-center">
+                                <h1 class="text-2xl font-extrabold text-vBlack tracking-tight uppercase">Entrega Oficial de Accesos</h1>
+                                <p class="text-gray-500 font-mono text-sm uppercase tracking-widest mt-2">Proyecto: BUDAPHONE</p>
+                            </div>
+
+                            <div class="mb-10 bg-yellow-50 border-l-4 border-yellow-400 p-5 break-inside-avoid shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                <h3 class="text-yellow-800 font-bold uppercase tracking-widest text-xs mb-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    Aviso de Seguridad y Responsabilidad
+                                </h3>
+                                <p class="text-[13.5px] text-yellow-900 leading-relaxed">
+                                    Las credenciales a continuación otorgan control <strong>absoluto</strong> sobre su plataforma, dominio y servidor. Vertrex entrega estas claves de forma definitiva. A partir de este momento, es su responsabilidad resguardarlas. Recomendamos enfáticamente cambiar las contraseñas al ingresar por primera vez.
+                                </p>
+                            </div>
+
+                            <div class="space-y-6">
+
+                                <div class="border border-gray-300 break-inside-avoid">
+                                    <div class="bg-gray-100 px-5 py-3 border-b border-gray-300" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                        <h4 class="font-bold text-vBlack text-sm uppercase tracking-wide">1. Panel Administrativo (Sistema Web)</h4>
+                                    </div>
+                                    <div class="p-5 grid grid-cols-[120px_1fr] gap-y-4 text-sm items-center">
+                                        <p class="font-bold text-gray-500 uppercase text-xs">URL de Acceso:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-blue-600 break-all">https://budaphone.com/admin</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Usuario / Email:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-vBlack">admin@budaphone.com</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Contraseña:</p>
+                                        <p class="font-mono bg-vBlack border border-vBlack p-2 text-vGreen tracking-widest">BudaP#2026!Admin</p>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-300 break-inside-avoid">
+                                    <div class="bg-gray-100 px-5 py-3 border-b border-gray-300" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                        <h4 class="font-bold text-vBlack text-sm uppercase tracking-wide">2. Servidor y Archivos (Hosting / CPanel)</h4>
+                                    </div>
+                                    <div class="p-5 grid grid-cols-[120px_1fr] gap-y-4 text-sm items-center">
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Proveedor:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-vBlack">Hostinger / cPanel</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">URL de Acceso:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-blue-600 break-all">https://hpanel.hostinger.com</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Usuario:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-vBlack">gerencia@budaphone.com</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Contraseña:</p>
+                                        <p class="font-mono bg-vBlack border border-vBlack p-2 text-white tracking-widest">Hst#Server_26</p>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-300 break-inside-avoid">
+                                    <div class="bg-gray-100 px-5 py-3 border-b border-gray-300" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                                        <h4 class="font-bold text-vBlack text-sm uppercase tracking-wide">3. Gestión de Dominio (DNS)</h4>
+                                    </div>
+                                    <div class="p-5 grid grid-cols-[120px_1fr] gap-y-4 text-sm items-center">
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Proveedor:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-vBlack">GoDaddy</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Usuario / PIN:</p>
+                                        <p class="font-mono bg-gray-50 border border-gray-200 p-2 text-vBlack">budaphone_domain</p>
+                                        
+                                        <p class="font-bold text-gray-500 uppercase text-xs">Contraseña:</p>
+                                        <p class="font-mono bg-vBlack border border-vBlack p-2 text-white tracking-widest">GoD_!2026Domain</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-10 break-inside-avoid text-center">
+                                <p class="text-[13px] text-gray-600 italic">
+                                    Guarde este documento en un lugar seguro. Vertrex Software Labs destruirá estas credenciales de sus registros internos tras 30 días de la entrega por protocolos de ciberseguridad.
+                                </p>
+                            </div>
+
+                            <div class="mt-auto pt-8 break-inside-avoid w-full pb-4">
+                                <div class="w-80 mx-auto text-center relative">
+                                    <div class="relative h-16 mb-2 overflow-visible flex justify-center">
+                                        <img src="vaul/firma.png" alt="Firma Vertrex" class="absolute bottom-0 h-[6rem] max-w-none translate-y-[36%] object-contain mix-blend-multiply">
+                                    </div>
+                                    <div class="border-b border-gray-400 h-2 mb-3 relative w-64 mx-auto"></div>
+                                    <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">Manuel Arturo Villanueva P.</h3>
+                                    <p class="text-[10px] font-semibold text-gray-500 mt-1 tracking-widest uppercase">Vertrex - Entrega Técnica</p>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium font-mono text-[10px] uppercase tracking-wider">
+                    <p class="text-vGreen">Uso Exclusivo del Propietario</p>
+                    <p>Destruir tras actualización de claves</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

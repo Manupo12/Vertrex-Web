@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento de Alcance (SOW) | Vertrex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vBlack: '#0A0A0A',
+                        vGreen: '#00FA82',
+                        vGray: '#F4F5F7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Variables y Configuración Base A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 297mm;
+            --header-height: 136px;
+            --footer-height: 152px;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            /* Forzar colores de impresión en WebKit */
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* Contenedor del Documento (Vista Pantalla) */
+        .page-container {
+            width: var(--a4-width);
+            min-height: var(--a4-height);
+            background-color: transparent;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        /* ===============================================================
+           MOTOR DE IMPRESIÓN MULTIPÁGINA BLINDADO
+           =============================================================== 
+        */
+        @media print {
+            @page {
+                margin: 0mm !important; 
+                size: A4 portrait;
+            }
+            html, body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                display: block !important;
+            }
+            
+            /* FONDO GLOBAL */
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background-size: 20px 20px !important;
+                background-image:
+                  linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px) !important;
+                z-index: -1;
+            }
+
+            .page-container { 
+                box-shadow: none !important; 
+                width: 100% !important;
+                margin: 0 !important; 
+                padding: 0 !important;
+                background: transparent !important;
+                display: block !important;
+            }
+
+            table, tbody, tr, td, main {
+                overflow: visible !important;
+            }
+
+            main {
+                display: block !important;
+                min-height: auto !important;
+            }
+
+            /* HEADER Y FOOTER ANCLADOS */
+            .fixed-header {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                z-index: 50 !important;
+            }
+
+            .fixed-footer {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                z-index: 50 !important;
+                min-height: var(--footer-height) !important;
+            }
+
+            /* ESPACIADORES FANTASMA */
+            .print-spacer-header { display: block !important; height: var(--header-height) !important; }
+            .print-spacer-footer { display: block !important; height: calc(var(--footer-height) + 20px) !important; }
+
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+            tbody { display: table-row-group !important; }
+
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #d1d5db !important; }
+            
+            p, ul, ol, li, h1, h2, h3, h4, .break-inside-avoid { 
+                page-break-inside: avoid !important;
+                break-inside: avoid !important; 
+            }
+        }
+
+        /* Ocultar espaciadores fantasma en pantalla normal */
+        .print-spacer-header, .print-spacer-footer { display: none; }
+
+        /* Cuadrícula para pantalla */
+        .bg-tech-grid-screen {
+            background-color: #ffffff;
+            background-size: 20px 20px;
+            background-image:
+              linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        }
+
+        .header-shape-right {
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-auto">
+
+    <button onclick="window.print()" class="no-print fixed bottom-8 right-8 bg-vBlack hover:bg-gray-800 text-vGreen font-bold py-4 px-8 rounded-none border border-vGreen shadow-[4px_4px_0px_0px_rgba(0,250,130,1)] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none z-50 flex items-center gap-3 text-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        EXPORTAR A PDF / IMPRIMIR
+    </button>
+
+    <div class="page-container bg-tech-grid-screen print:bg-transparent">
+        
+        <header class="fixed-header relative z-20 w-full h-[136px] flex justify-between items-center px-12">
+            <div class="flex items-center gap-2 relative z-30 pt-2">
+                <div class="w-28 h-28 flex-shrink-0 rounded flex items-center justify-center overflow-hidden">
+                    <img src="vaul/logo.png" alt="Vertrex logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-bold tracking-tighter text-vBlack leading-none">VERTREX</span>
+                    <span class="text-xs font-semibold text-gray-500 tracking-widest mt-1 uppercase">Desarrollo de Software</span>
+                </div>
+            </div>
+
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vBlack header-shape-right z-10" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="absolute top-0 right-0 w-[55%] h-full bg-vGreen header-shape-right translate-y-2 -translate-x-2 z-0 opacity-80" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            
+            <div class="relative z-30 text-right font-mono text-xs leading-loose text-white pt-6 pr-2">
+                <p class="flex justify-end gap-4"><span class="text-gray-300">FECHA:</span> <span>[DD/MM/YYYY]</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CÓDIGO:</span> <span class="text-vGreen font-bold">VTX-SOW-001</span></p>
+                <p class="flex justify-end gap-4"><span class="text-gray-300">CIUDAD:</span> <span class="font-bold">Neiva, Huila</span></p>
+            </div>
+        </header>
+
+        <table class="w-full flex-grow border-collapse border-0 border-spacing-0 m-0 p-0 relative z-10">
+            <thead>
+                <tr><td class="p-0 border-0"><div class="print-spacer-header"></div></td></tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <td class="p-0 border-0 align-top">
+                        <main class="px-12 py-10 flex flex-col min-h-full">
+                            
+                            <div class="mb-10 text-center border-b-2 border-vBlack pb-3 break-inside-avoid">
+                                <p class="text-xs font-bold text-gray-500 tracking-widest uppercase mb-1">Anexo Técnico</p>
+                                <h1 class="text-xl font-extrabold text-vBlack tracking-tight uppercase">DocumentO DE ALCANCE DEL PROYECTO (SOW)</h1>
+                            </div>
+
+                            <div class="flex justify-between mb-8 text-sm border-b border-gray-200 pb-6 break-inside-avoid">
+                                <div class="w-[45%]">
+                                    <p class="text-gray-500 font-bold mb-1 uppercase tracking-widest text-[10px]">CONTRATISTA / AGENCIA:</p>
+                                    <h3 class="font-bold text-base text-vBlack">Vertrex</h3>
+                                    <p class="text-gray-800">Rep: Manuel A. Villanueva Polania</p>
+                                </div>
+                                <div class="w-[45%] text-right border-l border-gray-200 pl-6">
+                                    <p class="text-gray-500 font-bold mb-1 uppercase tracking-widest text-[10px]">CLIENTE / PROYECTO:</p>
+                                    <h3 class="font-bold text-base text-vBlack">[NOMBRE DEL CLIENTE / EMPRESA]</h3>
+                                    <p class="text-gray-800">[TIPO DE PROYECTO / SOLUCIÓN]</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-8 break-inside-avoid text-justify">
+                                <h3 class="font-bold text-lg text-vBlack border-l-4 border-vGreen pl-3 mb-3 uppercase tracking-wider">1. Objetivo del Documento</h3>
+                                <p class="text-[14.5px] text-gray-800 leading-relaxed pl-4">
+                                    El propósito de este Documento de Alcance (Statement of Work) es definir clara y exhaustivamente las funcionalidades, módulos y entregables que constituyen el proyecto contratado. Cualquier requerimiento, funcionalidad o módulo que <strong>no esté explícitamente listado en este documento</strong>, se considerará fuera del alcance y requerirá una estimación independiente.
+                                </p>
+                            </div>
+
+                            <div class="mb-10 break-inside-avoid">
+                                <h3 class="font-bold text-lg text-vBlack border-l-4 border-vBlack pl-3 mb-4 uppercase tracking-wider">2. Alcance Funcional (Lo que ESTÁ INCLUIDO)</h3>
+                                
+                                <div class="bg-gray-50 border border-gray-300 rounded p-6">
+                                    <div class="space-y-6">
+                                        <div>
+                                            <h4 class="font-bold text-vBlack text-[15px] mb-2 flex items-center gap-2">
+                                                <div class="w-2 h-2 bg-vGreen rounded-full"></div> 2.1 E-Commerce y Catálogo Público
+                                            </h4>
+                                            <ul class="list-disc pl-8 text-[14px] text-gray-700 space-y-1">
+                                                <li>Diseño responsivo (adaptable a móviles y escritorio).</li>
+                                                <li>Catálogo de productos organizado por categorías.</li>
+                                                <li>Buscador de productos interno.</li>
+                                                <li>Sistema de carrito de compras funcional.</li>
+                                                <li>Checkout y pasarela de pagos integrada (Exclusivamente Wompi).</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div>
+                                            <h4 class="font-bold text-vBlack text-[15px] mb-2 flex items-center gap-2">
+                                                <div class="w-2 h-2 bg-vGreen rounded-full"></div> 2.2 Panel Administrativo (Backend)
+                                            </h4>
+                                            <ul class="list-disc pl-8 text-[14px] text-gray-700 space-y-1">
+                                                <li>Autenticación de administrador con credenciales seguras.</li>
+                                                <li>Gestión (Crear, Editar, Borrar) de productos, categorías y stock.</li>
+                                                <li>Visualización y gestión de órdenes de compra recibidas.</li>
+                                                <li>Panel básico de control operativo e inventario.</li>
+                                            </ul>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="font-bold text-vBlack text-[15px] mb-2 flex items-center gap-2">
+                                                <div class="w-2 h-2 bg-vGreen rounded-full"></div> 2.3 Módulo de Servicio Técnico
+                                            </h4>
+                                            <ul class="list-disc pl-8 text-[14px] text-gray-700 space-y-1">
+                                                <li>Sistema interno de creación de Tickets de reparación.</li>
+                                                <li>Sistema de seguimiento público de reparaciones (para que el cliente consulte el estado).</li>
+                                            </ul>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="font-bold text-vBlack text-[15px] mb-2 flex items-center gap-2">
+                                                <div class="w-2 h-2 bg-vGreen rounded-full"></div> 2.4 Documentos y Notificaciones
+                                            </h4>
+                                            <ul class="list-disc pl-8 text-[14px] text-gray-700 space-y-1">
+                                                <li>Generación automatizada de Documentos PDF (Ej. comprobantes de orden/factura no contable).</li>
+                                                <li>Botón o redirección de integración operativa hacia WhatsApp.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-10 break-inside-avoid">
+                                <h3 class="font-bold text-lg text-red-600 border-l-4 border-red-600 pl-3 mb-4 uppercase tracking-wider">3. Exclusiones (Lo que NO ESTÁ INCLUIDO)</h3>
+                                
+                                <div class="border border-red-200 bg-red-50/30 rounded p-5">
+                                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-[14px] text-gray-800">
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <span class="leading-tight">[EXCLUSIÓN 1].</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <span class="leading-tight">Redacción de Términos y Condiciones, o Políticas de Privacidad legales.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <span class="leading-tight">[EXCLUSIÓN 2].</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <span class="leading-tight">[EXCLUSIÓN 3].</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <span class="leading-tight">Modificaciones drásticas de diseño una vez aprobados los mockups iniciales.</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            <span class="leading-tight">[EXCLUSIÓN 4].</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mb-10 break-inside-avoid text-justify">
+                                <h3 class="font-bold text-lg text-vBlack border-l-4 border-vGreen pl-3 mb-3 uppercase tracking-wider">4. Proceso de Control de Cambios</h3>
+                                <p class="text-[14.5px] text-gray-800 leading-relaxed pl-4">
+                                    En caso de que el cliente ([NOMBRE DEL CLIENTE / EMPRESA]) requiera añadir nuevas pantallas, flujos, integraciones de terceros o modificar sustancialmente la lógica de negocio después de la firma de este documento, se iniciará un proceso de <strong>Control de Cambios</strong>. Vertrex evaluará el impacto técnico de la solicitud y emitirá una cotización y un cronograma independientes para dicha mejora.
+                                </p>
+                            </div>
+
+                            <div class="mt-10 pt-6 break-inside-avoid w-full border-t border-gray-300">
+                                <p class="text-[14px] text-gray-900 mb-8 text-center italic">Al firmar este documento, ambas partes aceptan que el alcance del proyecto está limitado a lo descrito anteriormente.</p>
+
+                                <div class="flex justify-between gap-12 w-full px-6">
+                                    <div class="w-1/2 relative">
+                                        <div class="relative h-16 mb-2 overflow-visible">
+                                            <img src="vaul/firma.png" alt="Firma Vertrex" class="absolute left-0 bottom-0 w-[11rem] max-w-none translate-y-[36%] object-contain mix-blend-multiply">
+                                        </div>
+                                        <div class="border-b border-gray-600 h-2 mb-3 relative"></div>
+                                        <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">Manuel A. Villanueva P.</h3>
+                                        <p class="text-xs font-semibold text-gray-500 mt-1 uppercase">Vertrex (Contratista)</p>
+                                    </div>
+
+                                    <div class="w-1/2">
+                                        <div class="h-16 mb-2"></div>
+                                        <div class="border-b border-gray-600 h-2 mb-3 relative"></div>
+                                        <h3 class="font-bold text-vBlack tracking-tight text-sm uppercase">[Nombre del Representante]</h3>
+                                        <p class="text-xs font-semibold text-gray-500 mt-1 uppercase">[NOMBRE DEL CLIENTE / EMPRESA] (Cliente)</p>
+                                        <p class="text-xs text-gray-800 mt-1"><span class="font-semibold">C.C / NIT:</span> ___________________</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </main>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr><td class="p-0 border-0"><div class="print-spacer-footer"></div></td></tr>
+            </tfoot>
+        </table>
+
+        <footer class="fixed-footer bg-vBlack text-white mt-auto relative z-20 print:mt-0">
+            <div class="h-1.5 w-full bg-vGreen" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></div>
+            <div class="px-12 py-8 flex justify-between items-center text-sm">
+                <div class="flex flex-col gap-1 text-gray-300">
+                    <p class="flex items-center gap-1 text-white font-bold tracking-wider mb-1 text-base">
+                        <img src="vaul/logo.png" alt="Vertrex mini logo" class="w-16 h-16 object-contain">
+                        VERTREX
+                    </p>
+                    <p>Neiva, Huila - Colombia</p>
+                </div>
+                
+                <div class="flex flex-col items-end gap-3 text-gray-300 font-medium">
+                    <a href="mailto:vertrexsc@gmail.com" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7"></path>
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        </svg>
+                        vertrexsc@gmail.com
+                    </a>
+                    <a href="https://wa.me/573202070445" target="_blank" class="hover:text-vGreen transition-colors flex items-center gap-3">
+                        <svg class="w-4 h-4 text-vGreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            <path d="M16.5 16c-1.5 1.5-3 1.5-6-.5s-2-4.5-.5-6c.2-.2.4-.3.6-.3s.4 0 .6 0c.2 0 .4 0 .5.2s.3.8.4 1c.1.2.2.4 0 .6s-.2.3-.4.5c-.2.2-.4.4-.2.8.2.4.6.8 1 1.2.4.4.8.8 1.2 1 .4.2.6.4.8.2.2-.2.4-.4.5-.4s.4-.2.6 0c.2.2.8.3 1 .4.2.1.4.2.4.4s0 .4-.2.6z"></path>
+                        </svg>
+                        +57 320 207 0445
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
