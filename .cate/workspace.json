@@ -73,7 +73,7 @@
             "width": 640,
             "height": 400
           },
-          "zOrder": 90,
+          "zOrder": 96,
           "creationIndex": 0,
           "animationState": "idle",
           "dockLayout": {
@@ -96,7 +96,7 @@
             "width": 640,
             "height": 400
           },
-          "zOrder": 95,
+          "zOrder": 97,
           "creationIndex": 1,
           "animationState": "idle",
           "dockLayout": {

@@ -88,7 +88,14 @@ export const clients = pgTable("clients", {
   rating: text("rating"),
   reviewsCount: integer("reviews_count"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
-});
+}, (table) => ({
+  statusIdx: index("clients_status_idx").on(table.status),
+  countryIdx: index("clients_country_idx").on(table.country),
+  cityIdx: index("clients_city_idx").on(table.city),
+  sectorIdx: index("clients_sector_idx").on(table.sector),
+  priorityIdx: index("clients_priority_idx").on(table.priority),
+  webPresenceIdx: index("clients_web_presence_idx").on(table.webPresence),
+}));
 
 export const clientContactors = pgTable("client_contactors", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
