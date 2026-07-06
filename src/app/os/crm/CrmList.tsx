@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatShortDate } from "@/lib/format";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { Card, CardContent } from "@/components/ui/card";
 import { SavedViewBar } from "@/components/os/SavedViews/SavedViewBar";
 import { bulkDeleteClientsAction } from "@/lib/db/actions/crm";
@@ -53,6 +54,7 @@ interface CrmListProps {
   sectors: string[];
   cities: string[];
   countries: string[];
+  contactorOptions: Array<{ id: string; label: string; sublabel?: string; dividerBefore?: boolean }>;
 }
 
 const CRM_STAGES = [
@@ -86,6 +88,7 @@ export function CrmList({
   sectors,
   cities,
   countries,
+  contactorOptions = [],
 }: CrmListProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -108,6 +111,10 @@ export function CrmList({
   const countryFilter = searchParams.get("country") || "all";
   const ratingFilter = searchParams.get("rating") || "all";
   const webPresenceFilter = searchParams.get("webPresence") || "all";
+  const contactorFilter = (searchParams.get("contactor") || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   const buildUrl = useCallback((updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -121,6 +128,10 @@ export function CrmList({
 
   const setFilter = (key: string, value: string) => {
     router.push(buildUrl({ [key]: value }));
+  };
+
+  const setContactorFilter = (next: string[]) => {
+    router.push(buildUrl({ contactor: next.length > 0 ? next.join(",") : "" }));
   };
 
   const goToPage = (p: number) => {
@@ -370,6 +381,15 @@ export function CrmList({
         </SelectContent>
       </Select>
 
+      <div className="w-[220px]">
+        <MultiSelect
+          options={contactorOptions}
+          selected={contactorFilter}
+          onChange={setContactorFilter}
+          emptyLabel="Asignado a (Todos)"
+        />
+      </div>
+
       <Select value={sectorFilter} onValueChange={(v) => setFilter("sector", v)}>
         <SelectTrigger className="w-[160px] bg-background"><SelectValue placeholder="Rubro/Sector" /></SelectTrigger>
         <SelectContent>
@@ -551,7 +571,7 @@ export function CrmList({
               className="lg:hidden bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              Filtros {(statusFilter !== "all" || priorityFilter !== "all" || sectorFilter !== "all" || cityFilter !== "all" || ratingFilter !== "all" || webPresenceFilter !== "all") ? "●" : ""}
+              Filtros {(statusFilter !== "all" || priorityFilter !== "all" || sectorFilter !== "all" || cityFilter !== "all" || ratingFilter !== "all" || webPresenceFilter !== "all" || contactorFilter.length > 0) ? "●" : ""}
             </Button>
           </div>
         }
@@ -605,6 +625,15 @@ export function CrmList({
                   {WEB_PRESENCE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Asignado a</label>
+              <MultiSelect
+                options={contactorOptions}
+                selected={contactorFilter}
+                onChange={setContactorFilter}
+                emptyLabel="Todos los miembros"
+              />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Rubro</label>
