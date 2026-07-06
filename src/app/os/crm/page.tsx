@@ -1,11 +1,22 @@
 import { db } from "@/lib/db";
 import { clients, clientContactors, users } from "@/lib/db/schema";
-import { eq, sql, ilike, and, or, count } from "drizzle-orm";
+import { eq, sql, ilike, and, or, count, inArray, exists, notExists, isNull } from "drizzle-orm";
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { CrmList } from "./CrmList";
 import { NewClientDialog } from "./NewClientDialog";
+import { listTeamMembersAction } from "@/lib/db/actions/crm";
 
 const PAGE_SIZE = 50;
+
+type ContactorFilter = { userIds: string[]; includeUnassigned: boolean };
+
+function parseContactorParam(raw: string | undefined): ContactorFilter {
+  if (!raw) return { userIds: [], includeUnassigned: false };
+  const tokens = raw.split(",").map((t) => t.trim()).filter(Boolean);
+  const userIds = tokens.filter((t) => t !== "none");
+  const includeUnassigned = tokens.includes("none");
+  return { userIds, includeUnassigned };
+}
 
 interface Props {
   searchParams: Promise<{
@@ -17,6 +28,7 @@ interface Props {
     country?: string;
     rating?: string;
     webPresence?: string;
+    contactor?: string;
     page?: string;
   }>;
 }
@@ -31,11 +43,13 @@ export default async function CrmPage({ searchParams }: Props) {
     country = "",
     rating = "",
     webPresence = "",
+    contactor = "",
     page = "1",
   } = await searchParams;
 
   const pageNum = Math.max(1, parseInt(page) || 1);
   const offset = (pageNum - 1) * PAGE_SIZE;
+  const contactorFilter = parseContactorParam(contactor);
 
   // Build WHERE conditions
   const conditions = [];
@@ -98,6 +112,36 @@ export default async function CrmPage({ searchParams }: Props) {
     );
   }
 
+  if (contactorFilter.userIds.length > 0 || contactorFilter.includeUnassigned) {
+    const subClauses = [] as ReturnType<typeof exists>[];
+    if (contactorFilter.userIds.length > 0) {
+      subClauses.push(
+        exists(
+          db
+            .select({ one: sql`1` })
+            .from(clientContactors)
+            .where(
+              and(
+                eq(clientContactors.clientId, clients.id),
+                inArray(clientContactors.userId, contactorFilter.userIds),
+              ),
+            ),
+        ),
+      );
+    }
+    if (contactorFilter.includeUnassigned) {
+      subClauses.push(
+        notExists(
+          db
+            .select({ one: sql`1` })
+            .from(clientContactors)
+            .where(eq(clientContactors.clientId, clients.id)),
+        ),
+      );
+    }
+    conditions.push(or(...subClauses));
+  }
+
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   // Parallel queries
@@ -156,7 +200,7 @@ export default async function CrmPage({ searchParams }: Props) {
       clientId: clientContactors.clientId,
       userId: users.id,
       userName: users.name,
-    }).from(clientContactors).innerJoin(users, eq(clientContactors.userId, users.id)),
+    }).from(clientContactors).leftJoin(users, eq(clientContactors.userId, users.id)),
   ]);
 
   const totalCount = totalResult[0]?.count ?? 0;
@@ -173,6 +217,7 @@ export default async function CrmPage({ searchParams }: Props) {
   );
 
   const contactorsMap = contactorsList.reduce((acc, row) => {
+    if (!row.userId || !row.userName) return acc;
     if (!acc[row.clientId]) acc[row.clientId] = [];
     acc[row.clientId].push({ id: row.userId, name: row.userName });
     return acc;
@@ -186,6 +231,33 @@ export default async function CrmPage({ searchParams }: Props) {
   const sectors = distinctSectors.map((r) => r.sector).filter(Boolean) as string[];
   const cities = distinctCities.map((r) => r.city).filter(Boolean) as string[];
   const countries = distinctCountries.map((r) => r.country).filter(Boolean) as string[];
+
+  const teamMembers = await listTeamMembersAction();
+  const orphanExists = await db
+    .select({ id: clientContactors.id })
+    .from(clients)
+    .leftJoin(clientContactors, eq(clientContactors.clientId, clients.id))
+    .where(isNull(clientContactors.id))
+    .limit(1);
+  const unassignedAvailable = orphanExists.length > 0;
+
+  const contactorOptions = [
+    ...teamMembers.map((m) => ({
+      id: m.id,
+      label: m.name,
+      sublabel: m.email,
+    })),
+    ...(unassignedAvailable
+      ? [
+          {
+            id: "none",
+            label: "Sin asignar",
+            sublabel: "Sin miembro asignado",
+            dividerBefore: true,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div>
@@ -205,6 +277,7 @@ export default async function CrmPage({ searchParams }: Props) {
         sectors={sectors}
         cities={cities}
         countries={countries}
+        contactorOptions={contactorOptions}
       />
     </div>
   );
