@@ -1,0 +1,431 @@
+- generic [ref=f13e3]:
+  - complementary [ref=f13e5]:
+    - link "Vertrex OS" [ref=f13e7] [cursor=pointer]:
+      - /url: /os/admin
+    - navigation [ref=f13e8]:
+      - generic [ref=f13e9]:
+        - paragraph [ref=f13e10]: Operacion
+        - link "Panel" [ref=f13e11] [cursor=pointer]:
+          - /url: /os/admin
+          - img [ref=f13e12]
+          - generic [ref=f13e17]: Panel
+        - link "Clientes" [ref=f13e18] [cursor=pointer]:
+          - /url: /os/crm
+          - img [ref=f13e19]
+          - generic [ref=f13e24]: Clientes
+        - link "Proyectos" [ref=f13e25] [cursor=pointer]:
+          - /url: /os/projects
+          - img [ref=f13e26]
+          - generic [ref=f13e28]: Proyectos
+        - link "Documentos" [ref=f13e29] [cursor=pointer]:
+          - /url: /os/documents
+          - img [ref=f13e30]
+          - generic [ref=f13e33]: Documentos
+        - link "Legal" [ref=f13e34] [cursor=pointer]:
+          - /url: /os/legal
+          - img [ref=f13e35]
+          - generic [ref=f13e39]: Legal
+      - generic [ref=f13e40]:
+        - paragraph [ref=f13e41]: Ejecucion
+        - link "Inbox" [ref=f13e42] [cursor=pointer]:
+          - /url: /os/projects/inbox
+          - img [ref=f13e43]
+          - generic [ref=f13e46]: Inbox
+        - link "Mis tareas" [ref=f13e47] [cursor=pointer]:
+          - /url: /os/projects/mine
+          - img [ref=f13e48]
+          - generic [ref=f13e51]: Mis tareas
+        - link "Tareas globales" [ref=f13e52] [cursor=pointer]:
+          - /url: /os/tasks/global
+          - img [ref=f13e53]
+          - generic [ref=f13e55]: Tareas globales
+        - link "Calendario guía" [ref=f13e56] [cursor=pointer]:
+          - /url: /os/projects/roadmap
+          - img [ref=f13e57]
+          - generic [ref=f13e59]: Calendario guía
+      - generic [ref=f13e60]:
+        - paragraph [ref=f13e61]: Inteligencia
+        - link "Ideas/Notas" [ref=f13e62] [cursor=pointer]:
+          - /url: /os/hub
+          - img [ref=f13e63]
+          - generic [ref=f13e65]: Ideas/Notas
+        - link "Links" [ref=f13e66] [cursor=pointer]:
+          - /url: /os/links
+          - img [ref=f13e67]
+          - generic [ref=f13e70]: Links
+        - link "Grafo" [ref=f13e71] [cursor=pointer]:
+          - /url: /os/graph
+          - img [ref=f13e72]
+          - generic [ref=f13e78]: Grafo
+        - link "Variables de entorno y claves" [ref=f13e79] [cursor=pointer]:
+          - /url: /os/resources
+          - img [ref=f13e80]
+          - generic [ref=f13e82]: Variables de entorno y claves
+      - generic [ref=f13e83]:
+        - paragraph [ref=f13e84]: Gestion
+        - link "Finanzas" [ref=f13e85] [cursor=pointer]:
+          - /url: /os/finances
+          - img [ref=f13e86]
+          - generic [ref=f13e88]: Finanzas
+        - link "Agenda" [ref=f13e89] [cursor=pointer]:
+          - /url: /os/agenda
+          - img [ref=f13e90]
+          - generic [ref=f13e92]: Agenda
+        - link "Marketing" [ref=f13e93] [cursor=pointer]:
+          - /url: /os/marketing
+          - img [ref=f13e94]
+          - generic [ref=f13e97]: Marketing
+      - generic [ref=f13e98]:
+        - paragraph [ref=f13e99]: Sistema
+        - link "Equipo" [ref=f13e100] [cursor=pointer]:
+          - /url: /os/team
+          - img [ref=f13e101]
+          - generic [ref=f13e105]: Equipo
+        - link "Generador" [ref=f13e106] [cursor=pointer]:
+          - /url: /os/generator
+          - img [ref=f13e107]
+          - generic [ref=f13e110]: Generador
+        - link "Config" [ref=f13e111] [cursor=pointer]:
+          - /url: /os/settings
+          - img [ref=f13e112]
+          - generic [ref=f13e115]: Config
+    - generic [ref=f13e116]:
+      - button "Comandos Ctrl+K" [ref=f13e117]:
+        - img [ref=f13e118]
+        - generic [ref=f13e120]: Comandos
+        - generic [ref=f13e121]: Ctrl+K
+      - link "Salir" [ref=f13e122] [cursor=pointer]:
+        - /url: /login
+        - img [ref=f13e123]
+        - text: Salir
+  - generic [ref=f13e126]:
+    - generic [ref=f13e127]:
+      - navigation [ref=f13e129]:
+        - link "CRM" [ref=f13e131] [cursor=pointer]:
+          - /url: /os/crm
+      - generic [ref=f13e132]:
+        - button [ref=f13e133]:
+          - img [ref=f13e134]
+        - button "Buscar Ctrl+K" [ref=f13e137]:
+          - img [ref=f13e138]
+          - generic [ref=f13e140]: Buscar
+          - generic [ref=f13e141]: Ctrl+K
+        - generic "Admin (admin)" [ref=f13e142]:
+          - img [ref=f13e143]
+          - generic [ref=f13e146]: Admin
+          - generic [ref=f13e147]: admin
+    - main [ref=f13e148]:
+      - generic [ref=f13e149]:
+        - generic [ref=f13e150]:
+          - navigation [ref=f13e151]:
+            - generic [ref=f13e153]: CRM
+          - generic [ref=f13e154]:
+            - generic [ref=f13e155]:
+              - heading "Clientes & CRM" [level=1] [ref=f13e157]
+              - paragraph [ref=f13e158]: 5 contactos en total
+            - button "Nuevo cliente" [ref=f13e160]:
+              - img
+              - text: Nuevo cliente
+        - generic [ref=f13e161]:
+          - generic [ref=f13e162]:
+            - generic [ref=f13e163]:
+              - img [ref=f13e164]
+              - generic [ref=f13e166]: Vistas
+            - button "Todo" [ref=f13e167]
+            - button "Guardar vista" [ref=f13e168]:
+              - img [ref=f13e169]
+              - text: Guardar vista
+          - generic [ref=f13e170]:
+            - generic [ref=f13e172]:
+              - generic [ref=f13e173]:
+                - paragraph [ref=f13e174]: Total Contactos
+                - paragraph [ref=f13e175]: "5"
+              - img [ref=f13e177]
+            - generic [ref=f13e183]:
+              - generic [ref=f13e184]:
+                - paragraph [ref=f13e185]: Sin Presencia Web
+                - paragraph [ref=f13e186]: "1.723"
+                - paragraph [ref=f13e187]: 34460% — Oportunidad 🎯
+              - img [ref=f13e189]
+            - generic [ref=f13e197]:
+              - generic [ref=f13e198]:
+                - paragraph [ref=f13e199]: Con Presencia Digital
+                - paragraph [ref=f13e200]: "-1.718"
+                - paragraph [ref=f13e201]: 2.636 web · 3.862 IG
+              - img [ref=f13e203]
+            - generic [ref=f13e207]:
+              - generic [ref=f13e208]:
+                - paragraph [ref=f13e209]: En vista actual
+                - paragraph [ref=f13e210]: "5"
+                - paragraph [ref=f13e211]: Pág. 1 de 1
+              - img [ref=f13e213]
+          - generic [ref=f13e215]:
+            - generic [ref=f13e216] [cursor=pointer]:
+              - paragraph [ref=f13e217]: No contactado
+              - paragraph [ref=f13e218]: "27.124"
+            - generic [ref=f13e219] [cursor=pointer]:
+              - paragraph [ref=f13e220]: Contactado
+              - paragraph [ref=f13e221]: "0"
+            - generic [ref=f13e222] [cursor=pointer]:
+              - paragraph [ref=f13e223]: Interesado
+              - paragraph [ref=f13e224]: "0"
+            - generic [ref=f13e225] [cursor=pointer]:
+              - paragraph [ref=f13e226]: No respondió
+              - paragraph [ref=f13e227]: "0"
+            - generic [ref=f13e228] [cursor=pointer]:
+              - paragraph [ref=f13e229]: 1ª Reunión
+              - paragraph [ref=f13e230]: "0"
+            - generic [ref=f13e231] [cursor=pointer]:
+              - paragraph [ref=f13e232]: Contrato firmado
+              - paragraph [ref=f13e233]: "1"
+            - generic [ref=f13e234] [cursor=pointer]:
+              - paragraph [ref=f13e235]: Finalizado
+              - paragraph [ref=f13e236]: "0"
+            - generic [ref=f13e237] [cursor=pointer]:
+              - paragraph [ref=f13e238]: Continuidad
+              - paragraph [ref=f13e239]: "0"
+          - generic [ref=f13e240]:
+            - generic [ref=f13e241]:
+              - img [ref=f13e242]
+              - textbox "Buscar por nombre, rubro, ciudad, teléfono..." [ref=f13e245]
+            - button "Filtros ●" [ref=f13e248]:
+              - img
+              - text: Filtros ●
+            - generic [ref=f13e250]: 5 resultados
+          - generic [ref=f13e252]:
+            - table [ref=f13e255]:
+              - rowgroup [ref=f13e256]:
+                - row "Prospecto / Cliente Prioridad Presencia Web Contacto Calificación Contactado por Estado Creado" [ref=f13e257]:
+                  - columnheader [ref=f13e258] [cursor=pointer]:
+                    - checkbox [ref=f13e261]
+                  - columnheader "Prospecto / Cliente" [ref=f13e262] [cursor=pointer]:
+                    - generic [ref=f13e263]:
+                      - text: Prospecto / Cliente
+                      - img [ref=f13e264]
+                  - columnheader "Prioridad" [ref=f13e267] [cursor=pointer]:
+                    - generic [ref=f13e268]:
+                      - text: Prioridad
+                      - img [ref=f13e269]
+                  - columnheader "Presencia Web" [ref=f13e272] [cursor=pointer]:
+                    - generic [ref=f13e273]:
+                      - text: Presencia Web
+                      - img [ref=f13e274]
+                  - columnheader "Contacto" [ref=f13e277] [cursor=pointer]:
+                    - generic [ref=f13e278]:
+                      - text: Contacto
+                      - img [ref=f13e279]
+                  - columnheader "Calificación" [ref=f13e282] [cursor=pointer]:
+                    - generic [ref=f13e283]:
+                      - text: Calificación
+                      - img [ref=f13e284]
+                  - columnheader "Contactado por" [ref=f13e287] [cursor=pointer]:
+                    - generic [ref=f13e288]:
+                      - text: Contactado por
+                      - img [ref=f13e289]
+                  - columnheader "Estado" [ref=f13e292] [cursor=pointer]:
+                    - generic [ref=f13e293]:
+                      - text: Estado
+                      - img [ref=f13e294]
+                  - columnheader "Creado" [ref=f13e297] [cursor=pointer]:
+                    - generic [ref=f13e298]:
+                      - text: Creado
+                      - img [ref=f13e299]
+                  - columnheader [ref=f13e302] [cursor=pointer]
+              - rowgroup [ref=f13e303]:
+                - row "O Onda Coffee مقهى أوندا Cafetería • Dammam, Arabia Saudita 🔥 Alta Instagram Ver ↗ +966553031823 ⭐ 4.2 (936) raton No contactado 5 de jul de 2026" [ref=f13e304] [cursor=pointer]:
+                  - cell [ref=f13e305]:
+                    - checkbox [ref=f13e307]
+                  - cell "O Onda Coffee مقهى أوندا Cafetería • Dammam, Arabia Saudita" [ref=f13e308]:
+                    - generic [ref=f13e309]:
+                      - generic [ref=f13e310]: O
+                      - generic [ref=f13e311]:
+                        - paragraph [ref=f13e312]: Onda Coffee مقهى أوندا
+                        - paragraph [ref=f13e313]: Cafetería • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f13e314]:
+                    - generic [ref=f13e315]: 🔥 Alta
+                  - cell "Instagram Ver ↗" [ref=f13e316]:
+                    - generic [ref=f13e317]:
+                      - generic [ref=f13e318]:
+                        - img [ref=f13e319]
+                        - text: Instagram
+                      - link "Ver ↗" [ref=f13e323]:
+                        - /url: https://www.instagram.com/onda.coffee/
+                  - cell "+966553031823" [ref=f13e324]:
+                    - generic [ref=f13e325]:
+                      - generic [ref=f13e326]: "+966553031823"
+                      - generic [ref=f13e327]:
+                        - link "Abrir WhatsApp" [ref=f13e328]:
+                          - /url: https://wa.me/966553031823
+                          - img [ref=f13e329]
+                        - link "Instagram" [ref=f13e331]:
+                          - /url: https://instagram.com/onda.coffee
+                          - img [ref=f13e332]
+                  - cell "⭐ 4.2 (936)" [ref=f13e335]:
+                    - generic [ref=f13e336]:
+                      - text: ⭐
+                      - generic [ref=f13e337]: "4.2"
+                      - text: (936)
+                  - cell "raton" [ref=f13e338]:
+                    - generic [ref=f13e340]: raton
+                  - cell "No contactado" [ref=f13e341]:
+                    - generic [ref=f13e342]: No contactado
+                  - cell "5 de jul de 2026" [ref=f13e343]
+                  - cell [ref=f13e344]:
+                    - button [ref=f13e346]:
+                      - img
+                - row "G Garden Gate Cafetería • Dammam, Arabia Saudita 🔥 Alta Sin web +966570601360 ⭐ 4.7 (1.112) raton No contactado 5 de jul de 2026" [ref=f13e347] [cursor=pointer]:
+                  - cell [ref=f13e348]:
+                    - checkbox [ref=f13e350]
+                  - cell "G Garden Gate Cafetería • Dammam, Arabia Saudita" [ref=f13e351]:
+                    - generic [ref=f13e352]:
+                      - generic [ref=f13e353]: G
+                      - generic [ref=f13e354]:
+                        - paragraph [ref=f13e355]: Garden Gate
+                        - paragraph [ref=f13e356]: Cafetería • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f13e357]:
+                    - generic [ref=f13e358]: 🔥 Alta
+                  - cell "Sin web" [ref=f13e359]:
+                    - generic [ref=f13e360]:
+                      - img [ref=f13e361]
+                      - text: Sin web
+                  - cell "+966570601360" [ref=f13e368]:
+                    - generic [ref=f13e369]:
+                      - generic [ref=f13e370]: "+966570601360"
+                      - link "Abrir WhatsApp" [ref=f13e372]:
+                        - /url: https://wa.me/966570601360
+                        - img [ref=f13e373]
+                  - cell "⭐ 4.7 (1.112)" [ref=f13e375]:
+                    - generic [ref=f13e376]:
+                      - text: ⭐
+                      - generic [ref=f13e377]: "4.7"
+                      - text: (1.112)
+                  - cell "raton" [ref=f13e378]:
+                    - generic [ref=f13e380]: raton
+                  - cell "No contactado" [ref=f13e381]:
+                    - generic [ref=f13e382]: No contactado
+                  - cell "5 de jul de 2026" [ref=f13e383]
+                  - cell [ref=f13e384]:
+                    - button [ref=f13e386]:
+                      - img
+                - row "J Jamie's Italian Nakheel Mall Dammam Restaurante • Dammam, Arabia Saudita 🔥 Alta Instagram Ver ↗ +966561436494 ⭐ 4.4 (2.610) raton No contactado 5 de jul de 2026" [ref=f13e387] [cursor=pointer]:
+                  - cell [ref=f13e388]:
+                    - checkbox [ref=f13e390]
+                  - cell "J Jamie's Italian Nakheel Mall Dammam Restaurante • Dammam, Arabia Saudita" [ref=f13e391]:
+                    - generic [ref=f13e392]:
+                      - generic [ref=f13e393]: J
+                      - generic [ref=f13e394]:
+                        - paragraph [ref=f13e395]: Jamie's Italian Nakheel Mall Dammam
+                        - paragraph [ref=f13e396]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f13e397]:
+                    - generic [ref=f13e398]: 🔥 Alta
+                  - cell "Instagram Ver ↗" [ref=f13e399]:
+                    - generic [ref=f13e400]:
+                      - generic [ref=f13e401]:
+                        - img [ref=f13e402]
+                        - text: Instagram
+                      - link "Ver ↗" [ref=f13e406]:
+                        - /url: https://www.instagram.com/jimmys_sa/
+                  - cell "+966561436494" [ref=f13e407]:
+                    - generic [ref=f13e408]:
+                      - generic [ref=f13e409]: "+966561436494"
+                      - generic [ref=f13e410]:
+                        - link "Abrir WhatsApp" [ref=f13e411]:
+                          - /url: https://wa.me/966561436494
+                          - img [ref=f13e412]
+                        - link "Instagram" [ref=f13e414]:
+                          - /url: https://instagram.com/jimmys_sa
+                          - img [ref=f13e415]
+                  - cell "⭐ 4.4 (2.610)" [ref=f13e418]:
+                    - generic [ref=f13e419]:
+                      - text: ⭐
+                      - generic [ref=f13e420]: "4.4"
+                      - text: (2.610)
+                  - cell "raton" [ref=f13e421]:
+                    - generic [ref=f13e423]: raton
+                  - cell "No contactado" [ref=f13e424]:
+                    - generic [ref=f13e425]: No contactado
+                  - cell "5 de jul de 2026" [ref=f13e426]
+                  - cell [ref=f13e427]:
+                    - button [ref=f13e429]:
+                      - img
+                - row "م مساج بيور سبا الفيصلية PURE SPA Spa • Dammam, Arabia Saudita 🔥 Alta Sin web +966557607871 ⭐ 4.8 (3.048) raton No contactado 5 de jul de 2026" [ref=f13e430] [cursor=pointer]:
+                  - cell [ref=f13e431]:
+                    - checkbox [ref=f13e433]
+                  - cell "م مساج بيور سبا الفيصلية PURE SPA Spa • Dammam, Arabia Saudita" [ref=f13e434]:
+                    - generic [ref=f13e435]:
+                      - generic [ref=f13e436]: م
+                      - generic [ref=f13e437]:
+                        - paragraph [ref=f13e438]: مساج بيور سبا الفيصلية PURE SPA
+                        - paragraph [ref=f13e439]: Spa • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f13e440]:
+                    - generic [ref=f13e441]: 🔥 Alta
+                  - cell "Sin web" [ref=f13e442]:
+                    - generic [ref=f13e443]:
+                      - img [ref=f13e444]
+                      - text: Sin web
+                  - cell "+966557607871" [ref=f13e451]:
+                    - generic [ref=f13e452]:
+                      - generic [ref=f13e453]: "+966557607871"
+                      - link "Abrir WhatsApp" [ref=f13e455]:
+                        - /url: https://wa.me/966557607871
+                        - img [ref=f13e456]
+                  - cell "⭐ 4.8 (3.048)" [ref=f13e458]:
+                    - generic [ref=f13e459]:
+                      - text: ⭐
+                      - generic [ref=f13e460]: "4.8"
+                      - text: (3.048)
+                  - cell "raton" [ref=f13e461]:
+                    - generic [ref=f13e463]: raton
+                  - cell "No contactado" [ref=f13e464]:
+                    - generic [ref=f13e465]: No contactado
+                  - cell "5 de jul de 2026" [ref=f13e466]
+                  - cell [ref=f13e467]:
+                    - button [ref=f13e469]:
+                      - img
+                - row "J Jolie Dame Salon - Dammam Branch Peluquería • Dammam, Arabia Saudita 🔥 Alta Sin web +966553771134 ⭐ 4.5 (1.141) raton No contactado 5 de jul de 2026" [ref=f13e470] [cursor=pointer]:
+                  - cell [ref=f13e471]:
+                    - checkbox [ref=f13e473]
+                  - cell "J Jolie Dame Salon - Dammam Branch Peluquería • Dammam, Arabia Saudita" [ref=f13e474]:
+                    - generic [ref=f13e475]:
+                      - generic [ref=f13e476]: J
+                      - generic [ref=f13e477]:
+                        - paragraph [ref=f13e478]: Jolie Dame Salon - Dammam Branch
+                        - paragraph [ref=f13e479]: Peluquería • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f13e480]:
+                    - generic [ref=f13e481]: 🔥 Alta
+                  - cell "Sin web" [ref=f13e482]:
+                    - generic [ref=f13e483]:
+                      - img [ref=f13e484]
+                      - text: Sin web
+                  - cell "+966553771134" [ref=f13e491]:
+                    - generic [ref=f13e492]:
+                      - generic [ref=f13e493]: "+966553771134"
+                      - link "Abrir WhatsApp" [ref=f13e495]:
+                        - /url: https://wa.me/966553771134
+                        - img [ref=f13e496]
+                  - cell "⭐ 4.5 (1.141)" [ref=f13e498]:
+                    - generic [ref=f13e499]:
+                      - text: ⭐
+                      - generic [ref=f13e500]: "4.5"
+                      - text: (1.141)
+                  - cell "raton" [ref=f13e501]:
+                    - generic [ref=f13e503]: raton
+                  - cell "No contactado" [ref=f13e504]:
+                    - generic [ref=f13e505]: No contactado
+                  - cell "5 de jul de 2026" [ref=f13e506]
+                  - cell [ref=f13e507]:
+                    - button [ref=f13e509]:
+                      - img
+            - generic [ref=f13e510]:
+              - generic [ref=f13e511]: Mostrando 5 de 5 filas.
+              - generic [ref=f13e512]:
+                - button [disabled]:
+                  - img
+                - button [disabled]:
+                  - img
+                - generic [ref=f13e513]: Pág 1 de 1
+                - button [disabled]:
+                  - img
+                - button [disabled]:
+                  - img
+      - region "Notifications alt+T"

@@ -1,0 +1,169 @@
+- generic [ref=f3e3]:
+  - complementary [ref=f3e5]:
+    - link "Vertrex OS" [ref=f3e7] [cursor=pointer]:
+      - /url: /os/admin
+    - navigation [ref=f3e8]:
+      - generic [ref=f3e9]:
+        - paragraph [ref=f3e10]: Operacion
+        - link "Panel" [ref=f3e11] [cursor=pointer]:
+          - /url: /os/admin
+          - img [ref=f3e12]
+          - generic [ref=f3e17]: Panel
+        - link "Clientes" [ref=f3e18] [cursor=pointer]:
+          - /url: /os/crm
+          - img [ref=f3e19]
+          - generic [ref=f3e24]: Clientes
+        - link "Proyectos" [ref=f3e25] [cursor=pointer]:
+          - /url: /os/projects
+          - img [ref=f3e26]
+          - generic [ref=f3e28]: Proyectos
+        - link "Documentos" [ref=f3e29] [cursor=pointer]:
+          - /url: /os/documents
+          - img [ref=f3e30]
+          - generic [ref=f3e33]: Documentos
+        - link "Legal" [ref=f3e34] [cursor=pointer]:
+          - /url: /os/legal
+          - img [ref=f3e35]
+          - generic [ref=f3e39]: Legal
+      - generic [ref=f3e40]:
+        - paragraph [ref=f3e41]: Ejecucion
+        - link "Inbox" [ref=f3e42] [cursor=pointer]:
+          - /url: /os/projects/inbox
+          - img [ref=f3e43]
+          - generic [ref=f3e46]: Inbox
+        - link "Mis tareas" [ref=f3e47] [cursor=pointer]:
+          - /url: /os/projects/mine
+          - img [ref=f3e48]
+          - generic [ref=f3e51]: Mis tareas
+        - link "Tareas globales" [ref=f3e52] [cursor=pointer]:
+          - /url: /os/tasks/global
+          - img [ref=f3e53]
+          - generic [ref=f3e55]: Tareas globales
+        - link "Calendario guía" [ref=f3e56] [cursor=pointer]:
+          - /url: /os/projects/roadmap
+          - img [ref=f3e57]
+          - generic [ref=f3e59]: Calendario guía
+      - generic [ref=f3e60]:
+        - paragraph [ref=f3e61]: Inteligencia
+        - link "Ideas/Notas" [ref=f3e62] [cursor=pointer]:
+          - /url: /os/hub
+          - img [ref=f3e63]
+          - generic [ref=f3e65]: Ideas/Notas
+        - link "Links" [ref=f3e66] [cursor=pointer]:
+          - /url: /os/links
+          - img [ref=f3e67]
+          - generic [ref=f3e70]: Links
+        - link "Grafo" [ref=f3e71] [cursor=pointer]:
+          - /url: /os/graph
+          - img [ref=f3e72]
+          - generic [ref=f3e78]: Grafo
+        - link "Variables de entorno y claves" [ref=f3e79] [cursor=pointer]:
+          - /url: /os/resources
+          - img [ref=f3e80]
+          - generic [ref=f3e82]: Variables de entorno y claves
+      - generic [ref=f3e83]:
+        - paragraph [ref=f3e84]: Gestion
+        - link "Finanzas" [ref=f3e85] [cursor=pointer]:
+          - /url: /os/finances
+          - img [ref=f3e86]
+          - generic [ref=f3e88]: Finanzas
+        - link "Agenda" [ref=f3e89] [cursor=pointer]:
+          - /url: /os/agenda
+          - img [ref=f3e90]
+          - generic [ref=f3e92]: Agenda
+        - link "Marketing" [ref=f3e93] [cursor=pointer]:
+          - /url: /os/marketing
+          - img [ref=f3e94]
+          - generic [ref=f3e97]: Marketing
+      - generic [ref=f3e98]:
+        - paragraph [ref=f3e99]: Sistema
+        - link "Equipo" [ref=f3e100] [cursor=pointer]:
+          - /url: /os/team
+          - img [ref=f3e101]
+          - generic [ref=f3e105]: Equipo
+        - link "Generador" [ref=f3e106] [cursor=pointer]:
+          - /url: /os/generator
+          - img [ref=f3e107]
+          - generic [ref=f3e110]: Generador
+        - link "Config" [ref=f3e111] [cursor=pointer]:
+          - /url: /os/settings
+          - img [ref=f3e112]
+          - generic [ref=f3e115]: Config
+    - generic [ref=f3e116]:
+      - button "Comandos Ctrl+K" [ref=f3e117]:
+        - img [ref=f3e118]
+        - generic [ref=f3e120]: Comandos
+        - generic [ref=f3e121]: Ctrl+K
+      - link "Salir" [ref=f3e122] [cursor=pointer]:
+        - /url: /login
+        - img [ref=f3e123]
+        - text: Salir
+  - generic [ref=f3e126]:
+    - generic [ref=f3e127]:
+      - navigation [ref=f3e129]:
+        - link "Marketing" [ref=f3e131] [cursor=pointer]:
+          - /url: /os/marketing
+        - generic [ref=f3e132]:
+          - img [ref=f3e133]
+          - link "79d9e7ac-0036-47d7-9158-3f59b8296f40" [ref=f3e135] [cursor=pointer]:
+            - /url: /os/marketing/79d9e7ac-0036-47d7-9158-3f59b8296f40
+      - generic [ref=f3e136]:
+        - button [ref=f3e137]:
+          - img [ref=f3e138]
+        - button "Buscar Ctrl+K" [ref=f3e141]:
+          - img [ref=f3e142]
+          - generic [ref=f3e144]: Buscar
+          - generic [ref=f3e145]: Ctrl+K
+        - generic "Admin (admin)" [ref=f3e146]:
+          - img [ref=f3e147]
+          - generic [ref=f3e150]: Admin
+          - generic [ref=f3e151]: admin
+    - main [ref=f3e152]:
+      - generic [ref=f3e153]:
+        - generic [ref=f3e154]:
+          - navigation [ref=f3e155]:
+            - link "Marketing" [ref=f3e157] [cursor=pointer]:
+              - /url: /os/marketing
+            - generic [ref=f3e158]:
+              - img [ref=f3e159]
+              - generic [ref=f3e161]: "@cuenta_sin_password_test"
+          - generic [ref=f3e164]:
+            - 'heading "tiktok: @cuenta_sin_password_test" [level=1] [ref=f3e165]'
+            - generic [ref=f3e166]: tiktok
+        - generic [ref=f3e168]:
+          - tablist [ref=f3e169]:
+            - tab "Cuenta" [selected] [ref=f3e170]
+            - tab "Contenido" [ref=f3e171]
+            - tab "Credenciales" [ref=f3e172]
+          - tabpanel "Cuenta" [ref=f3e173]:
+            - generic [ref=f3e174]:
+              - generic [ref=f3e175]:
+                - generic [ref=f3e176]:
+                  - generic [ref=f3e177]: Seguidores
+                  - img [ref=f3e178]
+                - paragraph [ref=f3e184]: "0"
+              - generic [ref=f3e185]:
+                - generic [ref=f3e186]:
+                  - generic [ref=f3e187]: Alcance
+                  - img [ref=f3e188]
+                - paragraph [ref=f3e191]: "0"
+            - generic [ref=f3e192]:
+              - generic [ref=f3e193]:
+                - generic [ref=f3e194]: Detalles
+                - button "Editar" [ref=f3e195]:
+                  - img
+                  - text: Editar
+              - generic [ref=f3e196]:
+                - generic [ref=f3e197]:
+                  - generic [ref=f3e198]: Plataforma
+                  - generic [ref=f3e199]: tiktok
+                - generic [ref=f3e200]:
+                  - generic [ref=f3e201]: Usuario / Handle
+                  - generic [ref=f3e202]: "@cuenta_sin_password_test"
+                - generic [ref=f3e203]:
+                  - generic [ref=f3e204]: Email asociado
+                  - generic [ref=f3e205]: "-"
+                - generic [ref=f3e206]:
+                  - generic [ref=f3e207]: Creada el
+                  - generic [ref=f3e208]: 5 de jul de 2026
+      - region "Notifications alt+T"

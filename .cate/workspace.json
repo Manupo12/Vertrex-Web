@@ -47,11 +47,11 @@
   "panels": {
     "4afc0a07-e0e9-44c9-8b2f-efc4fe17bfa6": {
       "type": "terminal",
-      "title": "manu@manu-desktop: /mnt/datos/Proyectos/Web/Vertrex-Website"
+      "title": "manu@manu-desktop: /mnt/datos/Proyectos/Web/Vertrex-Website 2"
     },
     "0873f073-73b4-459d-bf0f-991fbcc93daa": {
       "type": "terminal",
-      "title": "Antigravity"
+      "title": "OpenCode"
     },
     "087660c6-589e-4e86-93b9-6b47bc90f9af": {
       "type": "canvas",
@@ -73,7 +73,7 @@
             "width": 640,
             "height": 400
           },
-          "zOrder": 96,
+          "zOrder": 110,
           "creationIndex": 0,
           "animationState": "idle",
           "dockLayout": {
@@ -89,14 +89,14 @@
           "id": "217b6dff-0137-4b0f-ba82-63d40dcd7366",
           "panelId": "0873f073-73b4-459d-bf0f-991fbcc93daa",
           "origin": {
-            "x": 180,
-            "y": 680
+            "x": 191.2079830221012,
+            "y": 682.101496816644
           },
           "size": {
             "width": 640,
             "height": 400
           },
-          "zOrder": 97,
+          "zOrder": 112,
           "creationIndex": 1,
           "animationState": "idle",
           "dockLayout": {
@@ -111,8 +111,8 @@
       },
       "zoomLevel": 1.427553911212158,
       "viewportOffset": {
-        "x": -183.776955606079,
-        "y": -930.2474418666991
+        "x": -199.776955606079,
+        "y": -933.2474418666991
       }
     }
   }
