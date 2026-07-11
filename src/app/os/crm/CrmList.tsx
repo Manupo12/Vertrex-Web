@@ -564,6 +564,19 @@ export function CrmList({
               <FiltersPanel />
             </div>
 
+            {/* Mobile-only Direct Random Button */}
+            <Button
+              variant="outline"
+              type="button"
+              onClick={handleRandomSelect}
+              className="lg:hidden bg-background border-border hover:bg-accent/40 text-xs font-semibold gap-1.5 shrink-0 h-9"
+              disabled={clients.length === 0}
+              title="Elegir y abrir un prospecto al azar de la lista actual"
+            >
+              <Shuffle className="h-3.5 w-3.5 text-[var(--color-primary)] animate-pulse" />
+              Al azar
+            </Button>
+
             {/* Mobile toggle */}
             <Button
               variant="outline" type="button"
@@ -678,10 +691,6 @@ export function CrmList({
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="outline" type="button" onClick={handleRandomSelect} className="w-full bg-background border-border text-xs font-semibold gap-1.5 h-9 mt-1" disabled={clients.length === 0}>
-              <Shuffle className="h-3.5 w-3.5 text-[var(--color-primary)]" />
-              Elegir uno al azar
-            </Button>
           </div>
         </div>
       )}
