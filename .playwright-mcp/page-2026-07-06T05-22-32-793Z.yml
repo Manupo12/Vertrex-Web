@@ -1,0 +1,204 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e3]:
+    - complementary [ref=f12e5]:
+      - link "Vertrex OS" [ref=f12e7] [cursor=pointer]:
+        - /url: /os/admin
+      - navigation [ref=f12e8]:
+        - generic [ref=f12e9]:
+          - paragraph [ref=f12e10]: Operacion
+          - link "Panel" [ref=f12e11] [cursor=pointer]:
+            - /url: /os/admin
+            - img [ref=f12e12]
+            - generic [ref=f12e17]: Panel
+          - link "Clientes" [ref=f12e18] [cursor=pointer]:
+            - /url: /os/crm
+            - img [ref=f12e19]
+            - generic [ref=f12e24]: Clientes
+          - link "Proyectos" [ref=f12e25] [cursor=pointer]:
+            - /url: /os/projects
+            - img [ref=f12e26]
+            - generic [ref=f12e28]: Proyectos
+          - link "Documentos" [ref=f12e29] [cursor=pointer]:
+            - /url: /os/documents
+            - img [ref=f12e30]
+            - generic [ref=f12e33]: Documentos
+          - link "Legal" [ref=f12e34] [cursor=pointer]:
+            - /url: /os/legal
+            - img [ref=f12e35]
+            - generic [ref=f12e39]: Legal
+        - generic [ref=f12e40]:
+          - paragraph [ref=f12e41]: Ejecucion
+          - link "Inbox" [ref=f12e42] [cursor=pointer]:
+            - /url: /os/projects/inbox
+            - img [ref=f12e43]
+            - generic [ref=f12e46]: Inbox
+          - link "Mis tareas" [ref=f12e47] [cursor=pointer]:
+            - /url: /os/projects/mine
+            - img [ref=f12e48]
+            - generic [ref=f12e51]: Mis tareas
+          - link "Tareas globales" [ref=f12e52] [cursor=pointer]:
+            - /url: /os/tasks/global
+            - img [ref=f12e53]
+            - generic [ref=f12e55]: Tareas globales
+          - link "Calendario guía" [ref=f12e56] [cursor=pointer]:
+            - /url: /os/projects/roadmap
+            - img [ref=f12e57]
+            - generic [ref=f12e59]: Calendario guía
+        - generic [ref=f12e60]:
+          - paragraph [ref=f12e61]: Inteligencia
+          - link "Ideas/Notas" [ref=f12e62] [cursor=pointer]:
+            - /url: /os/hub
+            - img [ref=f12e63]
+            - generic [ref=f12e65]: Ideas/Notas
+          - link "Links" [ref=f12e66] [cursor=pointer]:
+            - /url: /os/links
+            - img [ref=f12e67]
+            - generic [ref=f12e70]: Links
+          - link "Grafo" [ref=f12e71] [cursor=pointer]:
+            - /url: /os/graph
+            - img [ref=f12e72]
+            - generic [ref=f12e78]: Grafo
+          - link "Variables de entorno y claves" [ref=f12e79] [cursor=pointer]:
+            - /url: /os/resources
+            - img [ref=f12e80]
+            - generic [ref=f12e82]: Variables de entorno y claves
+        - generic [ref=f12e83]:
+          - paragraph [ref=f12e84]: Gestion
+          - link "Finanzas" [ref=f12e85] [cursor=pointer]:
+            - /url: /os/finances
+            - img [ref=f12e86]
+            - generic [ref=f12e88]: Finanzas
+          - link "Agenda" [ref=f12e89] [cursor=pointer]:
+            - /url: /os/agenda
+            - img [ref=f12e90]
+            - generic [ref=f12e92]: Agenda
+          - link "Marketing" [ref=f12e93] [cursor=pointer]:
+            - /url: /os/marketing
+            - img [ref=f12e94]
+            - generic [ref=f12e97]: Marketing
+        - generic [ref=f12e98]:
+          - paragraph [ref=f12e99]: Sistema
+          - link "Equipo" [ref=f12e100] [cursor=pointer]:
+            - /url: /os/team
+            - img [ref=f12e101]
+            - generic [ref=f12e105]: Equipo
+          - link "Generador" [ref=f12e106] [cursor=pointer]:
+            - /url: /os/generator
+            - img [ref=f12e107]
+            - generic [ref=f12e110]: Generador
+          - link "Config" [ref=f12e111] [cursor=pointer]:
+            - /url: /os/settings
+            - img [ref=f12e112]
+            - generic [ref=f12e115]: Config
+      - generic [ref=f12e116]:
+        - button "Comandos Ctrl+K" [ref=f12e117]:
+          - img [ref=f12e118]
+          - generic [ref=f12e120]: Comandos
+          - generic [ref=f12e121]: Ctrl+K
+        - link "Salir" [ref=f12e122] [cursor=pointer]:
+          - /url: /login
+          - img [ref=f12e123]
+          - text: Salir
+    - generic [ref=f12e126]:
+      - generic [ref=f12e127]:
+        - navigation [ref=f12e129]:
+          - link "CRM" [ref=f12e131] [cursor=pointer]:
+            - /url: /os/crm
+        - generic [ref=f12e132]:
+          - button [ref=f12e133]:
+            - img [ref=f12e134]
+          - button "Buscar Ctrl+K" [ref=f12e137]:
+            - img [ref=f12e138]
+            - generic [ref=f12e140]: Buscar
+            - generic [ref=f12e141]: Ctrl+K
+          - generic "Admin (admin)" [ref=f12e142]:
+            - img [ref=f12e143]
+            - generic [ref=f12e146]: Admin
+            - generic [ref=f12e147]: admin
+      - main [ref=f12e148]:
+        - generic [ref=f12e149]:
+          - generic [ref=f12e150]:
+            - navigation [ref=f12e151]:
+              - generic [ref=f12e153]: CRM
+            - generic [ref=f12e154]:
+              - generic [ref=f12e155]:
+                - heading "Clientes & CRM" [level=1] [ref=f12e157]
+                - paragraph [ref=f12e158]: 0 contactos en total
+              - button "Nuevo cliente" [ref=f12e160]:
+                - img
+                - text: Nuevo cliente
+          - generic [ref=f12e161]:
+            - generic [ref=f12e162]:
+              - generic [ref=f12e163]:
+                - img [ref=f12e164]
+                - generic [ref=f12e166]: Vistas
+              - button "Todo" [ref=f12e167]
+              - button "Guardar vista" [ref=f12e168]:
+                - img [ref=f12e169]
+                - text: Guardar vista
+            - generic [ref=f12e170]:
+              - generic [ref=f12e172]:
+                - generic [ref=f12e173]:
+                  - paragraph [ref=f12e174]: Total Contactos
+                  - paragraph [ref=f12e175]: "0"
+                - img [ref=f12e177]
+              - generic [ref=f12e183]:
+                - generic [ref=f12e184]:
+                  - paragraph [ref=f12e185]: Sin Presencia Web
+                  - paragraph [ref=f12e186]: "1.723"
+                  - paragraph [ref=f12e187]: 0% — Oportunidad 🎯
+                - img [ref=f12e189]
+              - generic [ref=f12e197]:
+                - generic [ref=f12e198]:
+                  - paragraph [ref=f12e199]: Con Presencia Digital
+                  - paragraph [ref=f12e200]: "-1.723"
+                  - paragraph [ref=f12e201]: 2.636 web · 3.862 IG
+                - img [ref=f12e203]
+              - generic [ref=f12e207]:
+                - generic [ref=f12e208]:
+                  - paragraph [ref=f12e209]: En vista actual
+                  - paragraph [ref=f12e210]: "0"
+                  - paragraph [ref=f12e211]: Pág. 1 de 0
+                - img [ref=f12e213]
+            - generic [ref=f12e215]:
+              - generic [ref=f12e216] [cursor=pointer]:
+                - paragraph [ref=f12e217]: No contactado
+                - paragraph [ref=f12e218]: "27.124"
+              - generic [ref=f12e219] [cursor=pointer]:
+                - paragraph [ref=f12e220]: Contactado
+                - paragraph [ref=f12e221]: "0"
+              - generic [ref=f12e222] [cursor=pointer]:
+                - paragraph [ref=f12e223]: Interesado
+                - paragraph [ref=f12e224]: "0"
+              - generic [ref=f12e225] [cursor=pointer]:
+                - paragraph [ref=f12e226]: No respondió
+                - paragraph [ref=f12e227]: "0"
+              - generic [ref=f12e228] [cursor=pointer]:
+                - paragraph [ref=f12e229]: 1ª Reunión
+                - paragraph [ref=f12e230]: "0"
+              - generic [ref=f12e231] [cursor=pointer]:
+                - paragraph [ref=f12e232]: Contrato firmado
+                - paragraph [ref=f12e233]: "1"
+              - generic [ref=f12e234] [cursor=pointer]:
+                - paragraph [ref=f12e235]: Finalizado
+                - paragraph [ref=f12e236]: "0"
+              - generic [ref=f12e237] [cursor=pointer]:
+                - paragraph [ref=f12e238]: Continuidad
+                - paragraph [ref=f12e239]: "0"
+            - generic [ref=f12e240]:
+              - generic [ref=f12e241]:
+                - img [ref=f12e242]
+                - textbox "Buscar por nombre, rubro, ciudad, teléfono..." [ref=f12e245]
+              - button "Filtros ●" [ref=f12e248]:
+                - img
+                - text: Filtros ●
+              - generic [ref=f12e250]: 0 resultados
+            - generic [ref=f12e251]:
+              - img [ref=f12e253]
+              - heading "Sin resultados" [level=3] [ref=f12e258]
+              - paragraph [ref=f12e259]: No hay contactos que coincidan con los filtros aplicados.
+              - button "Limpiar filtros" [ref=f12e260]
+        - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f12e266] [cursor=pointer]:
+    - img [ref=f12e267]
+  - alert [ref=f12e270]

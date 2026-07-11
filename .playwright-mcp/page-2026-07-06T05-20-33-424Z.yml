@@ -1,0 +1,621 @@
+- generic [ref=f7e3]:
+  - complementary [ref=f7e5]:
+    - link "Vertrex OS" [ref=f7e7] [cursor=pointer]:
+      - /url: /os/admin
+    - navigation [ref=f7e8]:
+      - generic [ref=f7e9]:
+        - paragraph [ref=f7e10]: Operacion
+        - link "Panel" [ref=f7e11] [cursor=pointer]:
+          - /url: /os/admin
+          - img [ref=f7e12]
+          - generic [ref=f7e17]: Panel
+        - link "Clientes" [ref=f7e18] [cursor=pointer]:
+          - /url: /os/crm
+          - img [ref=f7e19]
+          - generic [ref=f7e24]: Clientes
+        - link "Proyectos" [ref=f7e25] [cursor=pointer]:
+          - /url: /os/projects
+          - img [ref=f7e26]
+          - generic [ref=f7e28]: Proyectos
+        - link "Documentos" [ref=f7e29] [cursor=pointer]:
+          - /url: /os/documents
+          - img [ref=f7e30]
+          - generic [ref=f7e33]: Documentos
+        - link "Legal" [ref=f7e34] [cursor=pointer]:
+          - /url: /os/legal
+          - img [ref=f7e35]
+          - generic [ref=f7e39]: Legal
+      - generic [ref=f7e40]:
+        - paragraph [ref=f7e41]: Ejecucion
+        - link "Inbox" [ref=f7e42] [cursor=pointer]:
+          - /url: /os/projects/inbox
+          - img [ref=f7e43]
+          - generic [ref=f7e46]: Inbox
+        - link "Mis tareas" [ref=f7e47] [cursor=pointer]:
+          - /url: /os/projects/mine
+          - img [ref=f7e48]
+          - generic [ref=f7e51]: Mis tareas
+        - link "Tareas globales" [ref=f7e52] [cursor=pointer]:
+          - /url: /os/tasks/global
+          - img [ref=f7e53]
+          - generic [ref=f7e55]: Tareas globales
+        - link "Calendario guía" [ref=f7e56] [cursor=pointer]:
+          - /url: /os/projects/roadmap
+          - img [ref=f7e57]
+          - generic [ref=f7e59]: Calendario guía
+      - generic [ref=f7e60]:
+        - paragraph [ref=f7e61]: Inteligencia
+        - link "Ideas/Notas" [ref=f7e62] [cursor=pointer]:
+          - /url: /os/hub
+          - img [ref=f7e63]
+          - generic [ref=f7e65]: Ideas/Notas
+        - link "Links" [ref=f7e66] [cursor=pointer]:
+          - /url: /os/links
+          - img [ref=f7e67]
+          - generic [ref=f7e70]: Links
+        - link "Grafo" [ref=f7e71] [cursor=pointer]:
+          - /url: /os/graph
+          - img [ref=f7e72]
+          - generic [ref=f7e78]: Grafo
+        - link "Variables de entorno y claves" [ref=f7e79] [cursor=pointer]:
+          - /url: /os/resources
+          - img [ref=f7e80]
+          - generic [ref=f7e82]: Variables de entorno y claves
+      - generic [ref=f7e83]:
+        - paragraph [ref=f7e84]: Gestion
+        - link "Finanzas" [ref=f7e85] [cursor=pointer]:
+          - /url: /os/finances
+          - img [ref=f7e86]
+          - generic [ref=f7e88]: Finanzas
+        - link "Agenda" [ref=f7e89] [cursor=pointer]:
+          - /url: /os/agenda
+          - img [ref=f7e90]
+          - generic [ref=f7e92]: Agenda
+        - link "Marketing" [ref=f7e93] [cursor=pointer]:
+          - /url: /os/marketing
+          - img [ref=f7e94]
+          - generic [ref=f7e97]: Marketing
+      - generic [ref=f7e98]:
+        - paragraph [ref=f7e99]: Sistema
+        - link "Equipo" [ref=f7e100] [cursor=pointer]:
+          - /url: /os/team
+          - img [ref=f7e101]
+          - generic [ref=f7e105]: Equipo
+        - link "Generador" [ref=f7e106] [cursor=pointer]:
+          - /url: /os/generator
+          - img [ref=f7e107]
+          - generic [ref=f7e110]: Generador
+        - link "Config" [ref=f7e111] [cursor=pointer]:
+          - /url: /os/settings
+          - img [ref=f7e112]
+          - generic [ref=f7e115]: Config
+    - generic [ref=f7e116]:
+      - button "Comandos Ctrl+K" [ref=f7e117]:
+        - img [ref=f7e118]
+        - generic [ref=f7e120]: Comandos
+        - generic [ref=f7e121]: Ctrl+K
+      - link "Salir" [ref=f7e122] [cursor=pointer]:
+        - /url: /login
+        - img [ref=f7e123]
+        - text: Salir
+  - generic [ref=f7e126]:
+    - generic [ref=f7e127]:
+      - navigation [ref=f7e129]:
+        - link "CRM" [ref=f7e131] [cursor=pointer]:
+          - /url: /os/crm
+      - generic [ref=f7e132]:
+        - button [ref=f7e133]:
+          - img [ref=f7e134]
+        - button "Buscar Ctrl+K" [ref=f7e137]:
+          - img [ref=f7e138]
+          - generic [ref=f7e140]: Buscar
+          - generic [ref=f7e141]: Ctrl+K
+        - generic "Admin (admin)" [ref=f7e142]:
+          - img [ref=f7e143]
+          - generic [ref=f7e146]: Admin
+          - generic [ref=f7e147]: admin
+    - main [ref=f7e148]:
+      - generic [ref=f7e149]:
+        - generic [ref=f7e150]:
+          - navigation [ref=f7e151]:
+            - generic [ref=f7e153]: CRM
+          - generic [ref=f7e154]:
+            - generic [ref=f7e155]:
+              - heading "Clientes & CRM" [level=1] [ref=f7e157]
+              - paragraph [ref=f7e158]: 27.125 contactos en total
+            - button "Nuevo cliente" [ref=f7e160]:
+              - img
+              - text: Nuevo cliente
+        - generic [ref=f7e161]:
+          - generic [ref=f7e162]:
+            - generic [ref=f7e163]:
+              - img [ref=f7e164]
+              - generic [ref=f7e166]: Vistas
+            - button "Todo" [ref=f7e167]
+            - button "Guardar vista" [ref=f7e168]:
+              - img [ref=f7e169]
+              - text: Guardar vista
+          - generic [ref=f7e170]:
+            - generic [ref=f7e172]:
+              - generic [ref=f7e173]:
+                - paragraph [ref=f7e174]: Total Contactos
+                - paragraph [ref=f7e175]: "27.125"
+              - img [ref=f7e177]
+            - generic [ref=f7e183]:
+              - generic [ref=f7e184]:
+                - paragraph [ref=f7e185]: Sin Presencia Web
+                - paragraph [ref=f7e186]: "1.723"
+                - paragraph [ref=f7e187]: 6% — Oportunidad 🎯
+              - img [ref=f7e189]
+            - generic [ref=f7e197]:
+              - generic [ref=f7e198]:
+                - paragraph [ref=f7e199]: Con Presencia Digital
+                - paragraph [ref=f7e200]: "25.402"
+                - paragraph [ref=f7e201]: 2.636 web · 3.862 IG
+              - img [ref=f7e203]
+            - generic [ref=f7e207]:
+              - generic [ref=f7e208]:
+                - paragraph [ref=f7e209]: En vista actual
+                - paragraph [ref=f7e210]: "50"
+                - paragraph [ref=f7e211]: Pág. 1 de 543
+              - img [ref=f7e213]
+          - generic [ref=f7e215]:
+            - generic [ref=f7e216] [cursor=pointer]:
+              - paragraph [ref=f7e217]: No contactado
+              - paragraph [ref=f7e218]: "27.124"
+            - generic [ref=f7e219] [cursor=pointer]:
+              - paragraph [ref=f7e220]: Contactado
+              - paragraph [ref=f7e221]: "0"
+            - generic [ref=f7e222] [cursor=pointer]:
+              - paragraph [ref=f7e223]: Interesado
+              - paragraph [ref=f7e224]: "0"
+            - generic [ref=f7e225] [cursor=pointer]:
+              - paragraph [ref=f7e226]: No respondió
+              - paragraph [ref=f7e227]: "0"
+            - generic [ref=f7e228] [cursor=pointer]:
+              - paragraph [ref=f7e229]: 1ª Reunión
+              - paragraph [ref=f7e230]: "0"
+            - generic [ref=f7e231] [cursor=pointer]:
+              - paragraph [ref=f7e232]: Contrato firmado
+              - paragraph [ref=f7e233]: "1"
+            - generic [ref=f7e234] [cursor=pointer]:
+              - paragraph [ref=f7e235]: Finalizado
+              - paragraph [ref=f7e236]: "0"
+            - generic [ref=f7e237] [cursor=pointer]:
+              - paragraph [ref=f7e238]: Continuidad
+              - paragraph [ref=f7e239]: "0"
+          - generic [ref=f7e240]:
+            - generic [ref=f7e241]:
+              - img [ref=f7e242]
+              - textbox "Buscar por nombre, rubro, ciudad, teléfono..." [ref=f7e245]
+            - button "Filtros" [ref=f7e248]:
+              - img
+              - text: Filtros
+            - generic [ref=f7e250]: 27125 resultados
+          - generic [ref=f7e252]:
+            - table [ref=f7e255]:
+              - rowgroup [ref=f7e256]:
+                - row "Prospecto / Cliente Prioridad Presencia Web Contacto Calificación Contactado por Estado Creado" [ref=f7e257]:
+                  - columnheader [ref=f7e258] [cursor=pointer]:
+                    - checkbox [ref=f7e261]
+                  - columnheader "Prospecto / Cliente" [ref=f7e262] [cursor=pointer]:
+                    - generic [ref=f7e263]:
+                      - text: Prospecto / Cliente
+                      - img [ref=f7e264]
+                  - columnheader "Prioridad" [ref=f7e267] [cursor=pointer]:
+                    - generic [ref=f7e268]:
+                      - text: Prioridad
+                      - img [ref=f7e269]
+                  - columnheader "Presencia Web" [ref=f7e272] [cursor=pointer]:
+                    - generic [ref=f7e273]:
+                      - text: Presencia Web
+                      - img [ref=f7e274]
+                  - columnheader "Contacto" [ref=f7e277] [cursor=pointer]:
+                    - generic [ref=f7e278]:
+                      - text: Contacto
+                      - img [ref=f7e279]
+                  - columnheader "Calificación" [ref=f7e282] [cursor=pointer]:
+                    - generic [ref=f7e283]:
+                      - text: Calificación
+                      - img [ref=f7e284]
+                  - columnheader "Contactado por" [ref=f7e287] [cursor=pointer]:
+                    - generic [ref=f7e288]:
+                      - text: Contactado por
+                      - img [ref=f7e289]
+                  - columnheader "Estado" [ref=f7e292] [cursor=pointer]:
+                    - generic [ref=f7e293]:
+                      - text: Estado
+                      - img [ref=f7e294]
+                  - columnheader "Creado" [ref=f7e297] [cursor=pointer]:
+                    - generic [ref=f7e298]:
+                      - text: Creado
+                      - img [ref=f7e299]
+                  - columnheader [ref=f7e302] [cursor=pointer]
+              - rowgroup [ref=f7e303]:
+                - row "H Harat Ward Restaurante • Dammam, Arabia Saudita 🔥 Alta Solo link Ver ↗ +966530300965 ⭐ 4.8 (9.486) — No contactado 5 de jul de 2026" [ref=f7e304] [cursor=pointer]:
+                  - cell [ref=f7e305]:
+                    - checkbox [ref=f7e307]
+                  - cell "H Harat Ward Restaurante • Dammam, Arabia Saudita" [ref=f7e308]:
+                    - generic [ref=f7e309]:
+                      - generic [ref=f7e310]: H
+                      - generic [ref=f7e311]:
+                        - paragraph [ref=f7e312]: Harat Ward
+                        - paragraph [ref=f7e313]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e314]:
+                    - generic [ref=f7e315]: 🔥 Alta
+                  - cell "Solo link Ver ↗" [ref=f7e316]:
+                    - generic [ref=f7e317]:
+                      - generic [ref=f7e318]:
+                        - img [ref=f7e319]
+                        - text: Solo link
+                      - link "Ver ↗" [ref=f7e323]:
+                        - /url: https://linktr.ee/haratward
+                  - cell "+966530300965" [ref=f7e324]:
+                    - generic [ref=f7e325]:
+                      - generic [ref=f7e326]: "+966530300965"
+                      - link "Abrir WhatsApp" [ref=f7e328]:
+                        - /url: https://wa.me/966530300965
+                        - img [ref=f7e329]
+                  - cell "⭐ 4.8 (9.486)" [ref=f7e331]:
+                    - generic [ref=f7e332]:
+                      - text: ⭐
+                      - generic [ref=f7e333]: "4.8"
+                      - text: (9.486)
+                  - cell "—" [ref=f7e334]
+                  - cell "No contactado" [ref=f7e335]:
+                    - generic [ref=f7e336]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e337]
+                  - cell [ref=f7e338]:
+                    - button [ref=f7e340]:
+                      - img
+                - row "N Novotel Dammam Business Park Hotel • Dammam, Arabia Saudita 🔥 Alta Sin web +966138458888 ⭐ 4.2 (8.593) — No contactado 5 de jul de 2026" [ref=f7e341] [cursor=pointer]:
+                  - cell [ref=f7e342]:
+                    - checkbox [ref=f7e344]
+                  - cell "N Novotel Dammam Business Park Hotel • Dammam, Arabia Saudita" [ref=f7e345]:
+                    - generic [ref=f7e346]:
+                      - generic [ref=f7e347]: "N"
+                      - generic [ref=f7e348]:
+                        - paragraph [ref=f7e349]: Novotel Dammam Business Park
+                        - paragraph [ref=f7e350]: Hotel • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e351]:
+                    - generic [ref=f7e352]: 🔥 Alta
+                  - cell "Sin web" [ref=f7e353]:
+                    - generic [ref=f7e354]:
+                      - img [ref=f7e355]
+                      - text: Sin web
+                  - cell "+966138458888" [ref=f7e362]:
+                    - generic [ref=f7e363]:
+                      - generic [ref=f7e364]: "+966138458888"
+                      - link "Abrir WhatsApp" [ref=f7e366]:
+                        - /url: https://wa.me/966138458888
+                        - img [ref=f7e367]
+                  - cell "⭐ 4.2 (8.593)" [ref=f7e369]:
+                    - generic [ref=f7e370]:
+                      - text: ⭐
+                      - generic [ref=f7e371]: "4.2"
+                      - text: (8.593)
+                  - cell "—" [ref=f7e372]
+                  - cell "No contactado" [ref=f7e373]:
+                    - generic [ref=f7e374]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e375]
+                  - cell [ref=f7e376]:
+                    - button [ref=f7e378]:
+                      - img
+                - row "S Steak House Restaurante • Dammam, Arabia Saudita 🔥 Alta Sin web +966538408159 ⭐ 4.4 (7.537) — No contactado 5 de jul de 2026" [ref=f7e379] [cursor=pointer]:
+                  - cell [ref=f7e380]:
+                    - checkbox [ref=f7e382]
+                  - cell "S Steak House Restaurante • Dammam, Arabia Saudita" [ref=f7e383]:
+                    - generic [ref=f7e384]:
+                      - generic [ref=f7e385]: S
+                      - generic [ref=f7e386]:
+                        - paragraph [ref=f7e387]: Steak House
+                        - paragraph [ref=f7e388]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e389]:
+                    - generic [ref=f7e390]: 🔥 Alta
+                  - cell "Sin web" [ref=f7e391]:
+                    - generic [ref=f7e392]:
+                      - img [ref=f7e393]
+                      - text: Sin web
+                  - cell "+966538408159" [ref=f7e400]:
+                    - generic [ref=f7e401]:
+                      - generic [ref=f7e402]: "+966538408159"
+                      - link "Abrir WhatsApp" [ref=f7e404]:
+                        - /url: https://wa.me/966538408159
+                        - img [ref=f7e405]
+                  - cell "⭐ 4.4 (7.537)" [ref=f7e407]:
+                    - generic [ref=f7e408]:
+                      - text: ⭐
+                      - generic [ref=f7e409]: "4.4"
+                      - text: (7.537)
+                  - cell "—" [ref=f7e410]
+                  - cell "No contactado" [ref=f7e411]:
+                    - generic [ref=f7e412]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e413]
+                  - cell [ref=f7e414]:
+                    - button [ref=f7e416]:
+                      - img
+                - row "S Shrimp House Restaurant Restaurante • Dammam, Arabia Saudita 🔥 Alta Solo link Ver ↗ +966562228666 ⭐ 4.2 (6.681) — No contactado 5 de jul de 2026" [ref=f7e417] [cursor=pointer]:
+                  - cell [ref=f7e418]:
+                    - checkbox [ref=f7e420]
+                  - cell "S Shrimp House Restaurant Restaurante • Dammam, Arabia Saudita" [ref=f7e421]:
+                    - generic [ref=f7e422]:
+                      - generic [ref=f7e423]: S
+                      - generic [ref=f7e424]:
+                        - paragraph [ref=f7e425]: Shrimp House Restaurant
+                        - paragraph [ref=f7e426]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e427]:
+                    - generic [ref=f7e428]: 🔥 Alta
+                  - cell "Solo link Ver ↗" [ref=f7e429]:
+                    - generic [ref=f7e430]:
+                      - generic [ref=f7e431]:
+                        - img [ref=f7e432]
+                        - text: Solo link
+                      - link "Ver ↗" [ref=f7e436]:
+                        - /url: https://linktr.ee/baitalrobyan
+                  - cell "+966562228666" [ref=f7e437]:
+                    - generic [ref=f7e438]:
+                      - generic [ref=f7e439]: "+966562228666"
+                      - link "Abrir WhatsApp" [ref=f7e441]:
+                        - /url: https://wa.me/966562228666
+                        - img [ref=f7e442]
+                  - cell "⭐ 4.2 (6.681)" [ref=f7e444]:
+                    - generic [ref=f7e445]:
+                      - text: ⭐
+                      - generic [ref=f7e446]: "4.2"
+                      - text: (6.681)
+                  - cell "—" [ref=f7e447]
+                  - cell "No contactado" [ref=f7e448]:
+                    - generic [ref=f7e449]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e450]
+                  - cell [ref=f7e451]:
+                    - button [ref=f7e453]:
+                      - img
+                - row "M Manal elegant Peluquería • Dammam, Arabia Saudita 🔥 Alta Instagram Ver ↗ +966503892110 ⭐ 4.7 (5.882) — No contactado 5 de jul de 2026" [ref=f7e454] [cursor=pointer]:
+                  - cell [ref=f7e455]:
+                    - checkbox [ref=f7e457]
+                  - cell "M Manal elegant Peluquería • Dammam, Arabia Saudita" [ref=f7e458]:
+                    - generic [ref=f7e459]:
+                      - generic [ref=f7e460]: M
+                      - generic [ref=f7e461]:
+                        - paragraph [ref=f7e462]: Manal elegant
+                        - paragraph [ref=f7e463]: Peluquería • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e464]:
+                    - generic [ref=f7e465]: 🔥 Alta
+                  - cell "Instagram Ver ↗" [ref=f7e466]:
+                    - generic [ref=f7e467]:
+                      - generic [ref=f7e468]:
+                        - img [ref=f7e469]
+                        - text: Instagram
+                      - link "Ver ↗" [ref=f7e473]:
+                        - /url: https://www.instagram.com/manal_elegance
+                  - cell "+966503892110" [ref=f7e474]:
+                    - generic [ref=f7e475]:
+                      - generic [ref=f7e476]: "+966503892110"
+                      - generic [ref=f7e477]:
+                        - link "Abrir WhatsApp" [ref=f7e478]:
+                          - /url: https://wa.me/966503892110
+                          - img [ref=f7e479]
+                        - link "Instagram" [ref=f7e481]:
+                          - /url: https://instagram.com/manal_elegance
+                          - img [ref=f7e482]
+                  - cell "⭐ 4.7 (5.882)" [ref=f7e485]:
+                    - generic [ref=f7e486]:
+                      - text: ⭐
+                      - generic [ref=f7e487]: "4.7"
+                      - text: (5.882)
+                  - cell "—" [ref=f7e488]
+                  - cell "No contactado" [ref=f7e489]:
+                    - generic [ref=f7e490]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e491]
+                  - cell [ref=f7e492]:
+                    - button [ref=f7e494]:
+                      - img
+                - row "R Roma Castle Restaurant Restaurante • Dammam, Arabia Saudita 🔥 Alta Sin web +966553331811 ⭐ 4.2 (5.539) — No contactado 5 de jul de 2026" [ref=f7e495] [cursor=pointer]:
+                  - cell [ref=f7e496]:
+                    - checkbox [ref=f7e498]
+                  - cell "R Roma Castle Restaurant Restaurante • Dammam, Arabia Saudita" [ref=f7e499]:
+                    - generic [ref=f7e500]:
+                      - generic [ref=f7e501]: R
+                      - generic [ref=f7e502]:
+                        - paragraph [ref=f7e503]: Roma Castle Restaurant
+                        - paragraph [ref=f7e504]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e505]:
+                    - generic [ref=f7e506]: 🔥 Alta
+                  - cell "Sin web" [ref=f7e507]:
+                    - generic [ref=f7e508]:
+                      - img [ref=f7e509]
+                      - text: Sin web
+                  - cell "+966553331811" [ref=f7e516]:
+                    - generic [ref=f7e517]:
+                      - generic [ref=f7e518]: "+966553331811"
+                      - link "Abrir WhatsApp" [ref=f7e520]:
+                        - /url: https://wa.me/966553331811
+                        - img [ref=f7e521]
+                  - cell "⭐ 4.2 (5.539)" [ref=f7e523]:
+                    - generic [ref=f7e524]:
+                      - text: ⭐
+                      - generic [ref=f7e525]: "4.2"
+                      - text: (5.539)
+                  - cell "—" [ref=f7e526]
+                  - cell "No contactado" [ref=f7e527]:
+                    - generic [ref=f7e528]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e529]
+                  - cell [ref=f7e530]:
+                    - button [ref=f7e532]:
+                      - img
+                - row "S SOLACE, سولاس Restaurante • Dammam, Arabia Saudita 🔥 Alta Instagram Ver ↗ +966564144526 ⭐ 4.7 (5.259) — No contactado 5 de jul de 2026" [ref=f7e533] [cursor=pointer]:
+                  - cell [ref=f7e534]:
+                    - checkbox [ref=f7e536]
+                  - cell "S SOLACE, سولاس Restaurante • Dammam, Arabia Saudita" [ref=f7e537]:
+                    - generic [ref=f7e538]:
+                      - generic [ref=f7e539]: S
+                      - generic [ref=f7e540]:
+                        - paragraph [ref=f7e541]: SOLACE, سولاس
+                        - paragraph [ref=f7e542]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e543]:
+                    - generic [ref=f7e544]: 🔥 Alta
+                  - cell "Instagram Ver ↗" [ref=f7e545]:
+                    - generic [ref=f7e546]:
+                      - generic [ref=f7e547]:
+                        - img [ref=f7e548]
+                        - text: Instagram
+                      - link "Ver ↗" [ref=f7e552]:
+                        - /url: https://instagram.com/solace.ksa?utm_medium=copy_link
+                  - cell "+966564144526" [ref=f7e553]:
+                    - generic [ref=f7e554]:
+                      - generic [ref=f7e555]: "+966564144526"
+                      - generic [ref=f7e556]:
+                        - link "Abrir WhatsApp" [ref=f7e557]:
+                          - /url: https://wa.me/966564144526
+                          - img [ref=f7e558]
+                        - link "Instagram" [ref=f7e560]:
+                          - /url: https://instagram.com/solace.ksa
+                          - img [ref=f7e561]
+                  - cell "⭐ 4.7 (5.259)" [ref=f7e564]:
+                    - generic [ref=f7e565]:
+                      - text: ⭐
+                      - generic [ref=f7e566]: "4.7"
+                      - text: (5.259)
+                  - cell "—" [ref=f7e567]
+                  - cell "No contactado" [ref=f7e568]:
+                    - generic [ref=f7e569]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e570]
+                  - cell [ref=f7e571]:
+                    - button [ref=f7e573]:
+                      - img
+                - row "H Horyat Al Sharqia Seafood restaurant Restaurante • Dammam, Arabia Saudita 🔥 Alta Instagram Ver ↗ +966507831115 ⭐ 4.6 (4.940) — No contactado 5 de jul de 2026" [ref=f7e574] [cursor=pointer]:
+                  - cell [ref=f7e575]:
+                    - checkbox [ref=f7e577]
+                  - cell "H Horyat Al Sharqia Seafood restaurant Restaurante • Dammam, Arabia Saudita" [ref=f7e578]:
+                    - generic [ref=f7e579]:
+                      - generic [ref=f7e580]: H
+                      - generic [ref=f7e581]:
+                        - paragraph [ref=f7e582]: Horyat Al Sharqia Seafood restaurant
+                        - paragraph [ref=f7e583]: Restaurante • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e584]:
+                    - generic [ref=f7e585]: 🔥 Alta
+                  - cell "Instagram Ver ↗" [ref=f7e586]:
+                    - generic [ref=f7e587]:
+                      - generic [ref=f7e588]:
+                        - img [ref=f7e589]
+                        - text: Instagram
+                      - link "Ver ↗" [ref=f7e593]:
+                        - /url: https://instagram.com/horyatalsharqih?igshid=YmMyMTA=
+                  - cell "+966507831115" [ref=f7e594]:
+                    - generic [ref=f7e595]:
+                      - generic [ref=f7e596]: "+966507831115"
+                      - generic [ref=f7e597]:
+                        - link "Abrir WhatsApp" [ref=f7e598]:
+                          - /url: https://wa.me/966507831115
+                          - img [ref=f7e599]
+                        - link "Instagram" [ref=f7e601]:
+                          - /url: https://instagram.com/horyatalsharqih
+                          - img [ref=f7e602]
+                  - cell "⭐ 4.6 (4.940)" [ref=f7e605]:
+                    - generic [ref=f7e606]:
+                      - text: ⭐
+                      - generic [ref=f7e607]: "4.6"
+                      - text: (4.940)
+                  - cell "—" [ref=f7e608]
+                  - cell "No contactado" [ref=f7e609]:
+                    - generic [ref=f7e610]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e611]
+                  - cell [ref=f7e612]:
+                    - button [ref=f7e614]:
+                      - img
+                - row "G golden garden al corniche hotel Hotel • Dammam, Arabia Saudita 🔥 Alta Sin web +966544674763 ⭐ 3.9 (4.294) — No contactado 5 de jul de 2026" [ref=f7e615] [cursor=pointer]:
+                  - cell [ref=f7e616]:
+                    - checkbox [ref=f7e618]
+                  - cell "G golden garden al corniche hotel Hotel • Dammam, Arabia Saudita" [ref=f7e619]:
+                    - generic [ref=f7e620]:
+                      - generic [ref=f7e621]: G
+                      - generic [ref=f7e622]:
+                        - paragraph [ref=f7e623]: golden garden al corniche hotel
+                        - paragraph [ref=f7e624]: Hotel • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e625]:
+                    - generic [ref=f7e626]: 🔥 Alta
+                  - cell "Sin web" [ref=f7e627]:
+                    - generic [ref=f7e628]:
+                      - img [ref=f7e629]
+                      - text: Sin web
+                  - cell "+966544674763" [ref=f7e636]:
+                    - generic [ref=f7e637]:
+                      - generic [ref=f7e638]: "+966544674763"
+                      - link "Abrir WhatsApp" [ref=f7e640]:
+                        - /url: https://wa.me/966544674763
+                        - img [ref=f7e641]
+                  - cell "⭐ 3.9 (4.294)" [ref=f7e643]:
+                    - generic [ref=f7e644]:
+                      - text: ⭐
+                      - generic [ref=f7e645]: "3.9"
+                      - text: (4.294)
+                  - cell "—" [ref=f7e646]
+                  - cell "No contactado" [ref=f7e647]:
+                    - generic [ref=f7e648]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e649]
+                  - cell [ref=f7e650]:
+                    - button [ref=f7e652]:
+                      - img
+                - row "L Loop Restaurant & Cafe Cafetería • Dammam, Arabia Saudita 🔥 Alta Instagram Ver ↗ +966565366373 ⭐ 4.1 (4.039) — No contactado 5 de jul de 2026" [ref=f7e653] [cursor=pointer]:
+                  - cell [ref=f7e654]:
+                    - checkbox [ref=f7e656]
+                  - cell "L Loop Restaurant & Cafe Cafetería • Dammam, Arabia Saudita" [ref=f7e657]:
+                    - generic [ref=f7e658]:
+                      - generic [ref=f7e659]: L
+                      - generic [ref=f7e660]:
+                        - paragraph [ref=f7e661]: Loop Restaurant & Cafe
+                        - paragraph [ref=f7e662]: Cafetería • Dammam, Arabia Saudita
+                  - cell "🔥 Alta" [ref=f7e663]:
+                    - generic [ref=f7e664]: 🔥 Alta
+                  - cell "Instagram Ver ↗" [ref=f7e665]:
+                    - generic [ref=f7e666]:
+                      - generic [ref=f7e667]:
+                        - img [ref=f7e668]
+                        - text: Instagram
+                      - link "Ver ↗" [ref=f7e672]:
+                        - /url: https://www.instagram.com/loop.restaurant_cafe/
+                  - cell "+966565366373" [ref=f7e673]:
+                    - generic [ref=f7e674]:
+                      - generic [ref=f7e675]: "+966565366373"
+                      - generic [ref=f7e676]:
+                        - link "Abrir WhatsApp" [ref=f7e677]:
+                          - /url: https://wa.me/966565366373
+                          - img [ref=f7e678]
+                        - link "Instagram" [ref=f7e680]:
+                          - /url: https://instagram.com/loop.restaurant_cafe
+                          - img [ref=f7e681]
+                  - cell "⭐ 4.1 (4.039)" [ref=f7e684]:
+                    - generic [ref=f7e685]:
+                      - text: ⭐
+                      - generic [ref=f7e686]: "4.1"
+                      - text: (4.039)
+                  - cell "—" [ref=f7e687]
+                  - cell "No contactado" [ref=f7e688]:
+                    - generic [ref=f7e689]: No contactado
+                  - cell "5 de jul de 2026" [ref=f7e690]
+                  - cell [ref=f7e691]:
+                    - button [ref=f7e693]:
+                      - img
+            - generic [ref=f7e694]:
+              - generic [ref=f7e695]: Mostrando 10 de 50 filas.
+              - generic [ref=f7e696]:
+                - button [disabled]:
+                  - img
+                - button [disabled]:
+                  - img
+                - generic [ref=f7e697]: Pág 1 de 5
+                - button [ref=f7e698]:
+                  - img
+                - button [ref=f7e699]:
+                  - img
+          - generic [ref=f7e700]:
+            - paragraph [ref=f7e701]: Mostrando 1–50 de 27.125 contactos
+            - generic [ref=f7e702]:
+              - button "Anterior" [disabled]:
+                - img
+                - text: Anterior
+              - generic [ref=f7e703]: 1 / 543
+              - button "Siguiente" [ref=f7e704]:
+                - text: Siguiente
+                - img
+      - region "Notifications alt+T"

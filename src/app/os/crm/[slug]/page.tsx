@@ -1,14 +1,16 @@
 import { PageHeader } from "@/components/os/layout/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import Link from "next/link";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EntitySidebar } from "@/components/os/Graph/EntitySidebar";
 import { EntityConnectSheet } from "@/components/os/actions/EntityConnectSheet";
 import { getClientBySlug, generateClientPinAction, createClientAction, getClientContactors, listTeamMembersAction } from "@/lib/db/actions/crm";
 import { getEntityConnections, getResolvedEntityConnections } from "@/lib/db/actions/graph";
 import { db } from "@/lib/db";
-import { projects, documents, tickets, finances } from "@/lib/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { projects, documents, tickets, finances, clients } from "@/lib/db/schema";
+import { eq, inArray, ne, sql } from "drizzle-orm";
 import { formatShortDate, formatCurrencyCop } from "@/lib/format";
 import { notFound } from "next/navigation";
 import { PinManager } from "./PinManager";
@@ -16,6 +18,9 @@ import { EditClientDialog } from "./EditClientDialog";
 import { EditContactorsDialog } from "./EditContactorsDialog";
 import { EntityGraph } from "@/components/os/Graph/EntityGraph";
 import { AsyncSubmitButton } from "@/components/os/ui/AsyncSubmitButton";
+import { Button } from "@/components/ui/button";
+import { Shuffle } from "lucide-react";
+
 
 interface Props { params: Promise<{ slug: string }>; searchParams: Promise<{ pin?: string }> }
 
@@ -29,6 +34,14 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
 
   const client = await getClientBySlug(slug);
   if (!client) notFound();
+
+  // Fetch a random client to allow quick sequential triage
+  const [randomClient] = await db
+    .select({ slug: clients.slug })
+    .from(clients)
+    .where(ne(clients.slug, slug))
+    .orderBy(sql`RANDOM()`)
+    .limit(1);
 
   const currentContactors = await getClientContactors(client.id);
   const teamMembers = await listTeamMembersAction();
@@ -63,6 +76,14 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
         primaryAction={<PinManager slug={client.slug} generatePin={generateClientPinAction} initialPin={pin} />}
         secondaryActions={
           <div className="flex items-center gap-2">
+            {randomClient && (
+              <Link href={`/os/crm/${randomClient.slug}`}>
+                <Button variant="outline" size="sm" className="gap-1.5 h-9 bg-background border-border hover:bg-accent/40 text-xs font-semibold shrink-0">
+                  <Shuffle className="h-3.5 w-3.5 text-[var(--color-primary)] animate-pulse" />
+                  Siguiente al azar
+                </Button>
+              </Link>
+            )}
             <EntityConnectSheet sourceId={client.id} sourceType="client" />
             <EditClientDialog client={client} />
           </div>
