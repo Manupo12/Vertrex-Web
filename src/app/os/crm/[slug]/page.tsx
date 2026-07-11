@@ -10,7 +10,7 @@ import { getClientBySlug, generateClientPinAction, createClientAction, getClient
 import { getEntityConnections, getResolvedEntityConnections } from "@/lib/db/actions/graph";
 import { db } from "@/lib/db";
 import { projects, documents, tickets, finances, clients } from "@/lib/db/schema";
-import { eq, inArray, ne, sql } from "drizzle-orm";
+import { eq, inArray, ne, sql, and } from "drizzle-orm";
 import { formatShortDate, formatCurrencyCop } from "@/lib/format";
 import { notFound } from "next/navigation";
 import { PinManager } from "./PinManager";
@@ -35,11 +35,16 @@ export default async function CrmDetailPage({ params, searchParams }: Props) {
   const client = await getClientBySlug(slug);
   if (!client) notFound();
 
-  // Fetch a random client to allow quick sequential triage
+  // Fetch a random client to allow quick sequential triage (ONLY non-contacted prospects)
   const [randomClient] = await db
     .select({ slug: clients.slug })
     .from(clients)
-    .where(ne(clients.slug, slug))
+    .where(
+      and(
+        ne(clients.slug, slug),
+        eq(clients.status, "no_contactado")
+      )
+    )
     .orderBy(sql`RANDOM()`)
     .limit(1);
 
