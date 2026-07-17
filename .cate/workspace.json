@@ -35,23 +35,16 @@
           "activeIndex": 0
         }
       }
-    },
-    "locations": {
-      "087660c6-589e-4e86-93b9-6b47bc90f9af": {
-        "type": "dock",
-        "zone": "center",
-        "stackId": "0d2b3318-021c-4bdb-be71-67c604536b4f"
-      }
     }
   },
   "panels": {
     "4afc0a07-e0e9-44c9-8b2f-efc4fe17bfa6": {
       "type": "terminal",
-      "title": "manu@manu-desktop: /mnt/datos/Proyectos/Web/Vertrex-Website 2"
+      "title": "manu@manu-desktop: /mnt/datos/Proyectos/Web/Vertrex-Website"
     },
-    "0873f073-73b4-459d-bf0f-991fbcc93daa": {
+    "a926f580-f159-4d75-92b7-783829b97736": {
       "type": "terminal",
-      "title": "OpenCode"
+      "title": "Antigravity"
     },
     "087660c6-589e-4e86-93b9-6b47bc90f9af": {
       "type": "canvas",
@@ -85,25 +78,24 @@
             "activeIndex": 0
           }
         },
-        "217b6dff-0137-4b0f-ba82-63d40dcd7366": {
-          "id": "217b6dff-0137-4b0f-ba82-63d40dcd7366",
-          "panelId": "0873f073-73b4-459d-bf0f-991fbcc93daa",
+        "847ad8c4-7a4e-49cd-8832-90fee3779ed3": {
+          "id": "847ad8c4-7a4e-49cd-8832-90fee3779ed3",
           "origin": {
-            "x": 191.2079830221012,
-            "y": 682.101496816644
+            "x": 300,
+            "y": 860
           },
           "size": {
             "width": 640,
             "height": 400
           },
-          "zOrder": 112,
-          "creationIndex": 1,
+          "zOrder": 117,
+          "creationIndex": 2,
           "animationState": "idle",
           "dockLayout": {
             "type": "tabs",
-            "id": "c531396b-0657-4286-9dbd-869466f212dd",
+            "id": "3b96e60d-9663-41ea-898f-2351aa1da493",
             "panelIds": [
-              "0873f073-73b4-459d-bf0f-991fbcc93daa"
+              "a926f580-f159-4d75-92b7-783829b97736"
             ],
             "activeIndex": 0
           }
@@ -111,8 +103,8 @@
       },
       "zoomLevel": 1.427553911212158,
       "viewportOffset": {
-        "x": -199.776955606079,
-        "y": -933.2474418666991
+        "x": -355.08342495153795,
+        "y": -1169.2071458848875
       }
     }
   }

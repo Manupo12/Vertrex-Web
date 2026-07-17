@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 import { requireAdminUser } from "@/lib/auth/session";
-import { createTeamMemberAction, setTelegramUsernameAction } from "@/lib/db/actions/team";
+import { createTeamMemberAction, setTelegramUsernameAction, updateTeamMemberPasswordAction } from "@/lib/db/actions/team";
 import { formatShortDate } from "@/lib/format";
 import { ManageMember } from "./ManageMember";
 import { CopyButton } from "./CopyButton";
@@ -87,6 +87,38 @@ export default async function TeamDetailPage({ params, searchParams }: Props) {
             </form>
             <p className="text-xs text-muted-foreground">
               Ingresa el usuario sin el símbolo @. Esto permite vincular las tareas de este miembro al bot notificador de Telegram.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Cambiar Contraseña</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <form 
+              action={async (fd: FormData) => {
+                "use server";
+                const pass = String(fd.get("newPassword") || "").trim();
+                await updateTeamMemberPasswordAction(userId, pass);
+              }} 
+              className="flex items-center gap-2"
+            >
+              <div className="flex-1">
+                <input 
+                  name="newPassword"
+                  type="password"
+                  required
+                  placeholder="Nueva contraseña (mínimo 6 caracteres)"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <button type="submit" className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shrink-0">
+                Actualizar
+              </button>
+            </form>
+            <p className="text-xs text-muted-foreground">
+              Establece una nueva contraseña de inicio de sesión para este miembro. La actualización es instantánea.
             </p>
           </CardContent>
         </Card>

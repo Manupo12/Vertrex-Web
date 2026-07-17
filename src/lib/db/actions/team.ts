@@ -109,4 +109,25 @@ export async function getModulePermissionsAction(userId: string) {
   return db.select().from(modulePermissions).where(eq(modulePermissions.userId, userId));
 }
 
+export async function updateTeamMemberPasswordAction(userId: string, newPassword: string) {
+  const adminUser = await requireAdminUser();
+  const trimmedPassword = newPassword.trim();
+  if (!trimmedPassword) throw new Error("La contraseña no puede estar vacía");
+  if (trimmedPassword.length < 6) throw new Error("La contraseña debe tener al menos 6 caracteres");
+  
+  const passwordHash = await hashPassword(trimmedPassword);
+  await db.update(users).set({ passwordHash }).where(eq(users.id, userId));
+  
+  await logActivity({
+    actorType: "team",
+    actorId: adminUser.userId,
+    verb: "password_changed",
+    targetType: "team_member",
+    targetId: userId,
+    payload: { message: "Contraseña actualizada por el administrador" }
+  });
+  
+  revalidatePath(`/os/team/${userId}`);
+}
+
 
